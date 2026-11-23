@@ -269,66 +269,142 @@ function emitShards() {
    ========================================================== */
 function buildHome() {
   const R = newRenderers();
-  const totalQ = QUESTIONS.length;
-  const totalM = METHODS.length;
-  const totalC = CHAPTERS.length;
+  const totalQ = STATS.questions;
+  const totalM = STATS.methods;
+  const totalC = STATS.chapters;
+  const totalConcept = STATS.concepts;
 
+  /* ---------- 提分路径：三层分区（紧凑三列） ---------- */
+  const TIER_GOAL = { send: '目标 100%', mid: '目标 90%', dist: '目标 50–70%' };
+  const TIER_DESC = {
+    send: '选 1–7 / 填 9–15 / 17–22',
+    mid: '23 圆 / 24 二次 / 25 统计 / 26 含参二次',
+    dist: '8 / 16 / 27 / 28 四道题',
+  };
   const tierRows = ['send', 'mid', 'dist'].map((t) => {
     const qs = QUESTIONS.filter((q) => q.tier === t);
     const methods = METHODS.filter((m) => m.tier === t);
-    const ready = qs.length > 0;
-    return `<div class="coverage-row ${ready ? 'on' : 'off'}">
-      <span class="cv-score">${t === 'send' ? '58' : t === 'mid' ? '24' : '18'}</span>
-      <span class="cv-part">${TIER_NAME[t]}</span>
-      <span class="cv-note">${TIER_NOTE[t]}<span class="cv-own">本站：${qs.length} 题 · ${methods.length} 张方法卡</span></span>
-      <span class="cv-flag">${ready ? '✓ 已覆盖' : '建设中'}</span>
+    return `<div class="tier-mini ${t}">
+      <div class="tier-mini-score">${t === 'send' ? '58' : t === 'mid' ? '24' : '18'}<span>分</span></div>
+      <div class="tier-mini-name">${TIER_NAME[t]}</div>
+      <div class="tier-mini-desc">${TIER_DESC[t]}</div>
+      <div class="tier-mini-goal">${TIER_GOAL[t]}</div>
+      <div class="tier-mini-count">${qs.length} 题 · ${methods.length} 张卡</div>
     </div>`;
   }).join('');
 
-  /* 首页只放示例，不铺全部——完整列表在 method.html，那里有分页。
-     选 4 张覆盖三种层级，让读者一眼看到「识别信号」的写法差异。 */
-  const sampleIds = ['m-quad-interval', 'm-midpoint-4', 'm-factor-4', 'm-newdef-3step'];
+  /* ---------- 方法卡示例（4 张，覆盖三层） ---------- */
+  /* 三层各取代表：送分（因式分解，最基础）+ 中档（反比例 k 的几何意义）+ 区分（区间最值、中点）
+     按 tier 从易到难排列，让读者一眼看到难度递进 */
+  const sampleIds = ['m-factor-4', 'm-k-meaning', 'm-quad-interval', 'm-midpoint-4'];
   const sampleMethods = sampleIds.map((id) => METHODS.find((m) => m.id === id)).filter(Boolean);
-  const methodCards = sampleMethods.map((m) => {
+  /* 紧凑行：一行一张卡，只留名称 + 识别信号首句 + 层级 */
+  const methodRows = sampleMethods.map((m) => {
     const ch = CH_BY_ID.get(m.chapter);
-    return `<a class="card track-card" href="method/${m.id}.html">
-      <div class="track-head">
-        <span class="track-ico ${m.tier === 'dist' ? 'rose' : 'purple'}">${m.tier === 'dist' ? '🎯' : '📐'}</span>
-        <div>
-          <span class="track-step">${esc(ch ? ch.name : '')} · ${TIER_NAME[m.tier]}</span>
-          <h3>${esc(m.name)}</h3>
-        </div>
-      </div>
-      <p class="desc">${R.math.render(m.signal)}</p>
-      <div class="track-meta">
-        <span>${(m.steps || []).length} 步</span>
-        <span>${(m.pitfalls || []).length} 个误用</span>
-        <span>${(m.variantIds || []).length + 1} 题</span>
-      </div>
-      <span class="track-go">看方法卡 →</span>
+    return `<a class="mrow" href="method/${m.id}.html">
+      <span class="mrow-tier ${m.tier}">${TIER_NAME[m.tier]}</span>
+      <span class="mrow-main">
+        <b>${esc(m.name)}</b>
+        <span class="mrow-signal">${R.math.render(m.signal)}</span>
+      </span>
+      <span class="mrow-meta">${(m.steps || []).length} 步 · ${(m.pitfalls || []).length} 个误用</span>
+      <span class="mrow-go">→</span>
     </a>`;
   }).join('');
+
+  /* ---------- 问题 → 机制 ---------- */
+  const sellRows = [
+    {
+      no: '01',
+      pain: '刷了三本题，换个问法又不会',
+      painSub: '题量上去了，识别能力没上去',
+      tag: '方法卡',
+      fix: '每张卡第一行不是知识点名，是<b>「题面出现什么时该想到它」</b>。先练认题，再练解题——这才是换问法也认得出的能力。',
+      href: 'method.html',
+      link: '看方法卡怎么写',
+    },
+    {
+      no: '02',
+      pain: '答案看得懂，自己做还是没思路',
+      painSub: '「懂了」和「会做」之间差着几步',
+      tag: '步骤级判定',
+      fix: '判题的单位是<b>步</b>不是题。答错时系统记下你卡在<b>第几步</b>，而不是只记一个「错」。卡在第 1 步是概念问题，卡在第 3 步是计算问题——补救方式完全不同。',
+      href: 'drill.html',
+      link: '试一组分步刷题',
+    },
+    {
+      no: '03',
+      pain: '错题记了一堆，不知道从哪补',
+      painSub: '「计算差」这种结论没法执行',
+      tag: '弱点诊断',
+      fix: '错题按<b>可训练单元</b>聚合，直接告诉你：<b>二次函数区间最值 · 正确率 0% · 主因概念不清 · 常卡第 1 步</b>，然后一键进该单元的题。不是给结论，是给下一步动作。',
+      href: 'wrong.html',
+      link: '看诊断长什么样',
+    },
+  ];
+
+  const sellHtml = sellRows.map((r) => `<div class="sell-row">
+    <div class="sell-pain">
+      <span class="sell-no">${r.no}</span>
+      <b>${r.pain}</b>
+      <span class="sell-pain-sub">${r.painSub}</span>
+    </div>
+    <div class="sell-fix">
+      <span class="sell-tag">${r.tag}</span>
+      <p>${r.fix}</p>
+      <a class="sell-link" href="${r.href}">${r.link} →</a>
+    </div>
+  </div>`).join('');
+
+  /* ---------- 与普通题库的差别 ---------- */
+  const diffRows = [
+    ['组织方式', '按章节 / 知识点罗列', '<b>按方法 + 识别信号</b>'],
+    ['判题粒度', '对 / 错', '<b>步骤级，记卡在第几步</b>'],
+    ['错题', '收集起来，自己去翻', '<b>聚合到可训练单元，给下一步</b>'],
+    ['解答题批改', '号称 AI 批改', '<b>明确不批改，走自查 + 完整解答对照</b>'],
+    ['内容口径', '通用题库', '<b>对齐北京卷 28 题结构</b>'],
+  ];
+  const diffHtml = diffRows.map(([k, a, b]) => `<tr>
+    <td class="diff-k">${k}</td>
+    <td class="diff-old">${a}</td>
+    <td class="diff-new">${b}</td>
+  </tr>`).join('');
+
+  /* ---------- 三步上手 ---------- */
+  const steps = [
+    { n: '1', t: '先做一组题', d: '10 道送分区题，或直接看一章的题。不用注册，答完就有记录。', href: 'drill.html', cta: '开始做题' },
+    { n: '2', t: '看诊断说补什么', d: '弱点清单会告诉你最该补的方法卡、主因错因、常卡第几步。', href: 'wrong.html', cta: '看错因诊断' },
+    { n: '3', t: '进专项练', d: '点「专项训练」直接出那个单元的题。练完回来看正确率有没有上去。', href: 'drill.html?scope=weak', cta: '专攻最弱' },
+  ];
+  const stepsHtml = steps.map((s) => `<div class="step-mini">
+    <span class="step-mini-no">${s.n}</span>
+    <div>
+      <b>${s.t}</b>
+      <p>${s.d}</p>
+      <a class="sell-link" href="${s.href}">${s.cta} →</a>
+    </div>
+  </div>`).join('');
 
   const body = `
 <section class="hero">
   <div class="hero-split">
     <div>
-      <div class="hero-badge"><span class="dot-live"></span>18 章 · 300 题 · 29 张方法卡 · 对齐北京卷 28 题结构</div>
-      <h1>北京中考数学，<br><span class="accent-word">先看懂题，再动手算</span></h1>
+      <div class="hero-badge"><span class="dot-live"></span>北京中考数学 · 对齐卷面 28 题结构</div>
+      <h1>刷了很多题，<br><span class="accent-word">同类型的还是错</span></h1>
       <p class="lede">
- 本站不按「知识点清单」组织，而按<b>方法</b>组织：每张方法卡第一行写的是
- <b>「题面出现什么时该想到它」</b>，然后给 3–5 步标准流程、常见误用、母题精讲与三个变式。
- 刷题按<b>步骤</b>判定——答错时系统记下你卡在第几步，而不是只记一个「错」。
+ 问题通常不在题量，而在<b>看到题不知道用哪个方法</b>。
+ 本站按<b>方法</b>组织，不按知识点罗列：每张方法卡第一行写清「题面出现什么时该想到它」；
+ 刷题按<b>步骤</b>判定，记下你卡在第几步；错题自动聚合成<b>可训练单元</b>，直接告诉你下一步练什么。
  </p>
       <div class="hero-cta">
-        <a class="btn primary" href="drill.html">开始分步刷题 <span aria-hidden="true">→</span></a>
-        <a class="btn" href="method.html">看方法卡</a>
-        <a class="btn ghost" href="map.html">知识图谱</a>
+        <a class="btn primary" href="drill.html">免费开始做题 <span aria-hidden="true">→</span></a>
+        <a class="btn" href="wrong.html">先看诊断示例</a>
       </div>
       <div class="hero-trust">
-        <span><b>✓</b> 步骤级判定，不只对错</span>
-        <span><b>✓</b> 错题按五类错因归类</span>
-        <span><b>✓</b> 离线可用 · 档案备份</span>
+        <span><b>✓</b> 无需注册</span>
+        <span><b>✓</b> 离线可用</span>
+        <span><b>✓</b> 记录只存本地</span>
+        <span><b>✓</b> 无广告</span>
       </div>
     </div>
 
@@ -364,7 +440,7 @@ function buildHome() {
         </a>
         <a class="mission-item" href="wrong.html">
           <span class="mi-ico rose">🎯</span>
-          <span class="mi-main"><b>错因诊断</b><small>五类错因分栏，各给不同补救</small></span>
+          <span class="mi-main"><b>错因诊断</b><small>聚合到可训练单元，给下一步动作</small></span>
           <span class="mi-go">查看 →</span>
         </a>
       </div>
@@ -372,30 +448,86 @@ function buildHome() {
   </div>
 </section>
 
-<section class="section reveal" id="tiers">
+<section class="section reveal" id="why">
   <div class="section-head">
     <div class="section-head-left">
-      <span class="kicker">卷面分层</span>
-      <h2>100 分不是均匀分布的</h2>
-      <span class="sub">送分区 58 分要拿满，中档区 24 分靠方法，区分区 18 分只求拿一半——三层目标完全不同，练法也不同</span>
+      <span class="kicker">为什么刷题没效果</span>
+      <h2>三个问题，对应三个机制</h2>
+      <span class="sub">这三个问题不是「题不够多」，是刷题的粒度太粗——只记对错，不记为什么错</span>
     </div>
   </div>
-  <div class="coverage-list">${tierRows}</div>
-  <div class="coverage-total">
-    <span>当前站内题量 <b>${totalQ}</b> 题 · <b>${totalM}</b> 张方法卡 · <b>${totalC}</b> 章</span>
+  <div class="sell-rows">${sellHtml}</div>
+</section>
+
+<section class="section reveal" id="diff">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">与普通题库的区别</span>
+      <h2>同样是刷题，粒度不一样</h2>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <table class="gtable diff-table">
+      <thead><tr><th style="width:20%"></th><th style="width:36%">普通题库</th><th style="width:44%">本站</th></tr></thead>
+      <tbody>${diffHtml}</tbody>
+    </table>
   </div>
 </section>
 
-<section class="section reveal">
+<section class="section reveal" id="tiers">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">提分路径</span>
+      <h2>100 分不是均匀分布的</h2>
+      <span class="sub">三层目标不同，练法也不同。站内 <b>${totalQ}</b> 题 / <b>${totalM}</b> 张方法卡 / <b>${totalC}</b> 章 / <b>${totalConcept}</b> 条概念卡 / <b>${FORMULAS.length}</b> 条公式</span>
+    </div>
+  </div>
+  <div class="tier-minis">${tierRows}</div>
+</section>
+
+<section class="section reveal" id="sample">
   <div class="section-head">
     <div class="section-head-left">
       <span class="kicker">方法卡 · 示例 4 / ${METHODS.length}</span>
       <h2>先认题型，再谈方法</h2>
-      <span class="sub">每张卡第一行是「识别信号」——什么题面出现时该想到它。下面 4 张覆盖送分 / 中档 / 区分三层</span>
+      <span class="sub">第一行是「识别信号」——什么题面出现时该想到它。下面按送分 → 中档 → 区分排列，看难度递进</span>
     </div>
     <a class="btn sm soft" href="method.html">查看全部 ${METHODS.length} 张 →</a>
   </div>
-  <div class="grid c2 track-grid">${methodCards}</div>
+  <div class="mrows">${methodRows}</div>
+</section>
+
+<section class="section reveal" id="start">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">三步上手</span>
+      <h2>10 分钟知道该补什么</h2>
+      <span class="sub">不用先看教程，做题的过程就在采集诊断数据</span>
+    </div>
+  </div>
+  <div class="step-minis">${stepsHtml}</div>
+  <div class="final-cta">
+    <div>
+      <b>现在就开始，第一组题不用注册</b>
+      <span>记录只存你自己的浏览器，随时可导出备份</span>
+    </div>
+    <a class="btn primary lg" href="drill.html">免费开始 →</a>
+  </div>
+</section>
+
+<section class="section reveal" id="honest">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">边界</span>
+      <h2>本站不做什么</h2>
+    </div>
+  </div>
+  <div class="honest-list">
+    <div><b>不宣称覆盖全部考点</b><span>理科题目无穷变式，只标注每块分值与当前题量。</span></div>
+    <div><b>不做解答题 AI 批改</b><span>AI 判步骤一旦判错信任就崩了。走自查模式，对照完整解答。</span></div>
+    <div><b>不做视频课</b><span>只做「练」这一环，不做「讲」。</span></div>
+    <div><b>例题为原创</b><span>按北京卷题型结构编写，不是真题搬运。</span></div>
+  </div>
 </section>
 `;
 
@@ -440,8 +572,7 @@ function buildHome() {
 })();
 `;
 
-  const html = page({ active: 'index.html', title: '北京中考数学分步备考系统', desc: '按方法卡组织、步骤级判定、错因分类的北京中考数学备考站。', body, script });
-  // 首页需要公式 defs（方法卡信号里有公式）
+  const html = page({ active: 'index.html', title: '北京中考数学分步备考系统', desc: '按方法卡组织、步骤级判定、弱点诊断的北京中考数学备考站。300 题、29 张方法卡、18 章。', body, script });
   return html.replace('<body data-base="">', `<body data-base="">\n${R.math.defs()}`);
 }
 
