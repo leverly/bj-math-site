@@ -1021,19 +1021,26 @@ function buildDrill() {
   }
   var params = new URLSearchParams(location.search);
   var mode = params.get('mode') === 'selfcheck' ? 'selfcheck' : 'guided';
-  var scope = 'all';
+  var urlScope = params.get('scope');
+  var scope = (urlScope === 'weak' || urlScope === 'wrong') ? urlScope : 'all';
   var len = parseInt(params.get('n'), 10) || 8;
 
   // URL 预填（方法卡页跳过来时带 ?method=&mode=）
   var preMethod = params.get('method') || '';
+  var preChapter = params.get('chapter') || '';
   if (preMethod) {
     var sel = document.getElementById('methodSel');
     if (sel) sel.value = preMethod;
-    var sc = document.querySelector('#scopeChips .chip[data-s="all"]');
-    if (sc) sc.classList.add('on');
+  }
+  if (preChapter) {
+    var csel = document.getElementById('chapterSel');
+    if (csel) csel.value = preChapter;
   }
   [].forEach.call(document.querySelectorAll('#modeChips .chip'), function(c){
     c.classList.toggle('on', c.getAttribute('data-m') === mode);
+  });
+  [].forEach.call(document.querySelectorAll('#scopeChips .chip'), function(c){
+    c.classList.toggle('on', c.getAttribute('data-s') === scope);
   });
 
   function pick(sel, attr, cb){
@@ -1051,7 +1058,17 @@ function buildDrill() {
   function refreshHint(){
     var n = pool().length;
     var el = document.getElementById('scopeHint');
-    if (el) el.textContent = '当前筛选下 ' + n + ' 题可练';
+    if (el) {
+      var tag = '';
+      if (preMethod) {
+        var m = (META.methods || []).find(function(x){ return x.id === preMethod; });
+        if (m) tag = '【' + m.name + '】';
+      } else if (preChapter) {
+        var c = (META.chapters || []).find(function(x){ return x.id === preChapter; });
+        if (c) tag = '【' + c.name + '】';
+      }
+      el.textContent = tag + '当前筛选下 ' + n + ' 题可练';
+    }
   }
 
   function pool(){
@@ -1064,11 +1081,22 @@ function buildDrill() {
       var w = BJM.wrongMap();
       out = out.filter(function(q){ return !!w[q.id]; });
     } else if (scope === 'weak') {
-      var rates = BJM.methodRates();
-      if (rates.length) {
-        var weakest = rates[0].key;
-        out = out.filter(function(q){ return q.method === weakest; });
+      /* 专攻最弱：优先用弱点聚合选单元，而不是只看方法卡正确率。
+         若已用 URL 指定 method/chapter，就在该范围内找最弱。 */
+      if (!mid && !cid) {
+        var acts = BJM.nextActions(1);
+        if (acts.length) {
+          var a = acts[0];
+          if (a.kind === 'method') out = out.filter(function(q){ return q.method === a.key; });
+          else out = out.filter(function(q){ return q.chapter === a.key; });
+          return out;
+        }
       }
+      /* 范围内找最弱方法卡 */
+      var inRange = {};
+      out.forEach(function(q){ if (q.method) inRange[q.method] = 1; });
+      var mr = BJM.methodRates().filter(function(x){ return inRange[x.key]; });
+      if (mr.length) out = out.filter(function(q){ return q.method === mr[0].key; });
     }
     return out;
   }
@@ -1078,7 +1106,9 @@ function buildDrill() {
   [].forEach.call(document.querySelectorAll('#scopeChips .chip'), function(c){
     c.addEventListener('click', refreshHint);
   });
-  refreshHint();
+  /* 分片是异步加载的，QS 为空时算出的题量是 0。
+     先预加载一次再刷新提示，避免显示「0 题可练」却实际能出题。 */
+  loadAllQuestions().then(refreshHint).catch(function(){ refreshHint(); });
 
   document.getElementById('startBtn').addEventListener('click', function(){
     loadAllQuestions().then(function(){
@@ -1138,16 +1168,33 @@ function buildMap() {
   const R = newRenderers();
   const blocks = [...new Set(CHAPTERS.map((c) => c.block))];
 
+  /* 每章一个掌握度环。数据在运行时注入（localStorage 读不到构建期），
+     所以这里输出占位环 + data-chapter，由脚本填充。 */
+  const ring = (id) => `<span class="mastery-ring" data-chapter="${id}" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>`;
+
   const blockHtml = blocks.map((block) => {
     const list = CHAPTERS.filter((c) => c.block === block);
     const cards = list.map((c) => {
       const qn = (Q_BY_CHAPTER.get(c.id) || []).length;
       const mn = (c.methods || []).length;
-      return `<a class="card" href="map/${c.id}.html">
-        <div class="card-ico">${c.no}</div>
+      const cn = (C_BY_CHAPTER.get(c.id) || []).length;
+      return `<a class="card chapter-card" href="map/${c.id}.html" data-chapter="${c.id}">
+        <div class="ch-card-top">
+          <div class="card-ico">${c.no}</div>
+          ${ring(c.id)}
+        </div>
         <h3>${esc(c.name)}</h3>
-        <div class="meta">${qn} 题 · ${mn} 张方法卡</div>
-        ${(c.prereq || []).length ? `<div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：${
+        <div class="meta">${qn} 题 · ${mn} 张方法卡 · ${cn} 条概念</div>
+        <div class="ch-status" data-status="${c.id}"></div>
+        ${(c.prereq || []).length ? `<div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：${
           (c.prereq || []).map((p) => esc((CH_BY_ID.get(p) || {}).name || p)).join('、')
         }</div>` : ''}
       </a>`;
@@ -1167,12 +1214,121 @@ function buildMap() {
 <div class="page-head">
   <div class="crumb"><a href="index.html">首页</a> / 知识图谱</div>
   <h1>知识图谱</h1>
-  <p class="lede">${CHAPTERS.length} 章按课标知识块划分。<b>前置依赖</b>是本页的重点：某一章弱，可能不是这一章的问题，而是前置章拖累。</p>
+  <p class="lede">${CHAPTERS.length} 章按课标知识块划分。每个环是本章正确率，<b>红环</b>表示这章要补。<b>前置依赖</b>是本页的重点：某一章弱，可能不是这一章的问题，而是前置章拖累。</p>
 </div>
-${blockHtml}
+
+<section class="section" style="margin-top:18px" id="weakSec">
+  <div class="card" style="padding:18px 20px;border-left:4px solid var(--rose)">
+    <div class="kicker" style="margin-bottom:8px">诊断</div>
+    <div id="weakDiag"><p style="margin:0;font-size:.94rem;color:var(--text-2)">练几组题后，这里会指出「最该补的章」以及是否被前置章拖累。</p></div>
+  </div>
+</section>
+
+<div id="chapters">${blockHtml}</div>
 `;
 
-  const html = page({ active: 'map.html', title: '知识图谱', desc: '北京中考数学 18 章知识结构与前置依赖。', body, data: ['meta'] });
+  const script = `
+(function(){
+  var META = window.BJM.META || { chapters: [], methods: [] };
+  var CH = function(){ return window.BJM.CH || {}; };
+  var loaded = false;
+
+  function loadAll(){
+    if (loaded) return Promise.resolve();
+    var ids = (META.chapters || []).map(function(c){ return c.id; });
+    return Promise.all(ids.map(function(id){
+      return new Promise(function(res){
+        var s = document.createElement('script');
+        s.src = 'dist/data/ch/' + id + '.js';
+        s.onload = res; s.onerror = res;
+        document.head.appendChild(s);
+      });
+    })).then(function(){ loaded = true; });
+  }
+
+  var CIRC = 2 * Math.PI * 15;   // r=15
+
+  function paint(){
+    var cw = BJM.chapterWeakness();
+    var byCh = {};
+    cw.forEach(function(x){ byCh[x.key] = x; });
+
+    document.querySelectorAll('.mastery-ring').forEach(function(el){
+      var id = el.getAttribute('data-chapter');
+      var w = byCh[id];
+      var fill = el.querySelector('.ring-fill');
+      var num = el.querySelector('.ring-num');
+      if (!w || !w.answered) {
+        fill.setAttribute('stroke-dashoffset', CIRC);
+        fill.setAttribute('stroke', 'var(--border-2)');
+        num.textContent = '—';
+        return;
+      }
+      var pct = w.rate;
+      fill.setAttribute('stroke-dashoffset', String(CIRC * (1 - pct)));
+      fill.setAttribute('stroke', pct >= 0.85 ? 'var(--ok)' : pct >= 0.6 ? 'var(--gold)' : 'var(--rose)');
+      num.textContent = Math.round(pct * 100) + '%';
+    });
+
+    // 章节状态文案 + 薄弱方法卡数
+    document.querySelectorAll('.ch-status').forEach(function(el){
+      var id = el.getAttribute('data-status');
+      var w = byCh[id];
+      var ch = CH()[id];
+      if (!w || !w.answered) { el.innerHTML = '<span class="ch-tag">未练</span>'; return; }
+      var mw = BJM.methodWeakness().filter(function(m){
+        var mch = (META.methods || []).find(function(x){ return x.id === m.key; });
+        return mch && mch.chapter === id && m.wrongN > 0;
+      });
+      var errTxt = w.topErr ? ('主因 ' + (BJM.ERR_NAME[w.topErr] || '')) : '';
+      el.innerHTML = '<span class="ch-tag ' + (w.rate >= 0.85 ? 'ok' : w.rate >= 0.6 ? 'warn' : 'bad') + '">' +
+        (w.rate >= 0.85 ? '较稳' : w.rate >= 0.6 ? '需巩固' : '薄弱') + '</span>' +
+        (mw.length ? '<span class="ch-tag rose">' + mw.length + ' 张方法卡待补</span>' : '') +
+        (errTxt ? '<span class="ch-tag">' + errTxt + '</span>' : '');
+    });
+
+    // 诊断：最该补的章 + 前置拖累
+    var acts = BJM.nextActions(99).filter(function(a){ return a.kind === 'chapter'; });
+    var diag = document.getElementById('weakDiag');
+    if (!acts.length) {
+      diag.innerHTML = '<p style="margin:0;font-size:.94rem;color:var(--text-2)">还没练够。先去 <a href="drill.html">分步刷题</a> 练两组，这里会指出最该补的章。</p>';
+      return;
+    }
+    var worst = acts[0];
+    var chMeta = (META.chapters || []).find(function(c){ return c.id === worst.key; });
+    var html = '<p style="margin:0 0 8px;font-size:.98rem">最该补：<b>' +
+      (chMeta ? (chMeta.no + '. ' + chMeta.name) : worst.key) + '</b>　正确率 <b class="' +
+      (worst.rate >= 0.85 ? 'ok' : worst.rate >= 0.6 ? 'warn' : 'bad') + '">' +
+      Math.round(worst.rate * 100) + '%</b>　错 ' + worst.wrongN + ' 题</p>';
+
+    // 前置拖累：若前置章正确率也低于 70%，提示先补前置
+    if (chMeta && (chMeta.prereq || []).length) {
+      var drags = [];
+      chMeta.prereq.forEach(function(p){
+        var pw = byCh[p];
+        if (pw && pw.answered && pw.rate < 0.7) {
+          var pm = (META.chapters || []).find(function(x){ return x.id === p; });
+          drags.push({ id: p, name: pm ? pm.name : p, rate: pw.rate });
+        }
+      });
+      if (drags.length) {
+        html += '<p style="margin:0 0 8px;font-size:.9rem;color:var(--rose)">⚠ 前置章也弱，可能是被拖累：' +
+          drags.map(function(d){ return '<a href="map/' + d.id + '.html">' + d.name + '（' + Math.round(d.rate*100) + '%）</a>'; }).join('、') +
+          '　建议先补前置。</p>';
+      }
+    }
+    html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">' +
+      '<a class="btn primary sm" href="drill.html?chapter=' + worst.key + '&scope=weak">补这一章 →</a>' +
+      '<a class="btn soft sm" href="wrong.html">看完整错因诊断</a></div>';
+    diag.innerHTML = html;
+  }
+
+  BJM.ready(function(){ paint(); loadAll().then(paint); });
+  document.addEventListener('bj:qlog', function(){ loadAll().then(paint); });
+})();
+`;
+
+  const html = page({ active: 'map.html', title: '知识图谱', desc: '北京中考数学 18 章知识结构、掌握度与前置依赖。', body, script, data: ['meta'] });
   return html.replace('<body data-base="">', `<body data-base="">\n${R.math.defs()}`);
 }
 
@@ -1185,12 +1341,26 @@ function buildChapter(c) {
   const qs = Q_BY_CHAPTER.get(c.id) || [];
   const prereqs = (c.prereq || []).map((p) => CH_BY_ID.get(p)).filter(Boolean);
 
-  const methodCards = methods.map((m) => `<a class="card" href="../method/${m.id}.html">
-    <div class="card-ico ${m.tier === 'dist' ? 'rose' : 'purple'}">${m.tier === 'dist' ? '🎯' : '📐'}</div>
-    <h3>${esc(m.name)}</h3>
-    <div class="meta">${(m.steps || []).length} 步 · ${TIER_NAME[m.tier]}</div>
-    <p class="desc" style="margin-top:8px;font-size:.85rem">${R.math.render(m.signal)}</p>
-  </a>`).join('') || '<p class="empty">本章方法卡在 P2 补齐</p>';
+  const methodCards = methods.map((m) => `<div class="card method-mastery" data-method="${m.id}">
+    <a class="mm-link" href="../method/${m.id}.html">
+      <div class="mm-top">
+        <div class="card-ico ${m.tier === 'dist' ? 'rose' : 'purple'}">${m.tier === 'dist' ? '🎯' : '📐'}</div>
+        <span class="mm-ring">
+          <svg viewBox="0 0 32 32" width="30" height="30">
+            <circle cx="16" cy="16" r="13" fill="none" stroke="var(--bg-3)" stroke-width="3.5"/>
+            <circle class="mm-fill" cx="16" cy="16" r="13" fill="none" stroke="var(--accent)"
+              stroke-width="3.5" stroke-dasharray="81.7" stroke-dashoffset="81.7"
+              stroke-linecap="round" transform="rotate(-90 16 16)"/>
+          </svg>
+          <b class="mm-num">—</b>
+        </span>
+      </div>
+      <h3>${esc(m.name)}</h3>
+      <div class="meta">${(m.steps || []).length} 步 · ${TIER_NAME[m.tier]}</div>
+      <p class="desc" style="margin-top:8px;font-size:.85rem">${R.math.render(m.signal)}</p>
+    </a>
+    <div class="mm-foot" data-mmfoot="${m.id}"></div>
+  </div>`).join('') || '<p class="empty">本章方法卡在 P2 补齐</p>';
 
   const body = `
 <div class="page-head">
@@ -1199,12 +1369,19 @@ function buildChapter(c) {
   <p class="lede">${esc(c.block)} · ${qs.length} 题 · ${methods.length} 张方法卡${(c.examRefs || []).length ? ` · 关联题号 ${c.examRefs.join('、')}` : ''}</p>
 </div>
 
-${prereqs.length ? `<section class="section" style="margin-top:18px">
+<section class="section" style="margin-top:18px" id="chDiag">
+  <div class="card" style="padding:16px 20px;border-left:4px solid var(--accent)">
+    <div class="kicker" style="margin-bottom:6px">本章诊断</div>
+    <div id="chDiagBody"><p style="margin:0;font-size:.9rem;color:var(--text-2)">练几题后这里显示本章正确率、最弱方法卡与建议。</p></div>
+  </div>
+</section>
+
+${prereqs.length ? `<section class="section" style="margin-top:16px">
   <div class="card" style="padding:16px 20px;border-left:4px solid var(--gold)">
     <div class="kicker" style="margin-bottom:6px">前置章节</div>
     <p style="margin:0;font-size:.94rem">学本章之前，先确认这几章没问题：${prereqs.map((p) =>
       `<a href="${p.id}.html" style="font-weight:650">${esc(p.name)}</a>`).join('、')}</p>
-    <p style="margin:8px 0 0;font-size:.85rem;color:var(--text-2)">如果本章练得吃力，先回前置章做 10 题，看是不是那里的问题。</p>
+    <p style="margin:8px 0 0;font-size:.85rem;color:var(--text-2)" id="prereqNote">如果本章练得吃力，先回前置章做 10 题，看是不是那里的问题。</p>
   </div>
 </section>` : ''}
 
@@ -1213,6 +1390,7 @@ ${prereqs.length ? `<section class="section" style="margin-top:18px">
     <div class="section-head-left">
       <span class="kicker">方法卡</span>
       <h2>本章涉及的 ${methods.length} 个方法</h2>
+      <span class="sub">每个环是该方法卡的正确率，环下有「练最弱」直达该卡的题</span>
     </div>
   </div>
   <div class="grid c3">${methodCards}</div>
@@ -1226,19 +1404,130 @@ ${prereqs.length ? `<section class="section" style="margin-top:18px">
       <p class="desc">逐步作答，答错给提示，记下卡点。</p>
       <div class="meta" style="margin-top:10px">${qs.length} 题可用</div>
     </a>
-    <a class="card tool-card" href="../drill.html?chapter=${c.id}&mode=selfcheck">
-      <div class="card-ico purple">✓</div>
-      <h3>练本章 · 自查模式</h3>
-      <p class="desc">先做后对，只给步骤骨架。</p>
-      <div class="meta" style="margin-top:10px">适合已会只缺熟练</div>
+    <a class="card tool-card" href="../drill.html?chapter=${c.id}&scope=weak">
+      <div class="card-ico rose">🎯</div>
+      <h3>练本章 · 专攻最弱</h3>
+      <p class="desc">只出本章正确率最低的那张方法卡的题。</p>
+      <div class="meta" style="margin-top:10px">按你的错题自动选</div>
     </a>
   </div>
 </section>
 `;
 
+  const script = `
+(function(){
+  var CH_ID = ${JSON.stringify(c.id)};
+  var META = window.BJM.META || { chapters: [], methods: [] };
+  var CIRC = 2 * Math.PI * 13;
+  var loaded = false;
+
+  function loadChapter(){
+    if (loaded) return Promise.resolve();
+    return new Promise(function(res){
+      var s = document.createElement('script');
+      s.src = '../dist/data/ch/' + CH_ID + '.js';
+      s.onload = res; s.onerror = res;
+      document.head.appendChild(s);
+    }).then(function(){
+      var d = window.BJM.CH && window.BJM.CH[CH_ID];
+      if (d && d.defs && !document.querySelector('.math-defs')) {
+        var box = document.createElement('div');
+        box.innerHTML = d.defs;
+        document.body.appendChild(box.firstChild || box);
+      }
+      loaded = true;
+    });
+  }
+
+  function paint(){
+    var mw = BJM.methodWeakness();
+    var byM = {};
+    mw.forEach(function(x){ byM[x.key] = x; });
+
+    document.querySelectorAll('.method-mastery').forEach(function(card){
+      var id = card.getAttribute('data-method');
+      var w = byM[id];
+      var fill = card.querySelector('.mm-fill');
+      var num = card.querySelector('.mm-num');
+      var foot = card.querySelector('.mm-foot');
+      if (!w || !w.answered) {
+        fill.setAttribute('stroke-dashoffset', CIRC);
+        fill.setAttribute('stroke', 'var(--border-2)');
+        num.textContent = '—';
+        foot.innerHTML = '<a class="btn soft xs" href="../drill.html?method=' + id + '&mode=guided">开始练 →</a>';
+        return;
+      }
+      var pct = w.rate;
+      fill.setAttribute('stroke-dashoffset', String(CIRC * (1 - pct)));
+      fill.setAttribute('stroke', pct >= 0.85 ? 'var(--ok)' : pct >= 0.6 ? 'var(--gold)' : 'var(--rose)');
+      num.textContent = Math.round(pct * 100) + '%';
+      var errTxt = w.topErr ? (BJM.ERR_NAME[w.topErr] || '') : '';
+      var stuckTxt = w.topStuck >= 0 ? ('卡在第 ' + (w.topStuck + 1) + ' 步') : '';
+      foot.innerHTML =
+        '<span class="mm-stats">练 ' + w.answered + ' · 错 ' + w.wrongN +
+          (errTxt ? ' · ' + errTxt : '') + (stuckTxt ? ' · ' + stuckTxt : '') + '</span>' +
+        (pct < 0.85 ? '<a class="btn primary xs" href="../drill.html?method=' + id + '&scope=weak">练最弱 →</a>'
+                    : '<a class="btn soft xs" href="../drill.html?method=' + id + '&mode=guided">再练 →</a>');
+    });
+
+    // 本章诊断
+    var cw = BJM.chapterWeakness().find(function(x){ return x.key === CH_ID; });
+    var diag = document.getElementById('chDiagBody');
+    if (!cw || !cw.answered) {
+      diag.innerHTML = '<p style="margin:0;font-size:.9rem;color:var(--text-2)">还没练过本章。' +
+        '<a href="../drill.html?chapter=' + CH_ID + '&mode=guided">先练一组</a>，这里会显示诊断。</p>';
+      return;
+    }
+    var pct = Math.round(cw.rate * 100);
+    var cls = cw.rate >= 0.85 ? 'ok' : cw.rate >= 0.6 ? 'warn' : 'bad';
+    var weakM = mw.filter(function(x){
+      var meta = (META.methods || []).find(function(y){ return y.id === x.key; });
+      return meta && meta.chapter === CH_ID && x.wrongN > 0;
+    });
+    var html = '<p style="margin:0 0 8px;font-size:.96rem">本章正确率 <b class="' + cls + '">' + pct + '%</b>' +
+      '　练过 ' + cw.answered + ' 题　错 ' + cw.wrongN + ' 题' +
+      (cw.topErr ? ('　主因 <b>' + (BJM.ERR_NAME[cw.topErr] || '') + '</b>') : '') + '</p>';
+    if (weakM.length) {
+      html += '<p style="margin:0 0 8px;font-size:.88rem;color:var(--text-2)">薄弱方法卡：' +
+        weakM.slice(0,3).map(function(x){
+          var meta = (META.methods || []).find(function(y){ return y.id === x.key; });
+          return '<a href="../method/' + x.key + '.html">' + (meta ? meta.name : x.key) + '</a>（' +
+            Math.round(x.rate*100) + '%）';
+        }).join('、') + '</p>';
+    }
+    html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">' +
+      (cw.rate < 0.85 ? '<a class="btn primary sm" href="../drill.html?chapter=' + CH_ID + '&scope=weak">专攻本章最弱 →</a>' : '') +
+      '<a class="btn soft sm" href="../drill.html?chapter=' + CH_ID + '&mode=guided">再练一组</a>' +
+      '<a class="btn ghost sm" href="../wrong.html">看全局错因</a></div>';
+    diag.innerHTML = html;
+
+    // 前置章也弱时提示
+    var note = document.getElementById('prereqNote');
+    if (note) {
+      var chMeta = (META.chapters || []).find(function(x){ return x.id === CH_ID; });
+      var byCh = {};
+      BJM.chapterWeakness().forEach(function(x){ byCh[x.key] = x; });
+      var drags = (chMeta && chMeta.prereq || []).filter(function(p){
+        var pw = byCh[p]; return pw && pw.answered && pw.rate < 0.7;
+      });
+      if (drags.length) {
+        note.innerHTML = '⚠ 前置章正确率也低于 70%：' + drags.map(function(p){
+          var pm = (META.chapters || []).find(function(x){ return x.id === p; });
+          return '<a href="' + p + '.html">' + (pm ? pm.name : p) + '</a>';
+        }).join('、') + '　建议先补前置。';
+        note.style.color = 'var(--rose)';
+      }
+    }
+  }
+
+  BJM.ready(function(){ paint(); loadChapter().then(paint); });
+  document.addEventListener('bj:qlog', function(){ loadChapter().then(paint); });
+})();
+`;
+
   const html = page({
     base: '../', active: 'map.html',
-    title: `${c.name} · 第 ${c.no} 章`, desc: `${c.name}：方法卡与练习入口。`, body,
+    title: `${c.name} · 第 ${c.no} 章`, desc: `${c.name}：方法卡掌握度与练习入口。`, body, script,
   });
   return html.replace('<body data-base="../">', `<body data-base="../">\n${R.math.defs()}`);
 }
@@ -1249,18 +1538,18 @@ ${prereqs.length ? `<section class="section" style="margin-top:18px">
 function buildWrong() {
   const R = newRenderers();
   const ERR = [
-    ['concept', '概念不清', '定义、定理的适用条件没弄清', '去做条件判断题'],
-    ['method', '方法未掌握', '没思路，或选错了工具', '看识别信号 + 母题'],
-    ['construct', '构造不出', '几何题看不出辅助线', '看构造模型'],
-    ['calc', '计算失误', '会做但算错', '进计算专项（连对 3 次出册）'],
-    ['express', '表达不规范', '审题漏条件、步骤跳步', '做找错练习'],
+    ['concept', '概念不清', '定义、定理的适用条件没弄清', '去做条件判断题', 'concept.html'],
+    ['method', '方法未掌握', '没思路，或选错了工具', '看识别信号 + 母题', 'method.html'],
+    ['construct', '构造不出', '几何题看不出辅助线', '看构造模型', 'method.html'],
+    ['calc', '计算失误', '会做但算错', '进计算专项（连对 3 次出册）', 'drill.html?scope=wrong'],
+    ['express', '表达不规范', '审题漏条件、步骤跳步', '做找错练习', 'drill.html?scope=wrong'],
   ];
 
   const body = `
 <div class="page-head">
   <div class="crumb"><a href="index.html">首页</a> / 错因诊断</div>
   <h1>错因诊断</h1>
-  <p class="lede">「做错了」不是一个信息。<b>错在哪一层</b>才决定下一步练什么——五类错因的补救动作完全不同，出册规则也不同。</p>
+  <p class="lede">这里不列错题，给<b>下一步练什么</b>。错题按「可训练单元」（方法卡 / 章节）聚合，每个单元告诉你正确率、最常错的类型、最常卡在第几步，然后一键进专项训练。</p>
 </div>
 
 <section class="section" style="margin-top:20px">
@@ -1268,26 +1557,49 @@ function buildWrong() {
     <div class="k"><b id="kTotal">0</b><span>累计作答</span></div>
     <div class="k"><b id="kRate" style="color:var(--accent)">—</b><span>综合正确率</span></div>
     <div class="k"><b id="kWrong" style="color:var(--rose)">0</b><span>待清错题</span></div>
+    <div class="k"><b id="kWeak" style="color:var(--gold)">0</b><span>薄弱单元</span></div>
   </div>
+</section>
+
+<section class="section" style="margin-top:26px" id="actionsSec">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">下一步练什么</span>
+      <h2>按优先级排序的薄弱单元</h2>
+      <span class="sub">正确率越低、错题越多越靠前。点「专项训练」直接进该单元的题</span>
+    </div>
+  </div>
+  <div id="actions"></div>
 </section>
 
 <section class="section" style="margin-top:26px">
   <div class="section-head">
     <div class="section-head-left">
-      <span class="kicker">五类错因</span>
-      <h2>每一栏的补救动作都不一样</h2>
-      <span class="sub">概念错 → 回概念卡；方法错 → 看识别信号；构造错 → 看模型；计算错 → 限时练；表达错 → 做找错</span>
+      <span class="kicker">错因分布</span>
+      <h2>你主要错在哪一层</h2>
+      <span class="sub">五类错因的补救动作完全不同，先看清主因再决定练什么</span>
     </div>
   </div>
   <div id="errBars" class="traps"></div>
 </section>
 
-<section class="section" style="margin-top:24px">
+<section class="section" style="margin-top:26px">
   <div class="section-head">
     <div class="section-head-left">
-      <span class="kicker">错题清单</span>
+      <span class="kicker">卡点分布</span>
+      <h2>你最常卡在第几步</h2>
+      <span class="sub">第 1 步就卡 → 多半是概念或读题；第 3 步以后卡 → 多半是计算或收尾</span>
+    </div>
+  </div>
+  <div id="stuckBars" class="card" style="padding:18px 20px"></div>
+</section>
+
+<section class="section" style="margin-top:26px">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">错题明细</span>
       <h2>按错因分组</h2>
-      <span class="sub">每题显示卡在第几步。P3 会在这里接上「一键跳补救目标」</span>
+      <span class="sub">每题显示卡在第几步。想看具体题目再展开</span>
     </div>
     <button class="btn ghost sm" id="resetBtn">清空记录</button>
   </div>
@@ -1297,60 +1609,186 @@ function buildWrong() {
 
   const script = `
 (function(){
-  function refresh(){
-    var t = BJM.totalAnswered();
-    var set = function(id, v){ var e = document.getElementById(id); if (e) e.textContent = v; };
-    set('#kTotal', t.n);
-    set('#kRate', t.n ? Math.round(t.rate * 100) + '%' : '—');
-    set('#kWrong', BJM.wrongIds().length);
+  var ERR_META = ${JSON.stringify(ERR.reduce((a, [k, n, d, fix, href]) => (a[k] = { n, d, fix, href }, a), {}))};
+  var ERR_NAME = BJM.ERR_NAME;
+  var CH = function(){ return window.BJM.CH || {}; };
+  var META = window.BJM.META || { chapters: [], methods: [] };
+  var loadedAll = false;
 
-    // 五类错因条
-    var stats = BJM.errStats();
-    var bars = document.getElementById('errBars');
-    var ERR_META = ${JSON.stringify(ERR.reduce((a, [k, n, d, fix]) => (a[k] = { n, d, fix }, a), {}))};
-    bars.innerHTML = stats.map(function(s){
-      var meta = ERR_META[s.type] || { n: s.type, d: '', fix: '' };
-      var pct = s.n ? Math.round(s.rate * 100) : null;
-      return '<div class="trap" style="border-left-color:' + (s.n ? 'var(--rose)' : 'var(--border)') + '">' +
-        '<div class="trap-t">' + meta.n + ' <span style="font-weight:400;color:var(--text-3);font-size:.8rem">' +
-        (s.n ? s.n + ' 次作答 · 正确率 ' + pct + '%' : '暂无记录') + '</span></div>' +
-        '<div class="trap-why">' + meta.d + '</div>' +
-        '<div style="margin-top:8px;font-size:.84rem"><b style="color:var(--accent)">补救：</b>' + meta.fix + '</div>' +
+  function loadAll(){
+    if (loadedAll) return Promise.resolve();
+    var ids = (META.chapters || []).map(function(c){ return c.id; });
+    return Promise.all(ids.map(function(id){
+      return new Promise(function(res){
+        var s = document.createElement('script');
+        s.src = 'dist/data/ch/' + id + '.js';
+        s.onload = res; s.onerror = res;
+        document.head.appendChild(s);
+      });
+    })).then(function(){
+      // 注入字形 defs，否则公式不可见
+      var ch = CH(), seen = {};
+      Object.keys(ch).forEach(function(id){
+        var d = ch[id].defs;
+        if (d && !seen[d]) {
+          seen[d] = 1;
+          var box = document.createElement('div');
+          box.innerHTML = d;
+          document.body.appendChild(box.firstChild || box);
+        }
+      });
+      loadedAll = true;
+    });
+  }
+
+  function qmap(){
+    var m = {}, ch = CH();
+    Object.keys(ch).forEach(function(cid){
+      (ch[cid].questions || []).forEach(function(q){ m[q.id] = q; });
+    });
+    return m;
+  }
+  function mname(id){
+    var m = (META.methods || []).find(function(x){ return x.id === id; });
+    return m ? m.name : id;
+  }
+  function cname(id){
+    var c = (META.chapters || []).find(function(x){ return x.id === id; });
+    return c ? (c.no + '. ' + c.name) : id;
+  }
+
+  function pct(r){ return Math.round(r * 100) + '%'; }
+  function rateClass(r){ return r >= 0.85 ? 'ok' : r >= 0.6 ? 'warn' : 'bad'; }
+
+  function renderActions(){
+    var acts = BJM.nextActions(6);
+    var el = document.getElementById('actions');
+    if (!acts.length) {
+      el.innerHTML = '<div class="empty">还没有足够数据。先去 <a href="drill.html">分步刷题</a> 练两组，这里会告诉你下一步练什么。</div>';
+      return;
+    }
+    el.innerHTML = acts.map(function(a, i){
+      var isM = a.kind === 'method';
+      var title = isM ? mname(a.key) : cname(a.key);
+      var sub = isM ? '方法卡' : '章节';
+      var errName = a.topErr ? (ERR_NAME[a.topErr] || a.topErr) : '—';
+      var stuck = a.topStuck >= 0 ? ('第 ' + (a.topStuck + 1) + ' 步') : '—';
+      return '<div class="card weak-card" style="margin-bottom:12px;padding:16px 18px">' +
+        '<div class="weak-head">' +
+          '<span class="weak-rank">' + (i + 1) + '</span>' +
+          '<div class="weak-main">' +
+            '<div class="weak-title">' + title + ' <span class="weak-tag">' + sub + '</span></div>' +
+            '<div class="weak-meta">练过 ' + a.answered + ' 题 · 正确率 <b class="' + rateClass(a.rate) + '">' + pct(a.rate) + '</b>' +
+              ' · 错 ' + a.wrongN + ' 题 · 主因 ' + errName + ' · 常卡 ' + stuck + '</div>' +
+          '</div>' +
+          '<a class="btn primary sm" href="' + a.href + '">专项训练 →</a>' +
+        '</div>' +
       '</div>';
     }).join('');
+  }
 
-    // 错题清单
+  function renderErrBars(){
+    var stats = BJM.errStats();
+    /* 展示「该错因占总作答的比例」而不是正确率——正确率 0% 时条长为 0，
+       看不出哪类错得多。占比才有区分度。 */
+    var total = stats.reduce(function(a, s){ return a + s.n; }, 0);
+    var maxN = Math.max.apply(null, stats.map(function(s){ return s.n; }).concat([1]));
+    var sorted = stats.slice().sort(function(a, b){ return b.n - a.n; });
+    document.getElementById('errBars').innerHTML = sorted.map(function(s){
+      var meta = ERR_META[s.type] || { n: s.type, d: '', fix: '', href: 'drill.html' };
+      if (!s.n) {
+        return '<div class="trap" style="border-left-color:var(--border);opacity:.6">' +
+          '<div class="trap-t">' + meta.n +
+            ' <span style="font-weight:400;color:var(--text-3);font-size:.8rem">暂无记录</span></div>' +
+          '<div class="trap-why">' + meta.d + '</div></div>';
+      }
+      var share = total ? Math.round(s.n / total * 100) : 0;
+      var rateP = Math.round(s.rate * 100);
+      var barW = Math.max(3, Math.round(s.n / maxN * 100));
+      var color = rateP >= 75 ? 'var(--ok)' : rateP >= 50 ? 'var(--gold)' : 'var(--rose)';
+      return '<div class="trap" style="border-left-color:' + color + '">' +
+        '<div class="trap-t">' + meta.n +
+          ' <span style="font-weight:400;color:var(--text-3);font-size:.8rem">' +
+          s.n + ' 次 · 占 ' + share + '% · 正确率 ' + rateP + '%</span></div>' +
+        '<div class="err-bar"><i style="width:' + barW + '%;background:' + color + '"></i></div>' +
+        '<div class="trap-why">' + meta.d + '</div>' +
+        '<div style="margin-top:8px;font-size:.84rem"><b style="color:var(--accent)">补救：</b>' +
+          '<a href="' + meta.href + '">' + meta.fix + '</a></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderStuck(){
+    var dist = BJM.stuckDistribution();
+    var keys = Object.keys(dist).map(Number).filter(function(k){ return k >= 0; }).sort(function(a,b){ return a-b; });
+    var el = document.getElementById('stuckBars');
+    if (!keys.length) {
+      el.innerHTML = '<div class="empty" style="padding:6px 0">还没有记录到卡点。答题时答错的步骤会被记下来。</div>';
+      return;
+    }
+    var max = Math.max.apply(null, keys.map(function(k){ return dist[k]; }));
+    el.innerHTML = '<div class="stuck-chart">' + keys.map(function(k){
+      var n = dist[k];
+      var h = Math.round(n / max * 100);
+      var advice = k === 0 ? '多半是概念或读题' : k === 1 ? '多半是选错方法' : '多半是计算或收尾';
+      return '<div class="stuck-col" title="第 ' + (k+1) + ' 步：' + n + ' 次（' + advice + '）">' +
+        '<div class="stuck-bar-wrap"><i style="height:' + h + '%"></i></div>' +
+        '<div class="stuck-label">第' + (k+1) + '步</div>' +
+        '<div class="stuck-num">' + n + '</div>' +
+      '</div>';
+    }).join('') + '</div>' +
+    '<p class="setup-hint" style="margin-top:10px">柱越高说明这一步越常卡。' +
+      '第 1 步卡得多 → 优先回概念卡；中后段卡得多 → 进计算专项。</p>';
+  }
+
+  function renderList(){
     var byType = BJM.wrongByType();
-    var qmap = {};
-    var CH = window.BJM.CH || {};
-    Object.keys(CH).forEach(function(cid){
-      (CH[cid].questions || []).forEach(function(q){ qmap[q.id] = q; });
-    });
+    var qm = qmap();
     var list = document.getElementById('wrongList');
-    var any = false;
-    var html = '';
+    var any = false, html = '';
     BJM.ERR_TYPES.forEach(function(t){
       var items = byType[t] || [];
       if (!items.length) return;
       any = true;
       var meta = ERR_META[t] || { n: t };
-      html += '<div class="card" style="margin-bottom:14px;padding:16px 18px">' +
-        '<h3 style="margin:0 0 10px;font-size:1rem">' + meta.n + ' <span style="color:var(--text-3);font-weight:400;font-size:.82rem">' + items.length + ' 题</span></h3>';
+      html += '<details class="card" style="margin-bottom:12px;padding:14px 18px">' +
+        '<summary style="cursor:pointer;font-weight:700;font-size:.95rem">' + meta.n +
+          ' <span style="color:var(--text-3);font-weight:400;font-size:.82rem">' + items.length + ' 题</span></summary>';
       items.forEach(function(w){
-        var q = qmap[w.id];
+        var q = qm[w.id];
         var stepTxt = w.stuckStep >= 0 ? ('卡在第 ' + (w.stuckStep + 1) + ' 步') : '未记录卡点';
-        html += '<div style="padding:9px 0;border-top:1px solid var(--border);font-size:.88rem">' +
-          '<div style="font-weight:600">' + (q ? q.stemHtml : w.id) + '</div>' +
-          '<div style="color:var(--text-3);font-size:.78rem;margin-top:4px">' + stepTxt +
-          ' · 错 ' + w.n + ' 次' + (q && q.method ? (' · ' + q.method) : '') + '</div>' +
+        var mTag = w.method ? (' · ' + mname(w.method)) : '';
+        html += '<div class="wrong-item">' +
+          '<div class="wrong-stem">' + (q ? q.stemHtml : w.id) + '</div>' +
+          '<div class="wrong-meta">' + stepTxt + ' · 错 ' + w.n + ' 次' + mTag + '</div>' +
         '</div>';
       });
-      html += '</div>';
+      html += '</details>';
     });
     list.innerHTML = any ? html : '<div class="empty">还没有错题。先去 <a href="drill.html">分步刷题</a> 练一组。</div>';
   }
-  BJM.ready(refresh);
+
+  function refresh(){
+    var t = BJM.totalAnswered();
+    /* getElementById 不接受 '#' 前缀，这里统一用 querySelector */
+    var set = function(sel, v){ var e = document.querySelector(sel); if (e) e.textContent = v; };
+    set('#kTotal', t.n);
+    set('#kRate', t.n ? Math.round(t.rate * 100) + '%' : '—');
+    set('#kWrong', BJM.wrongIds().length);
+    set('#kWeak', BJM.nextActions(99).length);
+    renderActions();
+    renderErrBars();
+    renderStuck();
+    renderList();
+  }
+
+  BJM.ready(function(){
+    refresh();
+    loadAll().then(refresh);
+  });
+  /* 数据变化时直接重绘——分片已经加载过，不必再走 loadAll */
   document.addEventListener('bj:qlog', refresh);
+  document.addEventListener('bj:day', refresh);
 
   document.getElementById('resetBtn').addEventListener('click', function(){
     if (confirm('确定清空全部作答记录与错题？')) { BJM.qReset(); refresh(); BJM.toast('已清空'); }
@@ -1360,7 +1798,7 @@ function buildWrong() {
 
   const html = page({
     active: 'wrong.html', title: '错因诊断',
-    desc: '五类错因分栏的中考数学错题诊断。',
+    desc: '按可训练单元聚合的错因诊断：告诉你下一步练什么。',
     body, script, data: ['meta'],
   });
   return html.replace('<body data-base="">', `<body data-base="">\n${R.math.defs()}`);

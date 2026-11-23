@@ -301,6 +301,9 @@ function checkLinks(file) {
   while ((m = re.exec(html))) {
     let href = m[1];
     if (/^(https?:|mailto:|data:|javascript:|\/\/)/.test(href)) continue;
+    /* 跳过脚本里动态拼接的 href（如 'map/' + id + '.html'），
+       这些不是静态链接，运行时才成形。 */
+    if (href.includes("' +") || href.includes('" +') || href.includes('${')) continue;
     href = href.split('#')[0].split('?')[0];
     if (!href) continue;
     const target = resolve(pageDir, href);

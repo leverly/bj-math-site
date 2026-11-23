@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>知识图谱 · 北京中考数学领航</title>
-<meta name="description" content="北京中考数学 18 章知识结构与前置依赖。">
+<meta name="description" content="北京中考数学 18 章知识结构、掌握度与前置依赖。">
 <meta property="og:title" content="知识图谱 · 北京中考数学领航">
-<meta property="og:description" content="北京中考数学 18 章知识结构与前置依赖。">
+<meta property="og:description" content="北京中考数学 18 章知识结构、掌握度与前置依赖。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232563eb'/%3E%3Cstop offset='1' stop-color='%234f46e5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-family='system-ui,sans-serif' font-size='14' font-weight='800' fill='%23fff' text-anchor='middle'%3E%E6%95%B0%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/style.css?v=e8ced4bc">
+<link rel="stylesheet" href="assets/style.css?v=163befb9">
 <script>try{var m=JSON.parse(localStorage.getItem('bj-theme-manual')||'null');var h=new Date().getHours();var t=(m==='light'||m==='dark')?m:((h>=19||h<6)?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){var h2=new Date().getHours();document.documentElement.setAttribute('data-theme',(h2>=19||h2<6)?'dark':'light');}</script>
 </head>
 <body data-base="">
@@ -35,50 +35,142 @@
 <div class="page-head">
   <div class="crumb"><a href="index.html">首页</a> / 知识图谱</div>
   <h1>知识图谱</h1>
-  <p class="lede">18 章按课标知识块划分。<b>前置依赖</b>是本页的重点：某一章弱，可能不是这一章的问题，而是前置章拖累。</p>
+  <p class="lede">18 章按课标知识块划分。每个环是本章正确率，<b>红环</b>表示这章要补。<b>前置依赖</b>是本页的重点：某一章弱，可能不是这一章的问题，而是前置章拖累。</p>
 </div>
-<section class="section">
+
+<section class="section" style="margin-top:18px" id="weakSec">
+  <div class="card" style="padding:18px 20px;border-left:4px solid var(--rose)">
+    <div class="kicker" style="margin-bottom:8px">诊断</div>
+    <div id="weakDiag"><p style="margin:0;font-size:.94rem;color:var(--text-2)">练几组题后，这里会指出「最该补的章」以及是否被前置章拖累。</p></div>
+  </div>
+</section>
+
+<div id="chapters"><section class="section">
       <div class="section-head">
         <div class="section-head-left">
           <span class="kicker">数与代数</span>
           <h2>7 章</h2>
         </div>
       </div>
-      <div class="grid c3"><a class="card" href="map/ch-real.html">
-        <div class="card-ico">1</div>
+      <div class="grid c3"><a class="card chapter-card" href="map/ch-real.html" data-chapter="ch-real">
+        <div class="ch-card-top">
+          <div class="card-ico">1</div>
+          <span class="mastery-ring" data-chapter="ch-real" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>实数与运算</h3>
-        <div class="meta">16 题 · 0 张方法卡</div>
+        <div class="meta">16 题 · 0 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-real"></div>
         
-      </a><a class="card" href="map/ch-poly.html">
-        <div class="card-ico">2</div>
+      </a><a class="card chapter-card" href="map/ch-poly.html" data-chapter="ch-poly">
+        <div class="ch-card-top">
+          <div class="card-ico">2</div>
+          <span class="mastery-ring" data-chapter="ch-poly" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>整式与因式分解</h3>
-        <div class="meta">16 题 · 1 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：实数与运算</div>
-      </a><a class="card" href="map/ch-frac.html">
-        <div class="card-ico">3</div>
+        <div class="meta">16 题 · 1 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-poly"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：实数与运算</div>
+      </a><a class="card chapter-card" href="map/ch-frac.html" data-chapter="ch-frac">
+        <div class="ch-card-top">
+          <div class="card-ico">3</div>
+          <span class="mastery-ring" data-chapter="ch-frac" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>分式与二次根式</h3>
-        <div class="meta">16 题 · 2 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：整式与因式分解</div>
-      </a><a class="card" href="map/ch-eq.html">
-        <div class="card-ico">4</div>
+        <div class="meta">16 题 · 2 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-frac"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：整式与因式分解</div>
+      </a><a class="card chapter-card" href="map/ch-eq.html" data-chapter="ch-eq">
+        <div class="ch-card-top">
+          <div class="card-ico">4</div>
+          <span class="mastery-ring" data-chapter="ch-eq" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>方程与方程组</h3>
-        <div class="meta">16 题 · 2 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：整式与因式分解、分式与二次根式</div>
-      </a><a class="card" href="map/ch-ineq.html">
-        <div class="card-ico">5</div>
+        <div class="meta">16 题 · 2 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-eq"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：整式与因式分解、分式与二次根式</div>
+      </a><a class="card chapter-card" href="map/ch-ineq.html" data-chapter="ch-ineq">
+        <div class="ch-card-top">
+          <div class="card-ico">5</div>
+          <span class="mastery-ring" data-chapter="ch-ineq" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>不等式与不等式组</h3>
-        <div class="meta">16 题 · 1 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：方程与方程组</div>
-      </a><a class="card" href="map/ch-linear.html">
-        <div class="card-ico">6</div>
+        <div class="meta">16 题 · 1 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-ineq"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：方程与方程组</div>
+      </a><a class="card chapter-card" href="map/ch-linear.html" data-chapter="ch-linear">
+        <div class="ch-card-top">
+          <div class="card-ico">6</div>
+          <span class="mastery-ring" data-chapter="ch-linear" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>一次函数与反比例函数</h3>
-        <div class="meta">16 题 · 2 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：方程与方程组</div>
-      </a><a class="card" href="map/ch-quad.html">
-        <div class="card-ico">7</div>
+        <div class="meta">16 题 · 2 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-linear"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：方程与方程组</div>
+      </a><a class="card chapter-card" href="map/ch-quad.html" data-chapter="ch-quad">
+        <div class="ch-card-top">
+          <div class="card-ico">7</div>
+          <span class="mastery-ring" data-chapter="ch-quad" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>二次函数</h3>
-        <div class="meta">24 题 · 4 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：方程与方程组、一次函数与反比例函数</div>
+        <div class="meta">24 题 · 4 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-quad"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：方程与方程组、一次函数与反比例函数</div>
       </a></div>
     </section><section class="section">
       <div class="section-head">
@@ -87,41 +179,125 @@
           <h2>7 章</h2>
         </div>
       </div>
-      <div class="grid c3"><a class="card" href="map/ch-triangle.html">
-        <div class="card-ico">8</div>
+      <div class="grid c3"><a class="card chapter-card" href="map/ch-triangle.html" data-chapter="ch-triangle">
+        <div class="ch-card-top">
+          <div class="card-ico">8</div>
+          <span class="mastery-ring" data-chapter="ch-triangle" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>三角形与全等</h3>
-        <div class="meta">16 题 · 2 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：实数与运算</div>
-      </a><a class="card" href="map/ch-quadrilateral.html">
-        <div class="card-ico">9</div>
+        <div class="meta">16 题 · 2 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-triangle"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：实数与运算</div>
+      </a><a class="card chapter-card" href="map/ch-quadrilateral.html" data-chapter="ch-quadrilateral">
+        <div class="ch-card-top">
+          <div class="card-ico">9</div>
+          <span class="mastery-ring" data-chapter="ch-quadrilateral" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>四边形</h3>
-        <div class="meta">16 题 · 1 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：三角形与全等</div>
-      </a><a class="card" href="map/ch-similar.html">
-        <div class="card-ico">10</div>
+        <div class="meta">16 题 · 1 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-quadrilateral"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：三角形与全等</div>
+      </a><a class="card chapter-card" href="map/ch-similar.html" data-chapter="ch-similar">
+        <div class="ch-card-top">
+          <div class="card-ico">10</div>
+          <span class="mastery-ring" data-chapter="ch-similar" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>相似三角形</h3>
-        <div class="meta">16 题 · 1 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：三角形与全等</div>
-      </a><a class="card" href="map/ch-circle.html">
-        <div class="card-ico">11</div>
+        <div class="meta">16 题 · 1 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-similar"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：三角形与全等</div>
+      </a><a class="card chapter-card" href="map/ch-circle.html" data-chapter="ch-circle">
+        <div class="ch-card-top">
+          <div class="card-ico">11</div>
+          <span class="mastery-ring" data-chapter="ch-circle" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>圆</h3>
-        <div class="meta">16 题 · 2 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：三角形与全等</div>
-      </a><a class="card" href="map/ch-transform.html">
-        <div class="card-ico">12</div>
+        <div class="meta">16 题 · 2 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-circle"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：三角形与全等</div>
+      </a><a class="card chapter-card" href="map/ch-transform.html" data-chapter="ch-transform">
+        <div class="ch-card-top">
+          <div class="card-ico">12</div>
+          <span class="mastery-ring" data-chapter="ch-transform" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>图形变换</h3>
-        <div class="meta">16 题 · 0 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：三角形与全等、四边形</div>
-      </a><a class="card" href="map/ch-trig.html">
-        <div class="card-ico">13</div>
+        <div class="meta">16 题 · 0 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-transform"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：三角形与全等、四边形</div>
+      </a><a class="card chapter-card" href="map/ch-trig.html" data-chapter="ch-trig">
+        <div class="ch-card-top">
+          <div class="card-ico">13</div>
+          <span class="mastery-ring" data-chapter="ch-trig" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>锐角三角函数与解直角三角形</h3>
-        <div class="meta">16 题 · 1 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：三角形与全等、相似三角形</div>
-      </a><a class="card" href="map/ch-geo-aux.html">
-        <div class="card-ico">14</div>
+        <div class="meta">16 题 · 1 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-trig"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：三角形与全等、相似三角形</div>
+      </a><a class="card chapter-card" href="map/ch-geo-aux.html" data-chapter="ch-geo-aux">
+        <div class="ch-card-top">
+          <div class="card-ico">14</div>
+          <span class="mastery-ring" data-chapter="ch-geo-aux" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>几何辅助线综合</h3>
-        <div class="meta">20 题 · 4 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：三角形与全等、四边形、相似三角形、圆</div>
+        <div class="meta">20 题 · 4 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-geo-aux"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：三角形与全等、四边形、相似三角形、圆</div>
       </a></div>
     </section><section class="section">
       <div class="section-head">
@@ -130,16 +306,40 @@
           <h2>2 章</h2>
         </div>
       </div>
-      <div class="grid c3"><a class="card" href="map/ch-stat.html">
-        <div class="card-ico">15</div>
+      <div class="grid c3"><a class="card chapter-card" href="map/ch-stat.html" data-chapter="ch-stat">
+        <div class="ch-card-top">
+          <div class="card-ico">15</div>
+          <span class="mastery-ring" data-chapter="ch-stat" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>统计</h3>
-        <div class="meta">16 题 · 2 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：实数与运算</div>
-      </a><a class="card" href="map/ch-prob.html">
-        <div class="card-ico">16</div>
+        <div class="meta">16 题 · 2 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-stat"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：实数与运算</div>
+      </a><a class="card chapter-card" href="map/ch-prob.html" data-chapter="ch-prob">
+        <div class="ch-card-top">
+          <div class="card-ico">16</div>
+          <span class="mastery-ring" data-chapter="ch-prob" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>概率</h3>
-        <div class="meta">16 题 · 1 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：分式与二次根式</div>
+        <div class="meta">16 题 · 1 张方法卡 · 10 条概念</div>
+        <div class="ch-status" data-status="ch-prob"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：分式与二次根式</div>
       </a></div>
     </section><section class="section">
       <div class="section-head">
@@ -148,18 +348,42 @@
           <h2>2 章</h2>
         </div>
       </div>
-      <div class="grid c3"><a class="card" href="map/ch-newdef.html">
-        <div class="card-ico">17</div>
+      <div class="grid c3"><a class="card chapter-card" href="map/ch-newdef.html" data-chapter="ch-newdef">
+        <div class="ch-card-top">
+          <div class="card-ico">17</div>
+          <span class="mastery-ring" data-chapter="ch-newdef" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>新定义与阅读理解</h3>
-        <div class="meta">16 题 · 2 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：二次函数、几何辅助线综合</div>
-      </a><a class="card" href="map/ch-design.html">
-        <div class="card-ico">18</div>
+        <div class="meta">16 题 · 2 张方法卡 · 5 条概念</div>
+        <div class="ch-status" data-status="ch-newdef"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：二次函数、几何辅助线综合</div>
+      </a><a class="card chapter-card" href="map/ch-design.html" data-chapter="ch-design">
+        <div class="ch-card-top">
+          <div class="card-ico">18</div>
+          <span class="mastery-ring" data-chapter="ch-design" aria-label="掌握度">
+      <svg viewBox="0 0 36 36" width="36" height="36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="var(--bg-3)" stroke-width="4"/>
+        <circle class="ring-fill" cx="18" cy="18" r="15" fill="none" stroke="var(--accent)"
+          stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2"
+          stroke-linecap="round" transform="rotate(-90 18 18)"/>
+      </svg>
+      <b class="ring-num">—</b>
+    </span>
+        </div>
         <h3>方案设计与跨学科</h3>
-        <div class="meta">16 题 · 1 张方法卡</div>
-        <div class="meta" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：不等式与不等式组、一次函数与反比例函数、统计</div>
+        <div class="meta">16 题 · 1 张方法卡 · 5 条概念</div>
+        <div class="ch-status" data-status="ch-design"></div>
+        <div class="meta ch-prereq" style="margin-top:6px;font-size:.78rem;color:var(--text-3)">前置：不等式与不等式组、一次函数与反比例函数、统计</div>
       </a></div>
-    </section>
+    </section></div>
 
 </div>
 </main>
@@ -195,9 +419,108 @@
     <span>例题为原创 · 非真题 · 解答题不自动判分</span>
   </div>
 </footer>
-<script src="assets/app.js?v=5ddeb8c1"></script>
+<script src="assets/app.js?v=a329ea69"></script>
 
-<script src="dist/data/meta.js?v=5ddeb8c1"></script>
+<script src="dist/data/meta.js?v=a329ea69"></script>
+<script>
+(function(){
+  var META = window.BJM.META || { chapters: [], methods: [] };
+  var CH = function(){ return window.BJM.CH || {}; };
+  var loaded = false;
 
+  function loadAll(){
+    if (loaded) return Promise.resolve();
+    var ids = (META.chapters || []).map(function(c){ return c.id; });
+    return Promise.all(ids.map(function(id){
+      return new Promise(function(res){
+        var s = document.createElement('script');
+        s.src = 'dist/data/ch/' + id + '.js';
+        s.onload = res; s.onerror = res;
+        document.head.appendChild(s);
+      });
+    })).then(function(){ loaded = true; });
+  }
+
+  var CIRC = 2 * Math.PI * 15;   // r=15
+
+  function paint(){
+    var cw = BJM.chapterWeakness();
+    var byCh = {};
+    cw.forEach(function(x){ byCh[x.key] = x; });
+
+    document.querySelectorAll('.mastery-ring').forEach(function(el){
+      var id = el.getAttribute('data-chapter');
+      var w = byCh[id];
+      var fill = el.querySelector('.ring-fill');
+      var num = el.querySelector('.ring-num');
+      if (!w || !w.answered) {
+        fill.setAttribute('stroke-dashoffset', CIRC);
+        fill.setAttribute('stroke', 'var(--border-2)');
+        num.textContent = '—';
+        return;
+      }
+      var pct = w.rate;
+      fill.setAttribute('stroke-dashoffset', String(CIRC * (1 - pct)));
+      fill.setAttribute('stroke', pct >= 0.85 ? 'var(--ok)' : pct >= 0.6 ? 'var(--gold)' : 'var(--rose)');
+      num.textContent = Math.round(pct * 100) + '%';
+    });
+
+    // 章节状态文案 + 薄弱方法卡数
+    document.querySelectorAll('.ch-status').forEach(function(el){
+      var id = el.getAttribute('data-status');
+      var w = byCh[id];
+      var ch = CH()[id];
+      if (!w || !w.answered) { el.innerHTML = '<span class="ch-tag">未练</span>'; return; }
+      var mw = BJM.methodWeakness().filter(function(m){
+        var mch = (META.methods || []).find(function(x){ return x.id === m.key; });
+        return mch && mch.chapter === id && m.wrongN > 0;
+      });
+      var errTxt = w.topErr ? ('主因 ' + (BJM.ERR_NAME[w.topErr] || '')) : '';
+      el.innerHTML = '<span class="ch-tag ' + (w.rate >= 0.85 ? 'ok' : w.rate >= 0.6 ? 'warn' : 'bad') + '">' +
+        (w.rate >= 0.85 ? '较稳' : w.rate >= 0.6 ? '需巩固' : '薄弱') + '</span>' +
+        (mw.length ? '<span class="ch-tag rose">' + mw.length + ' 张方法卡待补</span>' : '') +
+        (errTxt ? '<span class="ch-tag">' + errTxt + '</span>' : '');
+    });
+
+    // 诊断：最该补的章 + 前置拖累
+    var acts = BJM.nextActions(99).filter(function(a){ return a.kind === 'chapter'; });
+    var diag = document.getElementById('weakDiag');
+    if (!acts.length) {
+      diag.innerHTML = '<p style="margin:0;font-size:.94rem;color:var(--text-2)">还没练够。先去 <a href="drill.html">分步刷题</a> 练两组，这里会指出最该补的章。</p>';
+      return;
+    }
+    var worst = acts[0];
+    var chMeta = (META.chapters || []).find(function(c){ return c.id === worst.key; });
+    var html = '<p style="margin:0 0 8px;font-size:.98rem">最该补：<b>' +
+      (chMeta ? (chMeta.no + '. ' + chMeta.name) : worst.key) + '</b>　正确率 <b class="' +
+      (worst.rate >= 0.85 ? 'ok' : worst.rate >= 0.6 ? 'warn' : 'bad') + '">' +
+      Math.round(worst.rate * 100) + '%</b>　错 ' + worst.wrongN + ' 题</p>';
+
+    // 前置拖累：若前置章正确率也低于 70%，提示先补前置
+    if (chMeta && (chMeta.prereq || []).length) {
+      var drags = [];
+      chMeta.prereq.forEach(function(p){
+        var pw = byCh[p];
+        if (pw && pw.answered && pw.rate < 0.7) {
+          var pm = (META.chapters || []).find(function(x){ return x.id === p; });
+          drags.push({ id: p, name: pm ? pm.name : p, rate: pw.rate });
+        }
+      });
+      if (drags.length) {
+        html += '<p style="margin:0 0 8px;font-size:.9rem;color:var(--rose)">⚠ 前置章也弱，可能是被拖累：' +
+          drags.map(function(d){ return '<a href="map/' + d.id + '.html">' + d.name + '（' + Math.round(d.rate*100) + '%）</a>'; }).join('、') +
+          '　建议先补前置。</p>';
+      }
+    }
+    html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">' +
+      '<a class="btn primary sm" href="drill.html?chapter=' + worst.key + '&scope=weak">补这一章 →</a>' +
+      '<a class="btn soft sm" href="wrong.html">看完整错因诊断</a></div>';
+    diag.innerHTML = html;
+  }
+
+  BJM.ready(function(){ paint(); loadAll().then(paint); });
+  document.addEventListener('bj:qlog', function(){ loadAll().then(paint); });
+})();
+</script>
 </body>
 </html>

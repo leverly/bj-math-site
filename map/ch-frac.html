@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>分式与二次根式 · 第 3 章 · 北京中考数学领航</title>
-<meta name="description" content="分式与二次根式：方法卡与练习入口。">
+<meta name="description" content="分式与二次根式：方法卡掌握度与练习入口。">
 <meta property="og:title" content="分式与二次根式 · 第 3 章 · 北京中考数学领航">
-<meta property="og:description" content="分式与二次根式：方法卡与练习入口。">
+<meta property="og:description" content="分式与二次根式：方法卡掌握度与练习入口。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232563eb'/%3E%3Cstop offset='1' stop-color='%234f46e5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-family='system-ui,sans-serif' font-size='14' font-weight='800' fill='%23fff' text-anchor='middle'%3E%E6%95%B0%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="../assets/style.css?v=e8ced4bc">
+<link rel="stylesheet" href="../assets/style.css?v=163befb9">
 <script>try{var m=JSON.parse(localStorage.getItem('bj-theme-manual')||'null');var h=new Date().getHours();var t=(m==='light'||m==='dark')?m:((h>=19||h<6)?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){var h2=new Date().getHours();document.documentElement.setAttribute('data-theme',(h2>=19||h2<6)?'dark':'light');}</script>
 </head>
 <body data-base="../">
@@ -38,11 +38,18 @@
   <p class="lede">数与代数 · 16 题 · 2 张方法卡 · 关联题号 11、18</p>
 </div>
 
-<section class="section" style="margin-top:18px">
+<section class="section" style="margin-top:18px" id="chDiag">
+  <div class="card" style="padding:16px 20px;border-left:4px solid var(--accent)">
+    <div class="kicker" style="margin-bottom:6px">本章诊断</div>
+    <div id="chDiagBody"><p style="margin:0;font-size:.9rem;color:var(--text-2)">练几题后这里显示本章正确率、最弱方法卡与建议。</p></div>
+  </div>
+</section>
+
+<section class="section" style="margin-top:16px">
   <div class="card" style="padding:16px 20px;border-left:4px solid var(--gold)">
     <div class="kicker" style="margin-bottom:6px">前置章节</div>
     <p style="margin:0;font-size:.94rem">学本章之前，先确认这几章没问题：<a href="ch-poly.html" style="font-weight:650">整式与因式分解</a></p>
-    <p style="margin:8px 0 0;font-size:.85rem;color:var(--text-2)">如果本章练得吃力，先回前置章做 10 题，看是不是那里的问题。</p>
+    <p style="margin:8px 0 0;font-size:.85rem;color:var(--text-2)" id="prereqNote">如果本章练得吃力，先回前置章做 10 题，看是不是那里的问题。</p>
   </div>
 </section>
 
@@ -51,19 +58,48 @@
     <div class="section-head-left">
       <span class="kicker">方法卡</span>
       <h2>本章涉及的 2 个方法</h2>
+      <span class="sub">每个环是该方法卡的正确率，环下有「练最弱」直达该卡的题</span>
     </div>
   </div>
-  <div class="grid c3"><a class="card" href="../method/m-frac-simplify.html">
-    <div class="card-ico purple">📐</div>
-    <h3>分式化简求值</h3>
-    <div class="meta">4 步 · 送分区</div>
-    <p class="desc" style="margin-top:8px;font-size:.85rem">题面出现「先化简，再求值」且含分式，或出现分数形式的代数式要求化简。</p>
-  </a><a class="card" href="../method/m-sqrt-simplify.html">
-    <div class="card-ico purple">📐</div>
-    <h3>二次根式化简</h3>
-    <div class="meta">4 步 · 送分区</div>
-    <p class="desc" style="margin-top:8px;font-size:.85rem">题面出现 <span class="math math-inline"><svg style="vertical-align: -0.979ex;" xmlns="http://www.w3.org/2000/svg" width="2.495ex" height="2.398ex" role="img" focusable="false" viewBox="0 -627.5 1103 1060" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msqrt"><g transform="translate(853,0)"><g data-mml-node="mtext"><use data-c="A0" xlink:href="#MJX-TEX-N-A0"></use></g></g><g data-mml-node="mo" transform="translate(0,-232.5)"><use data-c="221A" xlink:href="#MJX-TEX-N-221A"></use></g><rect width="250" height="60" x="853" y="507.5"></rect></g></g></g></svg></span> 且被开方数含完全平方因数、或含分母，要求「化简」「计算」。</p>
-  </a></div>
+  <div class="grid c3"><div class="card method-mastery" data-method="m-frac-simplify">
+    <a class="mm-link" href="../method/m-frac-simplify.html">
+      <div class="mm-top">
+        <div class="card-ico purple">📐</div>
+        <span class="mm-ring">
+          <svg viewBox="0 0 32 32" width="30" height="30">
+            <circle cx="16" cy="16" r="13" fill="none" stroke="var(--bg-3)" stroke-width="3.5"/>
+            <circle class="mm-fill" cx="16" cy="16" r="13" fill="none" stroke="var(--accent)"
+              stroke-width="3.5" stroke-dasharray="81.7" stroke-dashoffset="81.7"
+              stroke-linecap="round" transform="rotate(-90 16 16)"/>
+          </svg>
+          <b class="mm-num">—</b>
+        </span>
+      </div>
+      <h3>分式化简求值</h3>
+      <div class="meta">4 步 · 送分区</div>
+      <p class="desc" style="margin-top:8px;font-size:.85rem">题面出现「先化简，再求值」且含分式，或出现分数形式的代数式要求化简。</p>
+    </a>
+    <div class="mm-foot" data-mmfoot="m-frac-simplify"></div>
+  </div><div class="card method-mastery" data-method="m-sqrt-simplify">
+    <a class="mm-link" href="../method/m-sqrt-simplify.html">
+      <div class="mm-top">
+        <div class="card-ico purple">📐</div>
+        <span class="mm-ring">
+          <svg viewBox="0 0 32 32" width="30" height="30">
+            <circle cx="16" cy="16" r="13" fill="none" stroke="var(--bg-3)" stroke-width="3.5"/>
+            <circle class="mm-fill" cx="16" cy="16" r="13" fill="none" stroke="var(--accent)"
+              stroke-width="3.5" stroke-dasharray="81.7" stroke-dashoffset="81.7"
+              stroke-linecap="round" transform="rotate(-90 16 16)"/>
+          </svg>
+          <b class="mm-num">—</b>
+        </span>
+      </div>
+      <h3>二次根式化简</h3>
+      <div class="meta">4 步 · 送分区</div>
+      <p class="desc" style="margin-top:8px;font-size:.85rem">题面出现 <span class="math math-inline"><svg style="vertical-align: -0.979ex;" xmlns="http://www.w3.org/2000/svg" width="2.495ex" height="2.398ex" role="img" focusable="false" viewBox="0 -627.5 1103 1060" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msqrt"><g transform="translate(853,0)"><g data-mml-node="mtext"><use data-c="A0" xlink:href="#MJX-TEX-N-A0"></use></g></g><g data-mml-node="mo" transform="translate(0,-232.5)"><use data-c="221A" xlink:href="#MJX-TEX-N-221A"></use></g><rect width="250" height="60" x="853" y="507.5"></rect></g></g></g></svg></span> 且被开方数含完全平方因数、或含分母，要求「化简」「计算」。</p>
+    </a>
+    <div class="mm-foot" data-mmfoot="m-sqrt-simplify"></div>
+  </div></div>
 </section>
 
 <section class="section" style="margin-top:24px">
@@ -74,11 +110,11 @@
       <p class="desc">逐步作答，答错给提示，记下卡点。</p>
       <div class="meta" style="margin-top:10px">16 题可用</div>
     </a>
-    <a class="card tool-card" href="../drill.html?chapter=ch-frac&mode=selfcheck">
-      <div class="card-ico purple">✓</div>
-      <h3>练本章 · 自查模式</h3>
-      <p class="desc">先做后对，只给步骤骨架。</p>
-      <div class="meta" style="margin-top:10px">适合已会只缺熟练</div>
+    <a class="card tool-card" href="../drill.html?chapter=ch-frac&scope=weak">
+      <div class="card-ico rose">🎯</div>
+      <h3>练本章 · 专攻最弱</h3>
+      <p class="desc">只出本章正确率最低的那张方法卡的题。</p>
+      <div class="meta" style="margin-top:10px">按你的错题自动选</div>
     </a>
   </div>
 </section>
@@ -117,9 +153,118 @@
     <span>例题为原创 · 非真题 · 解答题不自动判分</span>
   </div>
 </footer>
-<script src="../assets/app.js?v=5ddeb8c1"></script>
+<script src="../assets/app.js?v=a329ea69"></script>
 
 
+<script>
+(function(){
+  var CH_ID = "ch-frac";
+  var META = window.BJM.META || { chapters: [], methods: [] };
+  var CIRC = 2 * Math.PI * 13;
+  var loaded = false;
 
+  function loadChapter(){
+    if (loaded) return Promise.resolve();
+    return new Promise(function(res){
+      var s = document.createElement('script');
+      s.src = '../dist/data/ch/' + CH_ID + '.js';
+      s.onload = res; s.onerror = res;
+      document.head.appendChild(s);
+    }).then(function(){
+      var d = window.BJM.CH && window.BJM.CH[CH_ID];
+      if (d && d.defs && !document.querySelector('.math-defs')) {
+        var box = document.createElement('div');
+        box.innerHTML = d.defs;
+        document.body.appendChild(box.firstChild || box);
+      }
+      loaded = true;
+    });
+  }
+
+  function paint(){
+    var mw = BJM.methodWeakness();
+    var byM = {};
+    mw.forEach(function(x){ byM[x.key] = x; });
+
+    document.querySelectorAll('.method-mastery').forEach(function(card){
+      var id = card.getAttribute('data-method');
+      var w = byM[id];
+      var fill = card.querySelector('.mm-fill');
+      var num = card.querySelector('.mm-num');
+      var foot = card.querySelector('.mm-foot');
+      if (!w || !w.answered) {
+        fill.setAttribute('stroke-dashoffset', CIRC);
+        fill.setAttribute('stroke', 'var(--border-2)');
+        num.textContent = '—';
+        foot.innerHTML = '<a class="btn soft xs" href="../drill.html?method=' + id + '&mode=guided">开始练 →</a>';
+        return;
+      }
+      var pct = w.rate;
+      fill.setAttribute('stroke-dashoffset', String(CIRC * (1 - pct)));
+      fill.setAttribute('stroke', pct >= 0.85 ? 'var(--ok)' : pct >= 0.6 ? 'var(--gold)' : 'var(--rose)');
+      num.textContent = Math.round(pct * 100) + '%';
+      var errTxt = w.topErr ? (BJM.ERR_NAME[w.topErr] || '') : '';
+      var stuckTxt = w.topStuck >= 0 ? ('卡在第 ' + (w.topStuck + 1) + ' 步') : '';
+      foot.innerHTML =
+        '<span class="mm-stats">练 ' + w.answered + ' · 错 ' + w.wrongN +
+          (errTxt ? ' · ' + errTxt : '') + (stuckTxt ? ' · ' + stuckTxt : '') + '</span>' +
+        (pct < 0.85 ? '<a class="btn primary xs" href="../drill.html?method=' + id + '&scope=weak">练最弱 →</a>'
+                    : '<a class="btn soft xs" href="../drill.html?method=' + id + '&mode=guided">再练 →</a>');
+    });
+
+    // 本章诊断
+    var cw = BJM.chapterWeakness().find(function(x){ return x.key === CH_ID; });
+    var diag = document.getElementById('chDiagBody');
+    if (!cw || !cw.answered) {
+      diag.innerHTML = '<p style="margin:0;font-size:.9rem;color:var(--text-2)">还没练过本章。' +
+        '<a href="../drill.html?chapter=' + CH_ID + '&mode=guided">先练一组</a>，这里会显示诊断。</p>';
+      return;
+    }
+    var pct = Math.round(cw.rate * 100);
+    var cls = cw.rate >= 0.85 ? 'ok' : cw.rate >= 0.6 ? 'warn' : 'bad';
+    var weakM = mw.filter(function(x){
+      var meta = (META.methods || []).find(function(y){ return y.id === x.key; });
+      return meta && meta.chapter === CH_ID && x.wrongN > 0;
+    });
+    var html = '<p style="margin:0 0 8px;font-size:.96rem">本章正确率 <b class="' + cls + '">' + pct + '%</b>' +
+      '　练过 ' + cw.answered + ' 题　错 ' + cw.wrongN + ' 题' +
+      (cw.topErr ? ('　主因 <b>' + (BJM.ERR_NAME[cw.topErr] || '') + '</b>') : '') + '</p>';
+    if (weakM.length) {
+      html += '<p style="margin:0 0 8px;font-size:.88rem;color:var(--text-2)">薄弱方法卡：' +
+        weakM.slice(0,3).map(function(x){
+          var meta = (META.methods || []).find(function(y){ return y.id === x.key; });
+          return '<a href="../method/' + x.key + '.html">' + (meta ? meta.name : x.key) + '</a>（' +
+            Math.round(x.rate*100) + '%）';
+        }).join('、') + '</p>';
+    }
+    html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">' +
+      (cw.rate < 0.85 ? '<a class="btn primary sm" href="../drill.html?chapter=' + CH_ID + '&scope=weak">专攻本章最弱 →</a>' : '') +
+      '<a class="btn soft sm" href="../drill.html?chapter=' + CH_ID + '&mode=guided">再练一组</a>' +
+      '<a class="btn ghost sm" href="../wrong.html">看全局错因</a></div>';
+    diag.innerHTML = html;
+
+    // 前置章也弱时提示
+    var note = document.getElementById('prereqNote');
+    if (note) {
+      var chMeta = (META.chapters || []).find(function(x){ return x.id === CH_ID; });
+      var byCh = {};
+      BJM.chapterWeakness().forEach(function(x){ byCh[x.key] = x; });
+      var drags = (chMeta && chMeta.prereq || []).filter(function(p){
+        var pw = byCh[p]; return pw && pw.answered && pw.rate < 0.7;
+      });
+      if (drags.length) {
+        note.innerHTML = '⚠ 前置章正确率也低于 70%：' + drags.map(function(p){
+          var pm = (META.chapters || []).find(function(x){ return x.id === p; });
+          return '<a href="' + p + '.html">' + (pm ? pm.name : p) + '</a>';
+        }).join('、') + '　建议先补前置。';
+        note.style.color = 'var(--rose)';
+      }
+    }
+  }
+
+  BJM.ready(function(){ paint(); loadChapter().then(paint); });
+  document.addEventListener('bj:qlog', function(){ loadChapter().then(paint); });
+})();
+</script>
 </body>
 </html>

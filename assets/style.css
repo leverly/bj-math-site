@@ -1985,3 +1985,97 @@ a.coverage-row:hover { border-color: var(--accent); transform: translateX(3px); 
 .math-block svg { height: 1.6em; max-width: 100%; }
 /* 反馈区字号偏小，公式略放大保证可读 */
 .se-fb .math svg, .se-hint .math svg, .se-ans .math svg, .se-step-fb .math svg { height: 1.3em; }
+
+/* ==========================================================
+   弱点诊断：掌握度环 / 弱点卡 / 卡点柱 / 错因条
+   ========================================================== */
+
+/* ---------- 掌握度环（知识图谱章节卡） ---------- */
+.ch-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+.mastery-ring { position: relative; display: inline-grid; place-items: center; width: 36px; height: 36px; flex: none; }
+.mastery-ring svg { display: block; }
+.mastery-ring .ring-fill { transition: stroke-dashoffset .5s var(--ease-out), stroke .3s; }
+.mastery-ring .ring-num {
+  position: absolute; font-size: .62rem; font-weight: 800; color: var(--text-2);
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em;
+}
+.ch-status { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.ch-tag {
+  font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: var(--r-pill);
+  background: var(--bg-3); color: var(--text-2); white-space: nowrap;
+}
+.ch-tag.ok { background: var(--ok-soft); color: var(--ok); }
+.ch-tag.warn { background: var(--gold-soft); color: var(--gold); }
+.ch-tag.bad { background: var(--rose-soft); color: var(--rose); }
+.ch-tag.rose { background: var(--rose-soft); color: var(--rose); }
+
+/* ---------- 弱点清单卡 ---------- */
+.weak-card { transition: border-color .18s var(--ease), box-shadow .18s var(--ease); }
+.weak-card:hover { border-color: var(--border-2); box-shadow: var(--shadow-2); }
+.weak-head { display: flex; align-items: center; gap: 13px; }
+.weak-rank {
+  flex: none; width: 26px; height: 26px; display: grid; place-items: center;
+  border-radius: 8px; background: var(--accent-soft); color: var(--accent);
+  font-size: .8rem; font-weight: 800;
+}
+.weak-main { flex: 1; min-width: 0; }
+.weak-title { font-size: .96rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.weak-tag {
+  font-size: .68rem; font-weight: 700; padding: 1px 7px; border-radius: var(--r-pill);
+  background: var(--bg-3); color: var(--text-3);
+}
+.weak-meta { font-size: .8rem; color: var(--text-3); margin-top: 4px; line-height: 1.6; }
+.weak-meta b.ok { color: var(--ok); }
+.weak-meta b.warn { color: var(--gold); }
+.weak-meta b.bad { color: var(--rose); }
+
+/* ---------- 错因正确率条 ---------- */
+.err-bar {
+  height: 6px; border-radius: 99px; background: var(--bg-3);
+  overflow: hidden; margin: 7px 0 4px;
+}
+.err-bar i { display: block; height: 100%; border-radius: inherit; transition: width .45s var(--ease-out); }
+
+/* ---------- 卡点分布柱 ---------- */
+.stuck-chart { display: flex; align-items: flex-end; gap: 14px; height: 120px; padding: 0 4px; }
+.stuck-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 5px; }
+.stuck-bar-wrap {
+  width: 100%; max-width: 46px; flex: 1; display: flex; align-items: flex-end;
+  background: var(--bg-3); border-radius: 6px 6px 0 0; overflow: hidden;
+}
+.stuck-bar-wrap i {
+  display: block; width: 100%; background: linear-gradient(180deg, var(--rose), var(--gold));
+  border-radius: 6px 6px 0 0; min-height: 4px; transition: height .45s var(--ease-out);
+}
+.stuck-label { font-size: .74rem; color: var(--text-2); font-weight: 650; }
+.stuck-num { font-size: .7rem; color: var(--text-3); font-variant-numeric: tabular-nums; }
+
+/* ---------- 章页方法卡掌握度 ---------- */
+.method-mastery { display: flex; flex-direction: column; gap: 10px; }
+.mm-link { display: block; color: inherit; }
+.mm-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+.mm-ring { position: relative; display: inline-grid; place-items: center; width: 30px; height: 30px; flex: none; }
+.mm-ring svg { display: block; }
+.mm-ring .mm-fill { transition: stroke-dashoffset .5s var(--ease-out), stroke .3s; }
+.mm-ring .mm-num { position: absolute; font-size: .56rem; font-weight: 800; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.mm-foot {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding-top: 10px; border-top: 1px solid var(--border);
+}
+.mm-stats { font-size: .74rem; color: var(--text-3); flex: 1; min-width: 0; }
+.btn.xs { padding: 5px 11px; font-size: .76rem; border-radius: 8px; }
+
+/* 错题明细 */
+.wrong-item { padding: 10px 0; border-top: 1px solid var(--border); }
+.wrong-stem { font-size: .88rem; font-weight: 600; line-height: 1.7; }
+.wrong-meta { color: var(--text-3); font-size: .76rem; margin-top: 4px; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::marker { content: ''; }
+details > summary::before { content: '▸ '; color: var(--text-3); }
+details[open] > summary::before { content: '▾ '; }
+
+@media (max-width: 640px) {
+  .weak-head { flex-wrap: wrap; }
+  .weak-head .btn { width: 100%; }
+  .stuck-chart { height: 96px; gap: 8px; }
+}

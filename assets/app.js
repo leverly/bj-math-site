@@ -275,6 +275,158 @@
     return { n: n, ok: ok, rate: n ? ok / n : 0 };
   };
 
+  /* ==========================================================
+     弱点聚合：把「错题」变成「可训练的单元」
+     ----------------------------------------------------------
+     光有横向错因（概念/方法/计算…）不够用——学生知道「我是计算错」，
+     但不知道练哪个具体东西。这里按**方法卡**和**章节**两个可训练单元
+     聚合，每个单元给出：
+       rate      该单元正确率
+       wrongN    错题数
+       errMix    错因分布（哪类错最多）
+       stuckMix  卡点分布（第几步最常卡）
+       score     优先级分数（越低越该先练）
+     ========================================================== */
+
+  /** 把一条错题记录归到某个桶 */
+  function bump(bucket, key, w) {
+    if (!key) return;
+    var b = bucket[key] || (bucket[key] = {
+      key: key, wrongN: 0, totalWrongTimes: 0,
+      errMix: {}, stuckMix: {}, steps: {}, ids: [],
+    });
+    b.wrongN++;
+    b.totalWrongTimes += (w.n || 1);
+    b.errMix[w.errorType] = (b.errMix[w.errorType] || 0) + 1;
+    var st = w.stuckStep >= 0 ? w.stuckStep : -1;
+    b.stuckMix[st] = (b.stuckMix[st] || 0) + 1;
+    if (st >= 0) b.steps[st] = (b.steps[st] || 0) + 1;
+    b.ids.push(w.id);
+  }
+
+  /** 取某单元的正确率（来自 stats 桶） */
+  function rateOf(bucket, key) {
+    var r = (qlog.stats[bucket] || {})[key];
+    if (!r || !r.n) return null;
+    return { n: r.n, ok: r.ok, rate: r.ok / r.n };
+  }
+
+  /**
+   * 按方法卡聚合弱点。
+   * 只返回「有作答记录」的方法卡——没练过的不算弱点，算未学。
+   */
+  Z.methodWeakness = function () {
+    var buckets = {};
+    Object.keys(qlog.wrong).forEach(function (id) {
+      var w = qlog.wrong[id];
+      if (w.method) bump(buckets, w.method, w);
+    });
+    // 也纳入「练过但没错题」的方法卡，正确率仍可能低
+    Object.keys(qlog.stats.byMethod || {}).forEach(function (m) {
+      if (!buckets[m]) buckets[m] = { key: m, wrongN: 0, totalWrongTimes: 0, errMix: {}, stuckMix: {}, steps: {}, ids: [] };
+    });
+    return Object.keys(buckets).map(function (k) {
+      var b = buckets[k];
+      var r = rateOf('byMethod', k);
+      var rate = r ? r.rate : 1;
+      var n = r ? r.n : 0;
+      // 优先级：正确率越低、错题越多、练得越少（样本不足但已错）越靠前
+      // 用 (1-rate) 为主，错题次数加权，样本少时轻微上调
+      var score = (1 - rate) * 100 + Math.min(b.totalWrongTimes, 10) * 2;
+      if (n > 0 && n < 3 && b.wrongN > 0) score += 6;   // 样本少但已错，值得早看
+      return {
+        key: k, rate: rate, answered: n, ok: r ? r.ok : 0,
+        wrongN: b.wrongN, totalWrongTimes: b.totalWrongTimes,
+        errMix: b.errMix, stuckMix: b.stuckMix, steps: b.steps, ids: b.ids,
+        score: Math.round(score),
+        topErr: topKey(b.errMix),
+        topStuck: topStep(b.stuckMix),
+      };
+    }).sort(function (a, b2) { return b2.score - a.score; });
+  };
+
+  /** 按章节聚合弱点，并汇总该章下的方法卡弱点 */
+  Z.chapterWeakness = function () {
+    var buckets = {};
+    Object.keys(qlog.wrong).forEach(function (id) {
+      var w = qlog.wrong[id];
+      if (w.chapter) bump(buckets, w.chapter, w);
+    });
+    Object.keys(qlog.stats.byChapter || {}).forEach(function (c) {
+      if (!buckets[c]) buckets[c] = { key: c, wrongN: 0, totalWrongTimes: 0, errMix: {}, stuckMix: {}, steps: {}, ids: [] };
+    });
+    return Object.keys(buckets).map(function (k) {
+      var b = buckets[k];
+      var r = rateOf('byChapter', k);
+      var rate = r ? r.rate : 1;
+      var n = r ? r.n : 0;
+      var score = (1 - rate) * 100 + Math.min(b.totalWrongTimes, 12) * 2;
+      if (n > 0 && n < 3 && b.wrongN > 0) score += 5;
+      return {
+        key: k, rate: rate, answered: n, ok: r ? r.ok : 0,
+        wrongN: b.wrongN, totalWrongTimes: b.totalWrongTimes,
+        errMix: b.errMix, stuckMix: b.stuckMix, steps: b.steps, ids: b.ids,
+        score: Math.round(score),
+        topErr: topKey(b.errMix),
+        topStuck: topStep(b.stuckMix),
+      };
+    }).sort(function (a, b2) { return b2.score - a.score; });
+  };
+
+  function topKey(mix) {
+    var best = null, bn = 0;
+    Object.keys(mix || {}).forEach(function (k) {
+      if (mix[k] > bn) { bn = mix[k]; best = k; }
+    });
+    return best;
+  }
+  function topStep(mix) {
+    var best = -1, bn = 0;
+    Object.keys(mix || {}).forEach(function (k) {
+      var v = parseInt(k, 10);
+      if (v < 0) return;
+      if (mix[k] > bn) { bn = mix[k]; best = v; }
+    });
+    return best;
+  }
+
+  /**
+   * 全局「下一步练什么」：给出前 N 个最该练的单元。
+   * 这是错因诊断页的核心输出——不是列错题，是给行动。
+   */
+  Z.nextActions = function (limit) {
+    var ms = Z.methodWeakness().filter(function (m) { return m.wrongN > 0 || m.rate < 0.75; });
+    var cs = Z.chapterWeakness().filter(function (c) { return c.wrongN > 0 || c.rate < 0.75; });
+    var acts = [];
+    ms.forEach(function (m) {
+      acts.push({
+        kind: 'method', key: m.key, score: m.score,
+        rate: m.rate, answered: m.answered, wrongN: m.wrongN,
+        topErr: m.topErr, topStuck: m.topStuck,
+        href: 'drill.html?method=' + encodeURIComponent(m.key) + '&scope=weak',
+      });
+    });
+    cs.forEach(function (c) {
+      acts.push({
+        kind: 'chapter', key: c.key, score: c.score - 4,   // 章节优先级略低于具体方法
+        rate: c.rate, answered: c.answered, wrongN: c.wrongN,
+        topErr: c.topErr, topStuck: c.topStuck,
+        href: 'drill.html?chapter=' + encodeURIComponent(c.key) + '&scope=weak',
+      });
+    });
+    return acts.sort(function (a, b) { return b.score - a.score; }).slice(0, limit || 5);
+  };
+
+  /** 卡点分布（全局）：第几步最容易卡，用于「分层提示」优化与专项 */
+  Z.stuckDistribution = function () {
+    var dist = {};
+    Object.keys(qlog.wrong).forEach(function (id) {
+      var w = qlog.wrong[id];
+      if (w.stuckStep >= 0) dist[w.stuckStep] = (dist[w.stuckStep] || 0) + 1;
+    });
+    return dist;
+  };
+
   Z.qReset = function () {
     qlog = { stats: { byChapter: {}, byMethod: {}, byTier: {} }, wrong: {}, errStats: {}, due: {} };
     ERR_TYPES.forEach(function (t) { qlog.errStats[t] = { n: 0, ok: 0 }; });
