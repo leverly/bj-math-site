@@ -95,6 +95,15 @@
   }
 
   /* ---------------- 渲染工具 ---------------- */
+  /** 任意字段：构建期已渲染的 xxxHtml 优先（含公式 SVG），否则转义纯文本。
+      理科题目的 hint/why/answer 常含公式，漏用 *Html 会显示成 $...$ 原文。 */
+  function fieldHtml(obj, key) {
+    if (!obj) return '';
+    var h = obj[key + 'Html'];
+    if (h != null) return h;
+    return esc(obj[key] == null ? '' : obj[key]);
+  }
+
   /** 选项文本：构建期已渲染的 optionsHtml 优先（含公式 SVG），否则转义纯文本 */
   function optHtml(s, k) {
     if (s && s.optionsHtml && s.optionsHtml[k] != null) return s.optionsHtml[k];
@@ -216,7 +225,7 @@
         h += '<ol class="se-done">';
         for (var i = 0; i < state.stepIdx; i++) {
           var r = state.results[i];
-          h += '<li class="' + (r && r.ok ? 'ok' : 'bad') + '"><b>' + esc(steps[i].label || ('第 ' + (i + 1) + ' 步')) +
+          h += '<li class="' + (r && r.ok ? 'ok' : 'bad') + '"><b>' + (steps[i].labelHtml || esc(steps[i].label || ('第 ' + (i + 1) + ' 步'))) +
             '</b><span>' + esc((r && r.input) || '') + '</span></li>';
         }
         h += '</ol>';
@@ -261,7 +270,7 @@
 
         if (ok) {
           fb.className = 'se-fb ok';
-          fb.innerHTML = '<b>✓ 这一步对了</b>' + (s.why ? '<span>' + esc(s.why) + '</span>' : '');
+          fb.innerHTML = '<b>✓ 这一步对了</b>' + (s.why ? '<span>' + fieldHtml(s, 'why') + '</span>' : '');
           nextBtn.disabled = false;
           nextBtn.focus();
           // 单步题：答对后直接进结果，省一次点击
@@ -269,8 +278,8 @@
         } else {
           fb.className = 'se-fb bad';
           fb.innerHTML = '<b>✕ 卡在这一步</b>' +
-            (s.hint ? '<div class="se-hint"><span class="se-hint-t">提示</span>' + esc(s.hint) + '</div>' : '') +
-            (s.answer ? '<div class="se-ans">这一步应该是：<b>' + esc(s.answer) + '</b></div>' : '');
+            (s.hint ? '<div class="se-hint"><span class="se-hint-t">提示</span>' + fieldHtml(s, 'hint') + '</div>' : '') +
+            (s.answer ? '<div class="se-ans">这一步应该是：<b>' + fieldHtml(s, 'answer') + '</b></div>' : '');
           nextBtn.disabled = false;
           nextBtn.focus();
         }
@@ -370,7 +379,7 @@
       steps.forEach(function (s, i) {
         h += '<li class="se-step" data-i="' + i + '">' +
           '<div class="se-step-head"><span class="se-step-no">' + (i + 1) + '</span>' +
-          '<span class="se-step-label">' + esc(s.label || s.ask) + '</span>' +
+          '<span class="se-step-label">' + (s.labelHtml || esc(s.label || s.ask)) + '</span>' +
           '<span class="se-step-score">' + (s.score || 1) + ' 分</span></div>' +
           '<div class="se-step-btns">' +
             '<button class="se-sc ok" data-v="1">做出来了</button>' +
@@ -421,7 +430,8 @@
               var hints = s.hints || (s.hint ? [s.hint] : []);
               fb.innerHTML = '<div class="se-hint-list">' +
                 hints.map(function (hx, k) {
-                  return '<div class="se-hint"><span class="se-hint-t">提示 ' + (k + 1) + '</span>' + esc(hx) + '</div>';
+                  var hxHtml = (s.hintsHtml && s.hintsHtml[k] != null) ? s.hintsHtml[k] : esc(hx);
+                  return '<div class="se-hint"><span class="se-hint-t">提示 ' + (k + 1) + '</span>' + hxHtml + '</div>';
                 }).join('') + '</div>' +
                 (s.model ? '<a class="se-model-link" href="' + esc(s.model) + '">看对应构造模型 →</a>' : '');
             }
@@ -477,8 +487,9 @@
       if (kind === 'choice' || (first && first.type === 'choice')) {
         h += '<div class="se-opts">';
         (q.options || (first && first.options) || []).forEach(function (o, k) {
+          // 选项可能挂在 q（送分题/模考）或 first（多步题）上，两处都要找
           h += '<button class="se-opt" data-k="' + k + '"><span class="se-key">' +
-            'ABCD'[k] + '</span><span>' + optHtml(first, k) + '</span></button>';
+            'ABCD'[k] + '</span><span>' + optHtml(q.options ? q : first, k) + '</span></button>';
         });
         h += '</div>';
       } else if (kind === 'fill' || (first && first.type === 'fill')) {

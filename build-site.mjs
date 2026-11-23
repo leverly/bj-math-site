@@ -180,8 +180,12 @@ function renderQuestion(q, R) {
   if (q.fig) o.figHtml = C(R.fig.render(q.fig));
   o.steps = (q.steps || []).map((s) => {
     const x = Object.assign({}, s, { askHtml: C(R.math.render(s.ask || '')) });
+    if (s.label) x.labelHtml = C(R.math.render(s.label));
     if (s.hint) x.hintHtml = C(R.math.render(s.hint));
     if (s.why) x.whyHtml = C(R.math.render(s.why));
+    if (s.answer) x.answerHtml = C(R.math.render(s.answer));
+    // selfcheck 模式的分层提示是数组
+    if (s.hints) x.hintsHtml = s.hints.map((h) => C(R.math.render(h)));
     // 选项也必须构建期渲染，否则引擎里只能显示 $...$ 原文
     if (s.options) x.optionsHtml = s.options.map((opt) => C(R.math.render(opt)));
     return x;
