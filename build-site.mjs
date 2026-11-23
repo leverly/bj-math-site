@@ -13,6 +13,7 @@ import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { FORMULAS } from './src/data-formulas.js';
 import {
   CHAPTERS, METHODS, ALL_QUESTIONS as QUESTIONS, ALL_CONCEPTS as CONCEPTS,
   CH_BY_ID, M_BY_ID, Q_BY_ID, Q_BY_METHOD, Q_BY_CHAPTER, C_BY_CHAPTER,
@@ -1396,31 +1397,31 @@ function buildWrong() {
    ========================================================== */
 function buildGraph() {
   const R = newRenderers();
-  const FORMULAS = [
-    { name: '二次函数顶点式', tex: '$y=a(x-h)^{2}+k$', cond: '$a\\ne 0$', misuse: '把 $x+h$ 的 $h$ 当成顶点横坐标（应为 $x-h$）', chapter: 'ch-quadratic' },
-    { name: '对称轴', tex: '$x=-\\dfrac{b}{2a}$', cond: '$a\\ne 0$', misuse: '忘记 $a\\ne 0$ 的前提，或符号写错成 $\\dfrac{b}{2a}$', chapter: 'ch-quadratic' },
-    { name: '判别式', tex: '$\\Delta=b^{2}-4ac$', cond: '仅对 $ax^{2}+bx+c=0\\ (a\\ne0)$', misuse: '把 $\\Delta=0$ 当成「无解」（应为两相等实根）', chapter: 'ch-quadratic' },
-    { name: '韦达定理', tex: '$x_1+x_2=-\\dfrac{b}{a},\\ x_1x_2=\\dfrac{c}{a}$', cond: '$\\Delta\\ge 0$ 且 $a\\ne 0$', misuse: '在 $\\Delta<0$ 时仍使用（此时无实根）', chapter: 'ch-quadratic' },
-    { name: '多边形内角和', tex: '$(n-2)\\times 180^{\\circ}$', cond: '$n\\ge 3$', misuse: '把 $n$ 当成内角个数以外的量，或漏减 2', chapter: 'ch-geo-aux' },
-    { name: '直角三角形斜边中线', tex: '$CD=\\dfrac{1}{2}AB$', cond: '$\\angle ACB=90^{\\circ}$，$D$ 为 $AB$ 中点', misuse: '在非直角三角形中套用', chapter: 'ch-geo-aux' },
-    { name: '三角形中位线', tex: '$DE\\parallel BC,\\ DE=\\dfrac{1}{2}BC$', cond: '$D,E$ 分别是两边中点', misuse: '把「中点连线」当成中位线（必须连两边中点）', chapter: 'ch-geo-aux' },
-    { name: '勾股定理', tex: '$a^{2}+b^{2}=c^{2}$', cond: '直角三角形，$c$ 为斜边', misuse: '未确认直角就套用，或把最长边当成直角边', chapter: 'ch-geo-aux' },
-    { name: '点到直线距离', tex: '$d=\\dfrac{|Ax_0+By_0+C|}{\\sqrt{A^{2}+B^{2}}}$', cond: '直线 $Ax+By+C=0$', misuse: '忘记加绝对值，或分母漏根号', chapter: 'ch-newdef' },
-    { name: '两点间距离', tex: '$|AB|=\\sqrt{(x_2-x_1)^{2}+(y_2-y_1)^{2}}$', cond: '平面直角坐标系', misuse: '坐标相减顺序不一致导致符号错', chapter: 'ch-newdef' },
-  ];
+  /* 公式数据来自 src/data-formulas.js（94 条，含适用条件与常见误用） */
 
-  const rows = FORMULAS.map((f) => `<tr>
-    <td style="font-weight:650">${esc(f.name)}</td>
-    <td style="text-align:center">${R.math.render(f.tex)}</td>
-    <td style="font-size:.86rem;color:var(--text-2)">${R.math.render(f.cond)}</td>
-    <td style="font-size:.86rem;color:var(--rose)">${R.math.render(f.misuse)}</td>
-  </tr>`).join('');
+
+  const byBlock = new Map();
+  FORMULAS.forEach((f) => {
+    const blk = (CH_BY_ID.get(f.chapter) || {}).block || '其他';
+    if (!byBlock.has(blk)) byBlock.set(blk, []);
+    byBlock.get(blk).push(f);
+  });
+  const rows = [...byBlock.entries()].map(([blk, list]) => {
+    const head = `<tr class="fgrp"><td colspan="4">${esc(blk)} · ${list.length} 条</td></tr>`;
+    const body = list.map((f) => `<tr>
+      <td style="font-weight:650">${esc(f.name)}</td>
+      <td style="text-align:center">${R.math.render(f.tex)}</td>
+      <td style="font-size:.86rem;color:var(--text-2)">${R.math.render(f.cond)}</td>
+      <td style="font-size:.86rem;color:var(--rose)">${R.math.render(f.misuse)}</td>
+    </tr>`).join('');
+    return head + body;
+  }).join('');
 
   const body = `
 <div class="page-head">
   <div class="crumb"><a href="index.html">首页</a> / 公式库</div>
   <h1>公式定理库</h1>
-  <p class="lede">与英语站词库最大的差别是第三、四列：<b>适用条件</b>和<b>常见误用</b>。理科的失分多数不是记不住公式，而是<b>条件不满足还硬套</b>。</p>
+  <p class="lede">${FORMULAS.length} 条公式定理，按知识块分组。与英语站词库最大的差别是第三、四列：<b>适用条件</b>和<b>常见误用</b>——理科的失分多数不是记不住公式，而是<b>条件不满足还硬套</b>。</p>
 </div>
 
 <section class="section" style="margin-top:20px">
@@ -1435,7 +1436,7 @@ function buildGraph() {
       <tbody>${rows}</tbody>
     </table>
   </div>
-  <p class="setup-hint" style="margin-top:12px">P0 收录 ${FORMULAS.length} 条送分与中档区常用公式。P1 补至 90 条，P2 补至 220 条。</p>
+  <p class="setup-hint" style="margin-top:12px">共 ${FORMULAS.length} 条，按知识块分组。P2 目标 220 条。</p>
 </section>
 `;
 

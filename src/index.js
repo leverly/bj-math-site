@@ -7,6 +7,7 @@ import { METHODS } from './data-methods.js';
 import { CONCEPTS, CONCEPTS_2 } from './data-concepts.js';
 import { QUESTIONS, QUESTIONS_2, QUESTIONS_3, QUESTIONS_4 } from './data-questions.js';
 import { SEND_QUESTIONS } from './data-send.js';
+import { SEND_QUESTIONS_2 } from './data-send2.js';
 import { QUESTIONS as P0_QUESTIONS } from './data-sample.js';
 
 /* 方法卡配套题：P1 三批 + P0 样张里 3 张卡的题 */
@@ -16,6 +17,7 @@ export const ALL_QUESTIONS = [
   ...QUESTIONS_3,
   ...QUESTIONS_4,
   ...SEND_QUESTIONS,
+  ...SEND_QUESTIONS_2,
   ...P0_QUESTIONS,
 ];
 
