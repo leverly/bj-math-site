@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>分步刷题 · 北京中考数学领航</title>
+<meta name="description" content="按步骤判定的中考数学刷题：引导模式与自查模式。">
+<meta property="og:title" content="分步刷题 · 北京中考数学领航">
+<meta property="og:description" content="按步骤判定的中考数学刷题：引导模式与自查模式。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232563eb'/%3E%3Cstop offset='1' stop-color='%234f46e5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-family='system-ui,sans-serif' font-size='14' font-weight='800' fill='%23fff' text-anchor='middle'%3E%E6%95%B0%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css?v=529aae0a">
+<script>try{var m=JSON.parse(localStorage.getItem('bj-theme-manual')||'null');var h=new Date().getHours();var t=(m==='light'||m==='dark')?m:((h>=19||h<6)?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){var h2=new Date().getHours();document.documentElement.setAttribute('data-theme',(h2>=19||h2<6)?'dark':'light');}</script>
+</head>
+<body data-base="">
+<svg class="math-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs></defs></svg>
+<div class="scroll-progress"></div>
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="logo" href="index.html">
+      <span class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20 L9 8 L13 14 L16 9 L21 20 Z"/><path d="M3 20 L21 20"/></svg></span>
+      <span>北京中考数学领航</span>
+      <span class="logo-badge">数学</span>
+    </a>
+    <nav class="hdr-nav"><a href="index.html">首页</a><a href="concept.html">概念自测</a><a href="drill.html" class="on">分步刷题</a><a href="method.html">方法卡</a><a href="map.html">知识图谱</a><a href="graph.html">公式库</a><a href="wrong.html">错因诊断</a></nav>
+    <div class="hdr-tools">
+      <button class="theme-btn" aria-label="切换主题">☾</button>
+      <button class="menu-btn" aria-label="菜单" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+<main class="main">
+<div class="wrap">
+
+<div class="page-head">
+  <div class="crumb"><a href="index.html">首页</a> / 分步刷题</div>
+  <h1>分步刷题</h1>
+  <p class="lede">判定的单位是<b>步骤</b>，不是整题。答错时系统记下你卡在第几步，这是错因诊断的依据。</p>
+</div>
+
+<section class="section" style="margin-top:20px" id="setup">
+  <div class="card setup-card">
+    <div class="setup-head">
+      <h3>配置本组练习</h3>
+      <div class="setup-actions">
+        <button class="btn primary" id="startBtn">开始 →</button>
+      </div>
+    </div>
+
+    <div class="setup-grid">
+      <div class="setup-group">
+        <div class="kicker">作答模式</div>
+        <div class="chips" id="modeChips">
+          <button class="chip on" data-m="guided">引导 · 逐步作答</button>
+          <button class="chip" data-m="selfcheck">自查 · 先做后对</button>
+        </div>
+        <p class="setup-hint"><b>引导</b>每步一问，答错给提示；<b>自查</b>只给步骤骨架，你勾选做出来/卡住</p>
+      </div>
+
+      <div class="setup-group">
+        <div class="kicker">练习范围</div>
+        <div class="chips" id="scopeChips">
+          <button class="chip on" data-s="all">全部</button>
+          <button class="chip" data-s="wrong">只练错题</button>
+          <button class="chip" data-s="weak">专攻最弱方法</button>
+        </div>
+        <p class="setup-hint" id="scopeHint">共 180 题可练</p>
+      </div>
+
+      <div class="setup-group">
+        <div class="kicker">方法卡</div>
+        <select id="methodSel" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border-2);background:var(--surface);color:var(--text);font-size:.92rem">
+          <option value="">不限方法（全部）</option>
+          <option value="m-factor-4">因式分解四法（送分区）</option><option value="m-frac-simplify">分式化简求值（送分区）</option><option value="m-sqrt-simplify">二次根式化简（送分区）</option><option value="m-eq-system">方程组消元（送分区）</option><option value="m-quad-solve">一元二次方程解法（送分区）</option><option value="m-ineq-param">含参不等式（送分区）</option><option value="m-func-coef">待定系数法求解析式（送分区）</option><option value="m-k-meaning">反比例函数 k 的几何意义（中档区）</option><option value="m-quad-3forms">二次函数三种形式（中档区）</option><option value="m-quad-translate">二次函数图象平移（中档区）</option><option value="m-quad-interval">二次函数区间最值（区分区）</option><option value="m-quad-param">含参二次函数（区分区）</option><option value="m-congruent">全等三角形构造（送分区）</option><option value="m-isosceles">等腰三角形三线合一（送分区）</option><option value="m-parallelogram">平行四边形的判定与性质（送分区）</option><option value="m-similar-4">相似四模型（中档区）</option><option value="m-circle-aux">圆中辅助线（中档区）</option><option value="m-tangent-2ways">切线两路（中档区）</option><option value="m-right-triangle">解直角三角形（送分区）</option><option value="m-midpoint-4">中点四模型（区分区）</option><option value="m-hand-in-hand">手拉手旋转模型（区分区）</option><option value="m-half-angle">半角模型（区分区）</option><option value="m-three-segments">三条线段关系（区分区）</option><option value="m-chart-read">统计图表读取（送分区）</option><option value="m-three-measures">三数一差（送分区）</option><option value="m-tree-diagram">树状图与列表法（送分区）</option><option value="m-newdef-3step">新定义三步法（区分区）</option><option value="m-boundary">边界与临界（区分区）</option><option value="m-model-4step">建模四步（中档区）</option>
+        </select>
+      </div>
+
+      <div class="setup-group">
+        <div class="kicker">章节</div>
+        <select id="chapterSel" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border-2);background:var(--surface);color:var(--text);font-size:.92rem">
+          <option value="">不限章节（全部）</option>
+          <option value="ch-real">1. 实数与运算</option><option value="ch-poly">2. 整式与因式分解</option><option value="ch-frac">3. 分式与二次根式</option><option value="ch-eq">4. 方程与方程组</option><option value="ch-ineq">5. 不等式与不等式组</option><option value="ch-linear">6. 一次函数与反比例函数</option><option value="ch-quad">7. 二次函数</option><option value="ch-triangle">8. 三角形与全等</option><option value="ch-quadrilateral">9. 四边形</option><option value="ch-similar">10. 相似三角形</option><option value="ch-circle">11. 圆</option><option value="ch-transform">12. 图形变换</option><option value="ch-trig">13. 锐角三角函数与解直角三角形</option><option value="ch-geo-aux">14. 几何辅助线综合</option><option value="ch-stat">15. 统计</option><option value="ch-prob">16. 概率</option><option value="ch-newdef">17. 新定义与阅读理解</option><option value="ch-design">18. 方案设计与跨学科</option>
+        </select>
+      </div>
+
+      <div class="setup-group">
+        <div class="kicker">本组题量</div>
+        <div class="chips" id="lenChips">
+          <button class="chip" data-l="4">4 题</button>
+          <button class="chip on" data-l="8">8 题</button>
+          <button class="chip" data-l="12">12 题</button>
+          <button class="chip" data-l="20">20 题</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="zone" style="display:none;margin-top:24px">
+  <div id="stage"></div>
+</section>
+
+</div>
+</main>
+<footer class="foot">
+  <div class="foot-in">
+    <div class="col">
+      <div class="logo" style="margin-bottom:10px">
+        <span class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20 L9 8 L13 14 L16 9 L21 20 Z"/><path d="M3 20 L21 20"/></svg></span>
+        <span>北京中考数学领航</span>
+        <span class="logo-badge">数学</span>
+      </div>
+      <p style="line-height:1.7;margin:0;color:var(--text-2)">面向北京中考数学的分步备考站：方法卡按「识别信号」组织，刷题按步骤判定，错题按错因归类。</p>
+    </div>
+    <div class="col">
+      <h4>学习</h4>
+      <a href="drill.html">分步刷题</a>
+      <a href="method.html">方法卡</a>
+      <a href="map.html">知识图谱</a>
+      <a href="graph.html">公式库</a>
+    </div>
+    <div class="col">
+      <h4>复盘</h4>
+      <a href="wrong.html">错因诊断</a>
+      <a href="index.html#tiers">三层分区</a>
+    </div>
+    <div class="col">
+      <h4>说明</h4>
+      <a href="content.html">内容与口径</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>北京中考数学领航 · 对齐北京卷题型结构</span>
+    <span>例题为原创 · 非真题 · 解答题不自动判分</span>
+  </div>
+</footer>
+<script src="assets/app.js?v=5ddeb8c1"></script>
+<script src="assets/step-engine.js?v=6c46a542"></script>
+<script src="dist/data/meta.js?v=5ddeb8c1"></script>
+<script>
+(function(){
+  var META = (window.BJM && window.BJM.META) || { methods: [], chapters: [] };
+  var QS = [];
+  var loadedAll = false;
+
+  /** 按需加载全部章节分片，拼成扁平题库 */
+  function loadAllQuestions(){
+    if (loadedAll) return Promise.resolve(QS);
+    var ids = (META.chapters || []).map(function(c){ return c.id; });
+    return Promise.all(ids.map(function(id){
+      return new Promise(function(res){
+        var s = document.createElement('script');
+        s.src = 'dist/data/ch/' + id + '.js';
+        s.onload = res; s.onerror = res;
+        document.head.appendChild(s);
+      });
+    })).then(function(){
+      var CH = window.BJM.CH || {};
+      QS = [];
+      var seenDefs = {};
+      Object.keys(CH).forEach(function(id){
+        (CH[id].questions || []).forEach(function(q){ QS.push(q); });
+        // 注入该章的字形 defs（只注入一次，按内容去重）
+        var d = CH[id].defs;
+        if (d && !seenDefs[d]) {
+          seenDefs[d] = 1;
+          var box = document.createElement('div');
+          box.innerHTML = d;
+          document.body.appendChild(box.firstChild || box);
+        }
+      });
+      loadedAll = true;
+      return QS;
+    });
+  }
+  var params = new URLSearchParams(location.search);
+  var mode = params.get('mode') === 'selfcheck' ? 'selfcheck' : 'guided';
+  var scope = 'all';
+  var len = parseInt(params.get('n'), 10) || 8;
+
+  // URL 预填（方法卡页跳过来时带 ?method=&mode=）
+  var preMethod = params.get('method') || '';
+  if (preMethod) {
+    var sel = document.getElementById('methodSel');
+    if (sel) sel.value = preMethod;
+    var sc = document.querySelector('#scopeChips .chip[data-s="all"]');
+    if (sc) sc.classList.add('on');
+  }
+  [].forEach.call(document.querySelectorAll('#modeChips .chip'), function(c){
+    c.classList.toggle('on', c.getAttribute('data-m') === mode);
+  });
+
+  function pick(sel, attr, cb){
+    [].forEach.call(document.querySelectorAll(sel + ' .chip'), function(c){
+      c.addEventListener('click', function(){
+        [].forEach.call(document.querySelectorAll(sel + ' .chip'), function(x){ x.classList.remove('on'); });
+        c.classList.add('on'); cb(c.getAttribute(attr));
+      });
+    });
+  }
+  pick('#modeChips', 'data-m', function(v){ mode = v; });
+  pick('#scopeChips', 'data-s', function(v){ scope = v; });
+  pick('#lenChips', 'data-l', function(v){ len = parseInt(v, 10); });
+
+  function refreshHint(){
+    var n = pool().length;
+    var el = document.getElementById('scopeHint');
+    if (el) el.textContent = '当前筛选下 ' + n + ' 题可练';
+  }
+
+  function pool(){
+    var out = QS.slice();
+    var mid = document.getElementById('methodSel').value;
+    var cid = document.getElementById('chapterSel').value;
+    if (mid) out = out.filter(function(q){ return q.method === mid; });
+    if (cid) out = out.filter(function(q){ return q.chapter === cid; });
+    if (scope === 'wrong') {
+      var w = BJM.wrongMap();
+      out = out.filter(function(q){ return !!w[q.id]; });
+    } else if (scope === 'weak') {
+      var rates = BJM.methodRates();
+      if (rates.length) {
+        var weakest = rates[0].key;
+        out = out.filter(function(q){ return q.method === weakest; });
+      }
+    }
+    return out;
+  }
+
+  document.getElementById('methodSel').addEventListener('change', refreshHint);
+  document.getElementById('chapterSel').addEventListener('change', refreshHint);
+  [].forEach.call(document.querySelectorAll('#scopeChips .chip'), function(c){
+    c.addEventListener('click', refreshHint);
+  });
+  refreshHint();
+
+  document.getElementById('startBtn').addEventListener('click', function(){
+    loadAllQuestions().then(function(){
+    var p = pool();
+    if (!p.length) { BJM.toast('当前筛选下没有题目，换个条件试试'); return; }
+    document.getElementById('setup').style.display = 'none';
+    document.getElementById('zone').style.display = '';
+
+    BJM.step({
+      mount: '#stage',
+      questions: p,
+      mode: mode,
+      limit: len,
+      shuffle: true,
+      wrongHref: 'wrong.html',
+      backHref: 'drill.html',
+      backLabel: '重新配置',
+      onStep: function(q, idx, ok){ /* 步骤级埋点，P3 用于卡点统计 */ },
+      onAnswer: function(q, ok, rec){
+        // 自动推断错因：guided 模式可按 stuckStep 位置判断
+        var et = 'method';
+        if (rec.stuckStep === 0) et = 'concept';
+        else if (rec.stuckStep >= 0 && rec.stuckStep >= (q.steps || []).length - 1) et = 'calc';
+        BJM.qRecord({
+          id: q.id, chapter: q.chapter, method: q.method, tier: q.tier,
+          result: rec.result, stuckStep: rec.stuckStep, errorType: ok ? null : et,
+          timeMs: rec.timeMs, src: mode
+        });
+        if (q.variantOf && BJM.methodRecord) {
+          BJM.methodRecord(q.method, q.id, ok);
+        }
+        BJM.bumpDay('questions', 1);
+      },
+      onFinish: function(res){
+        if (res.rate >= 90) BJM.sfx('win');
+      }
+    });
+    var zone = document.getElementById('zone');
+    window.scrollTo({ top: Math.max(0, zone.getBoundingClientRect().top + window.scrollY - 80), behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+</body>
+</html>

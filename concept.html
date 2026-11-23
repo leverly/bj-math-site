@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>概念自测 · 北京中考数学领航</title>
+<meta name="description" content="只考条件不考背诵：给条件判结论、反推缺条件、判断命题真假。">
+<meta property="og:title" content="概念自测 · 北京中考数学领航">
+<meta property="og:description" content="只考条件不考背诵：给条件判结论、反推缺条件、判断命题真假。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232563eb'/%3E%3Cstop offset='1' stop-color='%234f46e5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-family='system-ui,sans-serif' font-size='14' font-weight='800' fill='%23fff' text-anchor='middle'%3E%E6%95%B0%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css?v=529aae0a">
+<script>try{var m=JSON.parse(localStorage.getItem('bj-theme-manual')||'null');var h=new Date().getHours();var t=(m==='light'||m==='dark')?m:((h>=19||h<6)?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){var h2=new Date().getHours();document.documentElement.setAttribute('data-theme',(h2>=19||h2<6)?'dark':'light');}</script>
+</head>
+<body data-base="">
+<svg class="math-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs></defs></svg>
+<div class="scroll-progress"></div>
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="logo" href="index.html">
+      <span class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20 L9 8 L13 14 L16 9 L21 20 Z"/><path d="M3 20 L21 20"/></svg></span>
+      <span>北京中考数学领航</span>
+      <span class="logo-badge">数学</span>
+    </a>
+    <nav class="hdr-nav"><a href="index.html">首页</a><a href="concept.html" class="on">概念自测</a><a href="drill.html">分步刷题</a><a href="method.html">方法卡</a><a href="map.html">知识图谱</a><a href="graph.html">公式库</a><a href="wrong.html">错因诊断</a></nav>
+    <div class="hdr-tools">
+      <button class="theme-btn" aria-label="切换主题">☾</button>
+      <button class="menu-btn" aria-label="菜单" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+<main class="main">
+<div class="wrap">
+
+<div class="page-head">
+  <div class="crumb"><a href="index.html">首页</a> / 概念自测</div>
+  <h1>概念自测</h1>
+  <p class="lede">理科的失分多数不是「记不住」，而是<b>条件不满足还硬套</b>。这一页不考背诵定义，只考三件事：给条件判结论、给结论反推缺什么条件、判断命题真假。</p>
+</div>
+
+<section class="section" style="margin-top:20px" id="setup">
+  <div class="card setup-card">
+    <div class="setup-head">
+      <h3>开始自测</h3>
+      <div class="setup-actions">
+        <button class="btn primary" id="startBtn">开始 →</button>
+      </div>
+    </div>
+    <div class="setup-grid">
+      <div class="setup-group">
+        <div class="kicker">范围</div>
+        <div class="chips" id="scopeChips">
+          <button class="chip on" data-s="all">全部章节</button>
+          <button class="chip" data-s="wrong">只练答错的</button>
+          <button class="chip" data-s="due">到期复习</button>
+        </div>
+        <p class="setup-hint" id="scopeHint">共 356 个判断</p>
+      </div>
+      <div class="setup-group">
+        <div class="kicker">本组题量</div>
+        <div class="chips" id="lenChips">
+          <button class="chip" data-l="10">10</button>
+          <button class="chip on" data-l="20">20</button>
+          <button class="chip" data-l="30">30</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="zone" style="display:none;margin-top:24px">
+  <div id="stage"></div>
+</section>
+
+<div id="chapters"><section class="section">
+      <div class="section-head"><div class="section-head-left">
+        <span class="kicker">数与代数</span><h2>7 章</h2>
+      </div></div>
+      <div class="grid c3"><a class="card" href="concept.html?chapter=ch-real">
+        <div class="card-ico">1</div>
+        <h3>实数与运算</h3>
+        <div class="meta">10 条概念 · 29 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-poly">
+        <div class="card-ico">2</div>
+        <h3>整式与因式分解</h3>
+        <div class="meta">10 条概念 · 23 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-frac">
+        <div class="card-ico">3</div>
+        <h3>分式与二次根式</h3>
+        <div class="meta">10 条概念 · 20 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-eq">
+        <div class="card-ico">4</div>
+        <h3>方程与方程组</h3>
+        <div class="meta">10 条概念 · 21 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-ineq">
+        <div class="card-ico">5</div>
+        <h3>不等式与不等式组</h3>
+        <div class="meta">10 条概念 · 21 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-linear">
+        <div class="card-ico">6</div>
+        <h3>一次函数与反比例函数</h3>
+        <div class="meta">10 条概念 · 20 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-quad">
+        <div class="card-ico">7</div>
+        <h3>二次函数</h3>
+        <div class="meta">10 条概念 · 21 个判断</div>
+      </a></div>
+    </section><section class="section">
+      <div class="section-head"><div class="section-head-left">
+        <span class="kicker">图形与几何</span><h2>7 章</h2>
+      </div></div>
+      <div class="grid c3"><a class="card" href="concept.html?chapter=ch-triangle">
+        <div class="card-ico">8</div>
+        <h3>三角形与全等</h3>
+        <div class="meta">10 条概念 · 21 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-quadrilateral">
+        <div class="card-ico">9</div>
+        <h3>四边形</h3>
+        <div class="meta">10 条概念 · 20 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-similar">
+        <div class="card-ico">10</div>
+        <h3>相似三角形</h3>
+        <div class="meta">10 条概念 · 20 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-circle">
+        <div class="card-ico">11</div>
+        <h3>圆</h3>
+        <div class="meta">10 条概念 · 20 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-transform">
+        <div class="card-ico">12</div>
+        <h3>图形变换</h3>
+        <div class="meta">10 条概念 · 20 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-trig">
+        <div class="card-ico">13</div>
+        <h3>锐角三角函数与解直角三角形</h3>
+        <div class="meta">10 条概念 · 20 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-geo-aux">
+        <div class="card-ico">14</div>
+        <h3>几何辅助线综合</h3>
+        <div class="meta">10 条概念 · 20 个判断</div>
+      </a></div>
+    </section><section class="section">
+      <div class="section-head"><div class="section-head-left">
+        <span class="kicker">统计与概率</span><h2>2 章</h2>
+      </div></div>
+      <div class="grid c3"><a class="card" href="concept.html?chapter=ch-stat">
+        <div class="card-ico">15</div>
+        <h3>统计</h3>
+        <div class="meta">10 条概念 · 20 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-prob">
+        <div class="card-ico">16</div>
+        <h3>概率</h3>
+        <div class="meta">10 条概念 · 20 个判断</div>
+      </a></div>
+    </section><section class="section">
+      <div class="section-head"><div class="section-head-left">
+        <span class="kicker">综合与实践</span><h2>2 章</h2>
+      </div></div>
+      <div class="grid c3"><a class="card" href="concept.html?chapter=ch-newdef">
+        <div class="card-ico">17</div>
+        <h3>新定义与阅读理解</h3>
+        <div class="meta">5 条概念 · 10 个判断</div>
+      </a><a class="card" href="concept.html?chapter=ch-design">
+        <div class="card-ico">18</div>
+        <h3>方案设计与跨学科</h3>
+        <div class="meta">5 条概念 · 10 个判断</div>
+      </a></div>
+    </section></div>
+
+</div>
+</main>
+<footer class="foot">
+  <div class="foot-in">
+    <div class="col">
+      <div class="logo" style="margin-bottom:10px">
+        <span class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20 L9 8 L13 14 L16 9 L21 20 Z"/><path d="M3 20 L21 20"/></svg></span>
+        <span>北京中考数学领航</span>
+        <span class="logo-badge">数学</span>
+      </div>
+      <p style="line-height:1.7;margin:0;color:var(--text-2)">面向北京中考数学的分步备考站：方法卡按「识别信号」组织，刷题按步骤判定，错题按错因归类。</p>
+    </div>
+    <div class="col">
+      <h4>学习</h4>
+      <a href="drill.html">分步刷题</a>
+      <a href="method.html">方法卡</a>
+      <a href="map.html">知识图谱</a>
+      <a href="graph.html">公式库</a>
+    </div>
+    <div class="col">
+      <h4>复盘</h4>
+      <a href="wrong.html">错因诊断</a>
+      <a href="index.html#tiers">三层分区</a>
+    </div>
+    <div class="col">
+      <h4>说明</h4>
+      <a href="content.html">内容与口径</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>北京中考数学领航 · 对齐北京卷题型结构</span>
+    <span>例题为原创 · 非真题 · 解答题不自动判分</span>
+  </div>
+</footer>
+<script src="assets/app.js?v=5ddeb8c1"></script>
+<script src="assets/step-engine.js?v=6c46a542"></script>
+<script src="dist/data/meta.js?v=5ddeb8c1"></script>
+<script>
+(function(){
+  /* 关键：不能在这里快照 window.BJM.CH——分片是点击后才异步加载的，
+     快照会永远指向空对象。每次用都现读。 */
+  function CH(){ return window.BJM.CH || {}; }
+  var params = new URLSearchParams(location.search);
+  var onlyChapter = params.get('chapter') || '';
+  var scope = 'all', len = 20;
+  var loaded = {};
+
+  var defsInjected = {};
+  function loadAll(){
+    var meta = window.BJM.META;
+    var ids = meta.chapters.map(function(c){ return c.id; });
+    return Promise.all(ids.map(function(id){
+      if (loaded[id]) return null;
+      return new Promise(function(res){
+        var s = document.createElement('script');
+        s.src = 'dist/data/ch/' + id + '.js';
+        s.onload = function(){
+          loaded[id] = 1;
+          // 注入字形 defs，否则公式不可见
+          var d = window.BJM.CH[id] && window.BJM.CH[id].defs;
+          if (d && !defsInjected[d]) {
+            defsInjected[d] = 1;
+            var box = document.createElement('div');
+            box.innerHTML = d;
+            document.body.appendChild(box.firstChild || box);
+          }
+          res();
+        };
+        s.onerror = function(){ res(); };
+        document.head.appendChild(s);
+      });
+    }));
+  }
+
+  function allConcepts(){
+    var out = [];
+    var ch = CH();
+    Object.keys(ch).forEach(function(id){
+      (ch[id].concepts || []).forEach(function(c){ out.push(c); });
+    });
+    return out;
+  }
+
+  function buildPool(){
+    var cs = allConcepts();
+    if (onlyChapter) cs = cs.filter(function(c){ return c.chapter === onlyChapter; });
+    // 展开成单个判断
+    var items = [];
+    cs.forEach(function(c){
+      (c.tests || []).forEach(function(t, i){
+        items.push({ cid: c.id, idx: i, chapter: c.chapter, claim: c.claim,
+          claimHtml: c.claimHtml, q: t.q, qHtml: t.qHtml, a: t.a, why: t.why, whyHtml: t.whyHtml });
+      });
+    });
+    if (scope === 'wrong') {
+      var w = BJM.csrsAll();
+      items = items.filter(function(x){ return w[x.cid + '#' + x.idx] && !w[x.cid + '#' + x.idx].lastOk; });
+    } else if (scope === 'due') {
+      var due = BJM.csrsDue(items.map(function(x){ return x.cid + '#' + x.idx; }));
+      var set = {}; due.forEach(function(k){ set[k] = 1; });
+      items = items.filter(function(x){ return set[x.cid + '#' + x.idx]; });
+    }
+    return items;
+  }
+
+  function pick(sel, attr, cb){
+    [].forEach.call(document.querySelectorAll(sel + ' .chip'), function(c){
+      c.addEventListener('click', function(){
+        [].forEach.call(document.querySelectorAll(sel + ' .chip'), function(x){ x.classList.remove('on'); });
+        c.classList.add('on'); cb(c.getAttribute(attr));
+      });
+    });
+  }
+  pick('#scopeChips', 'data-s', function(v){ scope = v; refreshHint(); });
+  pick('#lenChips', 'data-l', function(v){ len = parseInt(v, 10); });
+
+  function refreshHint(){
+    var n = buildPool().length;
+    var el = document.getElementById('scopeHint');
+    if (el) el.textContent = '当前范围 ' + n + ' 个判断';
+  }
+
+  // 概念题的「步骤」就是单个判断
+  function toQuestion(x){
+    return {
+      id: x.cid + '#' + x.idx,
+      chapter: x.chapter,
+      tier: 'send',
+      tierName: x.claim || '概念判断',
+      stem: '',
+      stemHtml: '<div class="c-claim">' + (x.claimHtml || x.claim || '') + '</div><div class="c-q">' + (x.qHtml || x.q) + '</div>',
+      steps: [{
+        label: '判断正误',
+        ask: '这个说法成立吗？',
+        type: 'judge',
+        key: x.a,
+        score: 1,
+        why: x.why,
+        whyHtml: x.whyHtml || x.why,
+      }],
+      solution: x.why,
+      solutionHtml: x.whyHtml || x.why,
+      errorTags: ['concept'],
+      __conceptId: x.cid,
+      __testIdx: x.idx,
+    };
+  }
+
+  document.getElementById('startBtn').addEventListener('click', function(){
+    loadAll().then(function(){
+      var pool = buildPool();
+      if (!pool.length) { BJM.toast('当前范围没有概念题'); return; }
+      document.getElementById('setup').style.display = 'none';
+      document.getElementById('zone').style.display = '';
+      document.getElementById('chapters').style.display = 'none';
+      var qs = pool.map(toQuestion);
+      BJM.step({
+        mount: '#stage',
+        questions: qs,
+        mode: 'guided',
+        limit: len,
+        shuffle: true,
+        backHref: 'concept.html',
+        backLabel: '重新选范围',
+        onAnswer: function(q, ok, rec){
+          var key = q.__conceptId + '#' + q.__testIdx;
+          var r = BJM.csrsRate(key, ok ? 2 : 0);
+          r.lastOk = ok;
+          BJM.qRecord({ id: key, chapter: q.chapter, tier: 'send', result: rec.result,
+            stuckStep: rec.stuckStep, errorType: ok ? null : 'concept', timeMs: rec.timeMs, src: 'concept' });
+          BJM.bumpDay('questions', 1);
+        },
+        onFinish: function(res){ if (res.rate >= 90) BJM.sfx('win'); }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  if (onlyChapter) {
+    var c = (window.BJM.META.chapters || []).find(function(x){ return x.id === onlyChapter; });
+    if (c) {
+      var banner = document.createElement('div');
+      banner.className = 'note';
+      banner.style.cssText = 'margin:18px 0;border-left-color:var(--accent)';
+      banner.innerHTML = '当前范围：<b>' + c.name + '</b>（' + c.cCount + ' 条概念）· <a href="concept.html">切回全部 →</a>';
+      document.getElementById('setup').parentNode.insertBefore(banner, document.getElementById('setup'));
+      document.getElementById('chapters').style.display = 'none';
+    }
+  }
+
+  BJM.ready(refreshHint);
+})();
+</script>
+</body>
+</html>

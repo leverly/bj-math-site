@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+build-report.json
+tools/fig-preview.html
+
+# 构建产物要提交（GitHub Pages 从根目录直接部署）
+# 所以 *.html / dist/ / method/ / map/ 不忽略

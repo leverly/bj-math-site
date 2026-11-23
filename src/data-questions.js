@@ -1,0 +1,1305 @@
+/* ==========================================================
+   P1 · 方法卡配套题（29 张卡 × 母题 + 3 变式 = 116 题）
+
+   每题必带：
+     id chapter method tier tierName kind score
+     stem steps[] errorTags[]
+   变式额外带 variantOf 与 changed（number | condition | reverse）
+
+   steps 规范：label 写「做什么」，ask 写具体提问
+   ========================================================== */
+
+export const QUESTIONS = [
+  /* ========== m-factor-4 因式分解四法 ========== */
+  { id: 'q-factor-1', chapter: 'ch-poly', method: 'm-factor-4', tier: 'send', tierName: '送分区 · 18 题', kind: 'solve', score: 5,
+    stem: '分解因式：$2x^{3}-8x$。', errorTags: ['method', 'calc', 'express'],
+    steps: [
+      { label: '先提公因式', ask: '先提出什么公因式？', type: 'choice', options: ['$2x$', '$2x^{2}$', '$x$', '没有公因式'], key: 0, score: 1,
+        hint: '系数 2 和 8 的最大公约数是 2，字母取最低次幂 $x$。', why: '公因式 = 系数最大公约数 × 相同字母最低次幂 = $2x$。' },
+      { label: '提公因式后看括号内', ask: '提出 $2x$ 后括号内是什么？', type: 'fill', accept: ['x^2-4', 'x²-4'], answer: 'x^2-4', score: 1,
+        hint: '$2x^{3}\\div 2x=x^{2}$，$8x\\div 2x=4$。', why: '$2x^{3}-8x=2x(x^{2}-4)$。' },
+      { label: '套公式或十字相乘', ask: '$x^{2}-4$ 该用什么方法？', type: 'choice', options: ['十字相乘', '平方差公式', '完全平方公式', '不能分解'], key: 1, score: 2,
+        hint: '两项、都是平方、中间是减号。', why: '$x^{2}-4=x^{2}-2^{2}$，两项平方差。' },
+      { label: '检查是否彻底', ask: '最终结果是什么？', type: 'fill', accept: ['2x(x+2)(x-2)', '2x(x-2)(x+2)'], answer: '2x(x+2)(x-2)', score: 1,
+        hint: '$x^{2}-4=(x+2)(x-2)$。', why: '$2x(x+2)(x-2)$，三个因式都不能再分解，彻底。' },
+    ],
+    solution: '$2x^{3}-8x=2x(x^{2}-4)=2x(x+2)(x-2)$。\n注意：必须提公因式后再用平方差，且要分解到每个因式都不能再分为止。' },
+
+  { id: 'v-factor-1', variantOf: 'q-factor-1', changed: 'number', chapter: 'ch-poly', method: 'm-factor-4', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '分解因式：$3a^{2}-12$。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '先提公因式', ask: '先提出什么？', type: 'fill', accept: ['3', '3a'], answer: '3', score: 1, hint: '$3a^{2}$ 与 $12$ 的最大公约数是 3。', why: '提出 3。' },
+      { label: '套公式或十字相乘', ask: '$a^{2}-4$ 分解结果？', type: 'fill', accept: ['(a+2)(a-2)', '(a-2)(a+2)'], answer: '(a+2)(a-2)', score: 2, hint: '平方差。', why: '$a^{2}-4=(a+2)(a-2)$。' },
+      { label: '检查是否彻底', ask: '最终结果？', type: 'fill', accept: ['3(a+2)(a-2)', '3(a-2)(a+2)'], answer: '3(a+2)(a-2)', score: 2, hint: '把 3 乘回去。', why: '$3(a+2)(a-2)$。' },
+    ],
+    solution: '$3a^{2}-12=3(a^{2}-4)=3(a+2)(a-2)$。' },
+
+  { id: 'v-factor-2', variantOf: 'q-factor-1', changed: 'condition', chapter: 'ch-poly', method: 'm-factor-4', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '分解因式：$x^{4}-16$。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '先提公因式', ask: '本题有公因式吗？', type: 'judge', key: false, score: 1, hint: '两项，系数都是 1，没有公共字母幂。', why: '没有公因式，直接用平方差。' },
+      { label: '套公式或十字相乘', ask: '第一次用平方差得？', type: 'fill', accept: ['(x^2+4)(x^2-4)'], answer: '(x^2+4)(x^2-4)', score: 2, hint: '$x^{4}=(x^{2})^{2}$，$16=4^{2}$。', why: '$x^{4}-16=(x^{2}+4)(x^{2}-4)$。' },
+      { label: '检查是否彻底', ask: '$x^{2}-4$ 还能分解吗？', type: 'judge', key: true, score: 1, hint: '两项平方差。', why: '还能分解成 $(x+2)(x-2)$。' },
+      { label: '检查是否彻底', ask: '最终结果？', type: 'fill', accept: ['(x^2+4)(x+2)(x-2)'], answer: '(x^2+4)(x+2)(x-2)', score: 1, hint: '$x^{2}+4$ 在实数范围不能再分。', why: '$(x^{2}+4)(x+2)(x-2)$。' },
+    ],
+    solution: '$x^{4}-16=(x^{2}+4)(x^{2}-4)=(x^{2}+4)(x+2)(x-2)$。\n$x^{2}+4$ 在实数范围内不能分解。' },
+
+  { id: 'v-factor-3', variantOf: 'q-factor-1', changed: 'reverse', chapter: 'ch-poly', method: 'm-factor-4', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '若 $x^{2}+kx-6$ 可分解为 $(x+3)(x-2)$，求 $k$ 的值。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '展开右边', ask: '$(x+3)(x-2)$ 展开得？', type: 'fill', accept: ['x^2+x-6', 'x²+x-6'], answer: 'x^2+x-6', score: 2, hint: '逐项相乘再合并。', why: '$x^{2}-2x+3x-6=x^{2}+x-6$。' },
+      { label: '对比系数', ask: '对比 $x$ 的系数，$k$ 等于？', type: 'fill', accept: ['1'], answer: '1', score: 2, hint: '一次项系数是 1。', why: '对应位置相等，$k=1$。' },
+      { label: '检查是否彻底', ask: '验证 $x^{2}+x-6$ 能否分解成 $(x+3)(x-2)$？', type: 'judge', key: true, score: 1, hint: '$3\\times(-2)=-6$，$3+(-2)=1$。', why: '十字相乘验证通过。' },
+    ],
+    solution: '$(x+3)(x-2)=x^{2}+x-6$，与 $x^{2}+kx-6$ 对比得 $k=1$。' },
+
+  /* ========== m-frac-simplify 分式化简求值 ========== */
+  { id: 'q-frac-1', chapter: 'ch-frac', method: 'm-frac-simplify', tier: 'send', tierName: '送分区 · 18 题', kind: 'solve', score: 5,
+    stem: '先化简，再求值：$\\dfrac{x^{2}-1}{x^{2}+2x+1}\\div\\dfrac{x-1}{x+1}$，其中 $x=2$。', errorTags: ['method', 'calc', 'express'],
+    steps: [
+      { label: '先分解因式', ask: '分子 $x^{2}-1$ 分解为？', type: 'fill', accept: ['(x+1)(x-1)', '(x-1)(x+1)'], answer: '(x+1)(x-1)', score: 1, hint: '平方差。', why: '$x^{2}-1=(x+1)(x-1)$。' },
+      { label: '先分解因式', ask: '分母 $x^{2}+2x+1$ 分解为？', type: 'fill', accept: ['(x+1)^2', '(x+1)²'], answer: '(x+1)^2', score: 1, hint: '完全平方。', why: '$x^{2}+2x+1=(x+1)^{2}$。' },
+      { label: '通分或约分', ask: '除以一个分式等于乘它的什么？', type: 'choice', options: ['相反数', '倒数', '平方', '本身'], key: 1, score: 2, hint: '除以 $\\dfrac{a}{b}$ 等于乘 $\\dfrac{b}{a}$。', why: '除以分式即乘其倒数。' },
+      { label: '化简到最简', ask: '化简结果是？', type: 'fill', accept: ['x-1', 'x-1'], answer: 'x-1', score: 1, hint: '$\\dfrac{(x+1)(x-1)}{(x+1)^{2}}\\times\\dfrac{x+1}{x-1}$，约分。', why: '约去 $(x+1)$ 和 $(x-1)$，剩 $\\dfrac{(x-1)(x+1)}{(x+1)}=x-1$。' },
+    ],
+    solution: '原式 $=\\dfrac{(x+1)(x-1)}{(x+1)^{2}}\\times\\dfrac{x+1}{x-1}=x-1$。\n当 $x=2$ 时，原式 $=2-1=1$。\n（注意 $x\\ne-1$ 且 $x\\ne1$，$x=2$ 满足。）' },
+
+  { id: 'v-frac-1', variantOf: 'q-frac-1', changed: 'number', chapter: 'ch-frac', method: 'm-frac-simplify', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '先化简，再求值：$\\dfrac{a^{2}-4}{a+2}$，其中 $a=3$。', errorTags: ['calc', 'express'],
+    steps: [
+      { label: '先分解因式', ask: '$a^{2}-4$ 分解为？', type: 'fill', accept: ['(a+2)(a-2)'], answer: '(a+2)(a-2)', score: 2, hint: '平方差。', why: '$a^{2}-4=(a+2)(a-2)$。' },
+      { label: '化简到最简', ask: '约分后得？', type: 'fill', accept: ['a-2'], answer: 'a-2', score: 2, hint: '约去 $(a+2)$。', why: '$\\dfrac{(a+2)(a-2)}{a+2}=a-2$。' },
+      { label: '代值求结果', ask: '代入 $a=3$ 得？', type: 'fill', accept: ['1'], answer: '1', score: 1, hint: '$3-2$。', why: '$3-2=1$。' },
+    ],
+    solution: '$\\dfrac{a^{2}-4}{a+2}=\\dfrac{(a+2)(a-2)}{a+2}=a-2$。当 $a=3$ 时，值为 1。' },
+
+  { id: 'v-frac-2', variantOf: 'q-frac-1', changed: 'condition', chapter: 'ch-frac', method: 'm-frac-simplify', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '先化简：$\\dfrac{x}{x-1}-\\dfrac{1}{x-1}$，并说明 $x$ 的取值限制。', errorTags: ['concept', 'express'],
+    steps: [
+      { label: '先分解因式', ask: '两个分式分母相同吗？', type: 'judge', key: true, score: 1, hint: '都是 $x-1$。', why: '同分母，直接分子相减。' },
+      { label: '通分或约分', ask: '分子相减得？', type: 'fill', accept: ['x-1'], answer: 'x-1', score: 2, hint: '$x-1$。', why: '$\\dfrac{x-1}{x-1}$。' },
+      { label: '化简到最简', ask: '化简结果是？', type: 'fill', accept: ['1'], answer: '1', score: 1, hint: '约去 $x-1$。', why: '结果为 1（当 $x\\ne1$）。' },
+      { label: '代值求结果', ask: '$x$ 的限制是什么？', type: 'choice', options: ['$x\\ne0$', '$x\\ne1$', '无限制', '$x>0$'], key: 1, score: 1, hint: '分母不能为 0。', why: '$x-1\\ne0$，即 $x\\ne1$。这个限制不能省。' },
+    ],
+    solution: '原式 $=\\dfrac{x-1}{x-1}=1\\ (x\\ne1)$。\n注意：化简后虽然看不出分母，但原式的限制 $x\\ne1$ 必须保留。' },
+
+  { id: 'v-frac-3', variantOf: 'q-frac-1', changed: 'reverse', chapter: 'ch-frac', method: 'm-frac-simplify', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '若分式 $\\dfrac{x^{2}-9}{x-3}$ 的值为 6，求 $x$ 的值。', errorTags: ['concept', 'calc'],
+    steps: [
+      { label: '先分解因式', ask: '分子分解为？', type: 'fill', accept: ['(x+3)(x-3)'], answer: '(x+3)(x-3)', score: 1, hint: '平方差。', why: '$x^{2}-9=(x+3)(x-3)$。' },
+      { label: '化简到最简', ask: '化简后得？', type: 'fill', accept: ['x+3'], answer: 'x+3', score: 1, hint: '约去 $x-3$。', why: '$x+3\\ (x\\ne3)$。' },
+      { label: '代值求结果', ask: '由 $x+3=6$ 得？', type: 'fill', accept: ['3'], answer: '3', score: 1, hint: '$6-3$。', why: '$x=3$。' },
+      { label: '代值求结果', ask: '$x=3$ 是合法答案吗？', type: 'judge', key: false, score: 2, hint: '代回原式看分母。', why: '$x=3$ 使分母为 0，是增根，必须舍去。所以本题无解。' },
+    ],
+    solution: '$\\dfrac{x^{2}-9}{x-3}=\\dfrac{(x+3)(x-3)}{x-3}=x+3\\ (x\\ne3)$。\n令 $x+3=6$ 得 $x=3$，但 $x=3$ 使分母为 0，舍去。\n所以不存在满足条件的 $x$。' },
+
+  /* ========== m-sqrt-simplify 二次根式化简 ========== */
+  { id: 'q-sqrt-1', chapter: 'ch-frac', method: 'm-sqrt-simplify', tier: 'send', tierName: '送分区 · 17 题', kind: 'solve', score: 5,
+    stem: '计算：$\\sqrt{12}-\\sqrt{3}+\\sqrt{\\dfrac{1}{3}}$。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '分解被开方数', ask: '$\\sqrt{12}$ 化成最简？', type: 'fill', accept: ['2\\sqrt{3}', '2√3'], answer: '2√3', score: 2, hint: '$12=4\\times3$，$\\sqrt{4}=2$。', why: '$\\sqrt{12}=2\\sqrt3$。' },
+      { label: '分母有理化', ask: '$\\sqrt{\\dfrac{1}{3}}$ 化成？', type: 'fill', accept: ['\\dfrac{\\sqrt{3}}{3}', '√3/3'], answer: '√3/3', score: 2, hint: '分子分母同乘 $\\sqrt3$。', why: '$\\sqrt{\\dfrac13}=\\dfrac{1}{\\sqrt3}=\\dfrac{\\sqrt3}{3}$。' },
+      { label: '合并同类根式', ask: '原式化简后等于？', type: 'fill', accept: ['\\dfrac{4\\sqrt{3}}{3}', '4√3/3'], answer: '4√3/3', score: 1, hint: '$2\\sqrt3-\\sqrt3+\\dfrac{\\sqrt3}{3}$。', why: '$\\left(2-1+\\dfrac13\\right)\\sqrt3=\\dfrac{4\\sqrt3}{3}$。' },
+    ],
+    solution: '$\\sqrt{12}-\\sqrt{3}+\\sqrt{\\dfrac13}=2\\sqrt3-\\sqrt3+\\dfrac{\\sqrt3}{3}=\\left(1+\\dfrac13\\right)\\sqrt3=\\dfrac{4\\sqrt3}{3}$。' },
+
+  { id: 'v-sqrt-1', variantOf: 'q-sqrt-1', changed: 'number', chapter: 'ch-frac', method: 'm-sqrt-simplify', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '计算：$\\sqrt{18}+\\sqrt{2}$。', errorTags: ['calc'],
+    steps: [
+      { label: '分解被开方数', ask: '$\\sqrt{18}$ 化成？', type: 'fill', accept: ['3\\sqrt{2}', '3√2'], answer: '3√2', score: 2, hint: '$18=9\\times2$。', why: '$\\sqrt{18}=3\\sqrt2$。' },
+      { label: '合并同类根式', ask: '结果？', type: 'fill', accept: ['4\\sqrt{2}', '4√2'], answer: '4√2', score: 2, hint: '$3\\sqrt2+\\sqrt2$。', why: '$4\\sqrt2$。' },
+      { label: '合并同类根式', ask: '$\\sqrt{2}+\\sqrt{3}$ 能合并吗？', type: 'judge', key: false, score: 1, hint: '被开方数不同。', why: '不能合并，$\\sqrt2+\\sqrt3$ 就是最终结果。' },
+    ],
+    solution: '$\\sqrt{18}+\\sqrt{2}=3\\sqrt2+\\sqrt2=4\\sqrt2$。' },
+
+  { id: 'v-sqrt-2', variantOf: 'q-sqrt-1', changed: 'condition', chapter: 'ch-frac', method: 'm-sqrt-simplify', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '化简：$\\sqrt{(x-3)^{2}}$（其中 $x<3$）。', errorTags: ['concept', 'express'],
+    steps: [
+      { label: '分解被开方数', ask: '$\\sqrt{(x-3)^{2}}$ 先写成？', type: 'fill', accept: ['|x-3|'], answer: '|x-3|', score: 2, hint: '$\\sqrt{a^{2}}=|a|$。', why: '$\\sqrt{(x-3)^{2}}=|x-3|$。' },
+      { label: '分母有理化', ask: '由 $x<3$ 判断 $x-3$ 的符号？', type: 'choice', options: ['正', '负', '零', '不确定'], key: 1, score: 2, hint: '$x<3$ 意味着 $x-3<0$。', why: '$x-3<0$，为负。' },
+      { label: '合并同类根式', ask: '去绝对值后得？', type: 'fill', accept: ['3-x', '-x+3'], answer: '3-x', score: 1, hint: '负数的绝对值是它的相反数。', why: '$|x-3|=-(x-3)=3-x$。' },
+    ],
+    solution: '$\\sqrt{(x-3)^{2}}=|x-3|$。因为 $x<3$，所以 $x-3<0$，$|x-3|=3-x$。\n关键：$\\sqrt{a^{2}}=|a|$，不能直接写成 $a$。' },
+
+  { id: 'v-sqrt-3', variantOf: 'q-sqrt-1', changed: 'reverse', chapter: 'ch-frac', method: 'm-sqrt-simplify', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '若 $\\sqrt{a+2}$ 是最简二次根式，且 $a$ 为正整数，写出 $a$ 的两个可能取值。', errorTags: ['concept'],
+    steps: [
+      { label: '分解被开方数', ask: '$\\sqrt{a+2}$ 有意义的条件？', type: 'fill', accept: ['a>=-2', 'a≥-2'], answer: 'a≥-2', score: 1, hint: '被开方数非负。', why: '$a+2\\ge0$，$a\\ge-2$。' },
+      { label: '分母有理化', ask: '最简二次根式要求被开方数不含什么？', type: 'choice', options: ['分母和完全平方因数', '小数', '负数', '字母'], key: 0, score: 2, hint: '两个条件。', why: '不含分母，不含能开得尽方的因数。' },
+      { label: '合并同类根式', ask: '$a=1$ 时 $\\sqrt{3}$ 是最简吗？', type: 'judge', key: true, score: 1, hint: '3 是质数。', why: '3 没有完全平方因数，是最简。' },
+      { label: '合并同类根式', ask: '$a=2$ 时 $\\sqrt{4}$ 是最简吗？', type: 'judge', key: false, score: 1, hint: '$\\sqrt4=2$。', why: '能开得尽方，不是最简。所以 $a=2$ 不行。' },
+    ],
+    solution: '$a+2\\ge0$ 得 $a\\ge-2$，且 $a$ 为正整数，所以 $a\\ge1$。\n$a=1$ 时 $\\sqrt3$ 是最简；$a=2$ 时 $\\sqrt4=2$ 不是最简。\n所以可取 $a=1$、$a=3$（$\\sqrt5$）等，只要 $a+2$ 不含完全平方因数且不为完全平方数。' },
+
+  /* ========== m-eq-system 方程组消元 ========== */
+  { id: 'q-eqsys-1', chapter: 'ch-eq', method: 'm-eq-system', tier: 'send', tierName: '送分区 · 19 题', kind: 'solve', score: 5,
+    stem: '解方程组：$\\begin{cases}2x+y=7\\\\x-y=2\\end{cases}$', errorTags: ['calc', 'express'],
+    steps: [
+      { label: '观察系数', ask: '哪个未知数系数容易消？', type: 'choice', options: ['$x$', '$y$', '都不容易', '都可以'], key: 1, score: 1, hint: '$y$ 的系数是 1 和 $-1$，相加即可消去。', why: '$y$ 的系数互为相反数，两式相加消 $y$。' },
+      { label: '选择消元方式', ask: '两式相加得？', type: 'fill', accept: ['3x=9', '3x = 9'], answer: '3x=9', score: 2, hint: '$(2x+y)+(x-y)=7+2$。', why: '$3x=9$。' },
+      { label: '解一元一次方程', ask: '$x$ 等于？', type: 'fill', accept: ['3'], answer: '3', score: 1, hint: '$9\\div3$。', why: '$x=3$。' },
+      { label: '回代求另一个未知数', ask: '$y$ 等于？', type: 'fill', accept: ['1'], answer: '1', score: 1, hint: '代回 $x-y=2$。', why: '$3-y=2$，$y=1$。' },
+    ],
+    solution: '两式相加：$3x=9$，$x=3$。\n代回 $x-y=2$ 得 $3-y=2$，$y=1$。\n所以 $\\begin{cases}x=3\\\\y=1\\end{cases}$。' },
+
+  { id: 'v-eqsys-1', variantOf: 'q-eqsys-1', changed: 'number', chapter: 'ch-eq', method: 'm-eq-system', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '解方程组：$\\begin{cases}x+y=5\\\\x-y=1\\end{cases}$', errorTags: ['calc'],
+    steps: [
+      { label: '观察系数', ask: '怎么消元最快？', type: 'choice', options: ['相加', '相减', '代入', '乘系数'], key: 0, score: 1, hint: '$y$ 系数 1 与 $-1$。', why: '相加消 $y$。' },
+      { label: '选择消元方式', ask: '相加得？', type: 'fill', accept: ['2x=6'], answer: '2x=6', score: 2, hint: '$5+1$。', why: '$2x=6$。' },
+      { label: '解一元一次方程', ask: '$x$ 等于？', type: 'fill', accept: ['3'], answer: '3', score: 1, hint: '$6\\div2$。', why: '$x=3$。' },
+      { label: '回代求另一个未知数', ask: '$y$ 等于？', type: 'fill', accept: ['2'], answer: '2', score: 1, hint: '$3+y=5$。', why: '$y=2$。' },
+    ],
+    solution: '相加得 $2x=6$，$x=3$；代回得 $y=2$。' },
+
+  { id: 'v-eqsys-2', variantOf: 'q-eqsys-1', changed: 'condition', chapter: 'ch-eq', method: 'm-eq-system', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '解方程组：$\\begin{cases}3x+2y=12\\\\2x+3y=13\\end{cases}$', errorTags: ['calc', 'method'],
+    steps: [
+      { label: '观察系数', ask: '直接加减能消元吗？', type: 'judge', key: false, score: 1, hint: '系数 3 和 2，都不相同也不相反。', why: '不能直接消，需要先乘系数。' },
+      { label: '选择消元方式', ask: '要消 $y$，两式分别乘？', type: 'choice', options: ['①×3, ②×2', '①×2, ②×3', '①×2, ②×2', '①×3, ②×3'], key: 0, score: 2, hint: '让 $y$ 的系数都变成 6。', why: '①×3 得 $9x+6y=36$，②×2 得 $4x+6y=26$，相减消 $y$。' },
+      { label: '解一元一次方程', ask: '$x$ 等于？', type: 'fill', accept: ['2'], answer: '2', score: 1, hint: '$9x-4x=36-26$。', why: '$5x=10$，$x=2$。' },
+      { label: '回代求另一个未知数', ask: '$y$ 等于？', type: 'fill', accept: ['3'], answer: '3', score: 1, hint: '代回 $3x+2y=12$。', why: '$6+2y=12$，$y=3$。' },
+    ],
+    solution: '①×3：$9x+6y=36$；②×2：$4x+6y=26$。相减得 $5x=10$，$x=2$。\n代回 $3(2)+2y=12$ 得 $y=3$。\n所以 $\\begin{cases}x=2\\\\y=3\\end{cases}$。\n注意：乘系数时整个方程每一项都要乘。' },
+
+  { id: 'v-eqsys-3', variantOf: 'q-eqsys-1', changed: 'reverse', chapter: 'ch-eq', method: 'm-eq-system', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '若 $\\begin{cases}x=2\\\\y=1\\end{cases}$ 是方程组 $\\begin{cases}ax+y=5\\\\x+by=3\\end{cases}$ 的解，求 $a$、$b$。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '观察系数', ask: '「是方程组的解」意味着什么？', type: 'choice', options: ['代入后两个方程都成立', '只满足第一个方程', '只满足第二个方程', '无法判断'], key: 0, score: 1, hint: '解要同时满足每个方程。', why: '解必须使每个方程都成立。' },
+      { label: '选择消元方式', ask: '代入第一式得？', type: 'fill', accept: ['2a+1=5'], answer: '2a+1=5', score: 2, hint: '$x=2,y=1$ 代入 $ax+y=5$。', why: '$2a+1=5$。' },
+      { label: '解一元一次方程', ask: '$a$ 等于？', type: 'fill', accept: ['2'], answer: '2', score: 1, hint: '$2a=4$。', why: '$a=2$。' },
+      { label: '回代求另一个未知数', ask: '$b$ 等于？', type: 'fill', accept: ['1'], answer: '1', score: 1, hint: '代入 $x+by=3$：$2+b=3$。', why: '$b=1$。' },
+    ],
+    solution: '代入 $ax+y=5$ 得 $2a+1=5$，$a=2$。\n代入 $x+by=3$ 得 $2+b=3$，$b=1$。' },
+
+  /* ========== m-quad-solve 一元二次方程解法 ========== */
+  { id: 'q-quadsolve-1', chapter: 'ch-eq', method: 'm-quad-solve', tier: 'send', tierName: '送分区 · 19 题', kind: 'solve', score: 5,
+    stem: '解方程：$x^{2}-4x-5=0$。', errorTags: ['method', 'calc', 'express'],
+    steps: [
+      { label: '看能否直接开方', ask: '本题适合哪种解法？', type: 'choice', options: ['直接开方', '因式分解（十字相乘）', '配方', '公式法'], key: 1, score: 1, hint: '找两数积为 $-5$、和为 $-4$。', why: '$-5$ 和 $1$ 满足：积 $-5$，和 $-4$，用十字相乘最快。' },
+      { label: '选解法', ask: '分解结果？', type: 'fill', accept: ['(x-5)(x+1)', '(x+1)(x-5)'], answer: '(x-5)(x+1)', score: 2, hint: '$-5\\times1=-5$，$-5+1=-4$。', why: '$x^{2}-4x-5=(x-5)(x+1)$。' },
+      { label: '解出两根', ask: '两个根是？', type: 'fill', accept: ['x=5或x=-1', '5,-1'], answer: '5 或 -1', score: 1, hint: '令每个因式为 0。', why: '$x-5=0$ 得 $x=5$；$x+1=0$ 得 $x=-1$。' },
+      { label: '检验合理性', ask: '把 $x=5$ 代回原方程验证？', type: 'judge', key: true, score: 1, hint: '$25-20-5=0$。', why: '成立。' },
+    ],
+    solution: '$x^{2}-4x-5=0$\n$(x-5)(x+1)=0$\n$x-5=0$ 或 $x+1=0$\n$x_1=5$，$x_2=-1$。' },
+
+  { id: 'v-quadsolve-1', variantOf: 'q-quadsolve-1', changed: 'number', chapter: 'ch-eq', method: 'm-quad-solve', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '解方程：$x^{2}=9$。', errorTags: ['calc'],
+    steps: [
+      { label: '看能否直接开方', ask: '本题适合哪种解法？', type: 'choice', options: ['直接开方', '十字相乘', '配方', '公式法'], key: 0, score: 1, hint: '形如 $x^{2}=a$。', why: '直接开平方最快。' },
+      { label: '选解法', ask: '$x$ 等于？', type: 'fill', accept: ['x=±3', '3,-3'], answer: '±3', score: 2, hint: '开平方有两个解。', why: '$x=\\pm3$。' },
+      { label: '解出两根', ask: '只写 $x=3$ 对吗？', type: 'judge', key: false, score: 2, hint: '开平方要取正负。', why: '漏了 $x=-3$，一元二次方程通常有两个根。' },
+    ],
+    solution: '$x^{2}=9$，$x=\\pm3$，即 $x_1=3$，$x_2=-3$。' },
+
+  { id: 'v-quadsolve-2', variantOf: 'q-quadsolve-1', changed: 'condition', chapter: 'ch-eq', method: 'm-quad-solve', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '解方程：$x^{2}=2x$。', errorTags: ['concept', 'calc'],
+    steps: [
+      { label: '看能否直接开方', ask: '两边同时除以 $x$ 得 $x=2$，对吗？', type: 'judge', key: false, score: 2, hint: '$x$ 可能为 0，不能直接除。', why: '除以 $x$ 时假设了 $x\\ne0$，会丢掉 $x=0$ 这个根。' },
+      { label: '选解法', ask: '正确做法是先？', type: 'choice', options: ['两边除以 $x$', '移项后因式分解', '直接开方', '用公式法'], key: 1, score: 1, hint: '移到一边再提公因式。', why: '移项得 $x^{2}-2x=0$，再提 $x$。' },
+      { label: '解出两根', ask: '分解结果？', type: 'fill', accept: ['x(x-2)=0'], answer: 'x(x-2)=0', score: 1, hint: '提公因式 $x$。', why: '$x(x-2)=0$。' },
+      { label: '检验合理性', ask: '两个根是？', type: 'fill', accept: ['x=0或x=2', '0,2'], answer: '0 或 2', score: 1, hint: '每个因式为 0。', why: '$x_1=0$，$x_2=2$。' },
+    ],
+    solution: '$x^{2}=2x$\n$x^{2}-2x=0$\n$x(x-2)=0$\n$x_1=0$，$x_2=2$。\n易错点：不能两边直接除以 $x$，否则丢掉 $x=0$。' },
+
+  { id: 'v-quadsolve-3', variantOf: 'q-quadsolve-1', changed: 'reverse', chapter: 'ch-eq', method: 'm-quad-solve', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '若一元二次方程 $x^{2}+bx+c=0$ 的两根为 $2$ 和 $-3$，求 $b$、$c$。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '看能否直接开方', ask: '两根已知，用哪个关系最快？', type: 'choice', options: ['判别式', '韦达定理', '配方', '直接开方'], key: 1, score: 1, hint: '两根之和与两根之积。', why: '韦达定理：$x_1+x_2=-b$，$x_1x_2=c$。' },
+      { label: '选解法', ask: '两根之和等于？', type: 'fill', accept: ['-1'], answer: '-1', score: 1, hint: '$2+(-3)$。', why: '$2+(-3)=-1$。' },
+      { label: '解出两根', ask: '由 $x_1+x_2=-b$ 得 $b$？', type: 'fill', accept: ['1'], answer: '1', score: 1, hint: '$-1=-b$。', why: '$b=1$。' },
+      { label: '检验合理性', ask: '$c$ 等于？', type: 'fill', accept: ['-6'], answer: '-6', score: 2, hint: '$x_1x_2=c$，$2\\times(-3)$。', why: '$c=-6$。' },
+    ],
+    solution: '由韦达定理：$x_1+x_2=2+(-3)=-1=-b$，得 $b=1$。\n$x_1x_2=2\\times(-3)=-6=c$，得 $c=-6$。\n验证：$x^{2}+x-6=(x-2)(x+3)=0$，两根正是 2 和 $-3$。' },
+
+  /* ========== m-ineq-param 含参不等式 ========== */
+  { id: 'q-ineqparam-1', chapter: 'ch-ineq', method: 'm-ineq-param', tier: 'send', tierName: '送分区 · 19 题', kind: 'solve', score: 5,
+    stem: '解关于 $x$ 的不等式：$ax>2$。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '整理成标准形式', ask: '本题已经是标准形式了吗？', type: 'judge', key: true, score: 1, hint: '左边 $x$ 的一次项，右边常数。', why: '已是标准形式，只需讨论系数 $a$。' },
+      { label: '判断系数符号', ask: '为什么要讨论 $a$ 的符号？', type: 'choice', options: ['因为除以负数要变号', '因为 $a$ 可能是小数', '因为 $a$ 是未知数', '不需要讨论'], key: 0, score: 2, hint: '解不等式最后一步是除以系数。', why: '除以负数不等号方向改变，所以要分 $a>0$、$a<0$、$a=0$ 三种情况。' },
+      { label: '分类写出解集', ask: '$a>0$ 时解集是？', type: 'fill', accept: ['x>2/a', 'x>\\dfrac{2}{a}'], answer: 'x>2/a', score: 1, hint: '除以正数不变号。', why: '$x>\\dfrac2a$。' },
+      { label: '检验边界', ask: '$a<0$ 时解集是？', type: 'choice', options: ['$x>\\dfrac{2}{a}$', '$x<\\dfrac{2}{a}$', '$x=\\dfrac{2}{a}$', '无解'], key: 1, score: 1, hint: '除以负数要变号。', why: '$x<\\dfrac2a$。' },
+    ],
+    solution: '当 $a>0$ 时，$x>\\dfrac{2}{a}$；\n当 $a<0$ 时，$x<\\dfrac{2}{a}$；\n当 $a=0$ 时，$0>2$ 不成立，无解。\n关键：必须讨论系数符号，不能直接写 $x>\\dfrac{2}{a}$。' },
+
+  { id: 'v-ineqparam-1', variantOf: 'q-ineqparam-1', changed: 'number', chapter: 'ch-ineq', method: 'm-ineq-param', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '解不等式：$-2x>6$。', errorTags: ['calc'],
+    steps: [
+      { label: '整理成标准形式', ask: '系数是负数吗？', type: 'judge', key: true, score: 1, hint: '$-2<0$。', why: '系数为负，除的时候要变号。' },
+      { label: '判断系数符号', ask: '两边除以 $-2$，不等号怎么变？', type: 'choice', options: ['不变', '改变方向', '变成等号', '无法确定'], key: 1, score: 2, hint: '除以负数要变号。', why: '除以 $-2$ 后方向改变。' },
+      { label: '分类写出解集', ask: '解集是？', type: 'fill', accept: ['x<-3', 'x<-3'], answer: 'x<-3', score: 2, hint: '$6\\div(-2)=-3$，方向变。', why: '$x<-3$。' },
+    ],
+    solution: '$-2x>6$\n两边同除以 $-2$，不等号方向改变：$x<-3$。' },
+
+  { id: 'v-ineqparam-2', variantOf: 'q-ineqparam-1', changed: 'condition', chapter: 'ch-ineq', method: 'm-ineq-param', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '若不等式 $ax>2$ 的解集是 $x<1$，求 $a$ 的值。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '整理成标准形式', ask: '解集是 $x<1$，说明不等号方向？', type: 'choice', options: ['没变', '改变了', '不确定'], key: 1, score: 2, hint: '原式是「>」，解集是「<」。', why: '方向改变了，说明除以了负数。' },
+      { label: '判断系数符号', ask: '因此 $a$ 的符号是？', type: 'choice', options: ['正', '负', '零', '不确定'], key: 1, score: 2, hint: '只有除以负数才变号。', why: '$a<0$。' },
+      { label: '分类写出解集', ask: '由 $\\dfrac{2}{a}=1$ 得 $a$？', type: 'fill', accept: ['2'], answer: '2', score: 1, hint: '$a=2$，但要检查符号。', why: '$a=2$，但 $a$ 必须为负，矛盾。' },
+    ],
+    solution: '解集方向由「>」变为「<」，说明两边除以了负数，故 $a<0$。\n又解集的临界值 $1=\\dfrac{2}{a}$，得 $a=2$，与 $a<0$ 矛盾。\n所以不存在这样的 $a$。\n关键：这类题必须同时检查数值和符号是否一致。' },
+
+  { id: 'v-ineqparam-3', variantOf: 'q-ineqparam-1', changed: 'reverse', chapter: 'ch-ineq', method: 'm-ineq-param', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '若关于 $x$ 的不等式 $(m-1)x<3$ 的解集是 $x>-3$，求 $m$。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '整理成标准形式', ask: '解集方向变了吗？', type: 'judge', key: true, score: 1, hint: '原「<」变「>」。', why: '方向改变，说明 $m-1<0$。' },
+      { label: '判断系数符号', ask: '临界值关系是？', type: 'fill', accept: ['3/(m-1)=-3', '\\dfrac{3}{m-1}=-3'], answer: '3/(m-1)=-3', score: 2, hint: '解集临界值 $\\dfrac{3}{m-1}=-3$。', why: '$\\dfrac{3}{m-1}=-3$。' },
+      { label: '分类写出解集', ask: '解得 $m$？', type: 'fill', accept: ['0'], answer: '0', score: 1, hint: '$3=-3(m-1)$，$m-1=-1$。', why: '$m-1=-1$，$m=0$。' },
+      { label: '检验边界', ask: '$m=0$ 满足 $m-1<0$ 吗？', type: 'judge', key: true, score: 1, hint: '$0-1=-1<0$。', why: '满足，答案有效。' },
+    ],
+    solution: '解集方向由「<」变为「>」，故 $m-1<0$。\n临界值 $\\dfrac{3}{m-1}=-3$，解得 $m-1=-1$，$m=0$。\n检验：$m=0$ 时 $m-1=-1<0$，符合，所以 $m=0$。' },
+
+  /* ========== m-func-coef 待定系数法 ========== */
+  { id: 'q-coef-1', chapter: 'ch-linear', method: 'm-func-coef', tier: 'send', tierName: '送分区 · 21 题', kind: 'solve', score: 5,
+    stem: '已知一次函数 $y=kx+b$ 的图象经过点 $(1,3)$ 和 $(2,5)$，求它的解析式。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '设解析式', ask: '本题应设什么形式？', type: 'choice', options: ['$y=kx+b$', '$y=ax^{2}+bx+c$', '$y=\\dfrac{k}{x}$', '$y=kx$'], key: 0, score: 1, hint: '题目说是「一次函数」。', why: '一次函数设 $y=kx+b$。' },
+      { label: '代入已知点', ask: '代入两点得方程组？', type: 'choice', options: ['$\\begin{cases}k+b=3\\\\2k+b=5\\end{cases}$', '$\\begin{cases}k+b=5\\\\2k+b=3\\end{cases}$', '$\\begin{cases}3k+b=1\\\\5k+b=2\\end{cases}$', '无法确定'], key: 0, score: 2, hint: '把 $(1,3)$ 和 $(2,5)$ 分别代入。', why: '$x=1,y=3$ 得 $k+b=3$；$x=2,y=5$ 得 $2k+b=5$。' },
+      { label: '解方程（组）', ask: '解得 $k$？', type: 'fill', accept: ['2'], answer: '2', score: 1, hint: '两式相减。', why: '$k=2$。' },
+      { label: '写出解析式并验证', ask: '解析式是？', type: 'fill', accept: ['y=2x+1'], answer: 'y=2x+1', score: 1, hint: '$k=2$ 代回得 $b=1$。', why: '$y=2x+1$。' },
+    ],
+    solution: '设 $y=kx+b$。代入 $(1,3)$、$(2,5)$：\n$\\begin{cases}k+b=3\\\\2k+b=5\\end{cases}$\n相减得 $k=2$，代回得 $b=1$。\n所以 $y=2x+1$。' },
+
+  { id: 'v-coef-1', variantOf: 'q-coef-1', changed: 'number', chapter: 'ch-linear', method: 'm-func-coef', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '已知正比例函数 $y=kx$ 的图象经过点 $(2,6)$，求解析式。', errorTags: ['calc'],
+    steps: [
+      { label: '设解析式', ask: '正比例函数设什么形式？', type: 'fill', accept: ['y=kx'], answer: 'y=kx', score: 1, hint: '正比例函数没有常数项。', why: '$y=kx$。' },
+      { label: '代入已知点', ask: '代入 $(2,6)$ 得？', type: 'fill', accept: ['2k=6'], answer: '2k=6', score: 2, hint: '$x=2,y=6$。', why: '$2k=6$。' },
+      { label: '解方程（组）', ask: '$k$ 等于？', type: 'fill', accept: ['3'], answer: '3', score: 1, hint: '$6\\div2$。', why: '$k=3$。' },
+      { label: '写出解析式并验证', ask: '解析式？', type: 'fill', accept: ['y=3x'], answer: 'y=3x', score: 1, hint: '把 $k$ 代回。', why: '$y=3x$。' },
+    ],
+    solution: '设 $y=kx$，代入 $(2,6)$ 得 $2k=6$，$k=3$。\n所以 $y=3x$。\n注意：正比例函数只有一个待定系数，一个点即可确定。' },
+
+  { id: 'v-coef-2', variantOf: 'q-coef-1', changed: 'condition', chapter: 'ch-linear', method: 'm-func-coef', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '已知一次函数 $y=kx+b$ 的图象与 $y$ 轴交于 $(0,-2)$，且经过点 $(3,4)$，求解析式。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '设解析式', ask: '「与 $y$ 轴交于 $(0,-2)$」直接给出什么？', type: 'choice', options: ['$k=-2$', '$b=-2$', '$k+b=-2$', '什么也没给'], key: 1, score: 2, hint: '与 $y$ 轴交点纵坐标就是 $b$。', why: '$b=-2$，直接得到。' },
+      { label: '代入已知点', ask: '再代入 $(3,4)$ 得？', type: 'fill', accept: ['3k-2=4'], answer: '3k-2=4', score: 2, hint: '$b=-2$ 已知，代入 $x=3,y=4$。', why: '$3k-2=4$。' },
+      { label: '解方程（组）', ask: '$k$ 等于？', type: 'fill', accept: ['2'], answer: '2', score: 1, hint: '$3k=6$。', why: '$k=2$。' },
+      { label: '写出解析式并验证', ask: '解析式？', type: 'fill', accept: ['y=2x-2'], answer: 'y=2x-2', score: 1, hint: '代回。', why: '$y=2x-2$。' },
+    ],
+    solution: '与 $y$ 轴交于 $(0,-2)$ 得 $b=-2$。\n代入 $(3,4)$：$3k-2=4$，$k=2$。\n所以 $y=2x-2$。\n技巧：与 $y$ 轴交点直接给 $b$，能省一个方程。' },
+
+  { id: 'v-coef-3', variantOf: 'q-coef-1', changed: 'reverse', chapter: 'ch-linear', method: 'm-func-coef', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '已知一次函数 $y=-2x+5$，求它与 $x$ 轴的交点坐标。', errorTags: ['concept', 'calc'],
+    steps: [
+      { label: '设解析式', ask: '求与 $x$ 轴交点，令什么为 0？', type: 'choice', options: ['$x=0$', '$y=0$', '$x=y$', '都不对'], key: 1, score: 1, hint: '$x$ 轴上的点纵坐标为 0。', why: '令 $y=0$。' },
+      { label: '代入已知点', ask: '方程变为？', type: 'fill', accept: ['-2x+5=0'], answer: '-2x+5=0', score: 2, hint: '把 $y=0$ 代入。', why: '$-2x+5=0$。' },
+      { label: '解方程（组）', ask: '$x$ 等于？', type: 'fill', accept: ['2.5', '5/2'], answer: '2.5', score: 1, hint: '$2x=5$。', why: '$x=\\dfrac52=2.5$。' },
+      { label: '写出解析式并验证', ask: '交点坐标？', type: 'fill', accept: ['(2.5,0)', '(5/2,0)'], answer: '(2.5,0)', score: 1, hint: '横坐标是解，纵坐标是 0。', why: '$(2.5,0)$。' },
+    ],
+    solution: '令 $y=0$：$-2x+5=0$，$x=2.5$。\n所以与 $x$ 轴交于 $(2.5,0)$。' },
+];
+
+/* ========== m-quad-3forms 二次函数三种形式 ========== */
+export const QUESTIONS_2 = [
+  { id: 'q-quad3-1', chapter: 'ch-quad', method: 'm-quad-3forms', tier: 'mid', tierName: '中档区 · 24 题', kind: 'solve', score: 6,
+    stem: '已知二次函数的图象顶点为 $(1,-2)$，且经过点 $(0,1)$，求它的解析式。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '看给的条件类型', ask: '本题给了顶点，应设哪种形式？', type: 'choice', options: ['一般式', '顶点式', '交点式'], key: 1, score: 1,
+        hint: '有顶点就用顶点式，最省力。', why: '顶点式 $y=a(x-h)^{2}+k$ 直接代入顶点。' },
+      { label: '选对应表达式', ask: '代入顶点 $(1,-2)$ 得？', type: 'fill', accept: ['y=a(x-1)^2-2'], answer: 'y=a(x-1)^2-2', score: 2,
+        hint: '顶点式里是 $x-h$。', why: '$y=a(x-1)^{2}-2$。' },
+      { label: '代入求系数', ask: '再代入 $(0,1)$ 求 $a$？', type: 'fill', accept: ['a=3'], answer: 'a=3', score: 2,
+        hint: '$1=a(0-1)^{2}-2$。', why: '$1=a-2$，$a=3$。' },
+      { label: '化为要求的形式', ask: '解析式是？', type: 'fill', accept: ['y=3(x-1)^2-2'], answer: 'y=3(x-1)^2-2', score: 1,
+        hint: '把 $a$ 代回。', why: '$y=3(x-1)^{2}-2$。' },
+    ],
+    solution: '设 $y=a(x-1)^{2}-2$。代入 $(0,1)$：$1=a(0-1)^{2}-2$，$a=3$。\n所以 $y=3(x-1)^{2}-2$。' },
+
+  { id: 'v-quad3-1', variantOf: 'q-quad3-1', changed: 'number', chapter: 'ch-quad', method: 'm-quad-3forms', tier: 'mid', tierName: '变式 · 改数字', kind: 'solve', score: 6,
+    stem: '已知二次函数图象顶点为 $(2,3)$，且过点 $(0,-1)$，求解析式。', errorTags: ['calc'],
+    steps: [
+      { label: '看给的条件类型', ask: '应设哪种形式？', type: 'fill', accept: ['y=a(x-2)^2+3'], answer: 'y=a(x-2)^2+3', score: 2, hint: '顶点式。', why: '$y=a(x-2)^{2}+3$。' },
+      { label: '代入求系数', ask: '$a$ 等于？', type: 'fill', accept: ['-1'], answer: '-1', score: 2, hint: '$-1=a(0-2)^{2}+3$。', why: '$-1=4a+3$，$a=-1$。' },
+      { label: '化为要求的形式', ask: '解析式？', type: 'fill', accept: ['y=-(x-2)^2+3'], answer: 'y=-(x-2)^2+3', score: 2, hint: '代回。', why: '$y=-(x-2)^{2}+3$。' },
+    ],
+    solution: '设 $y=a(x-2)^{2}+3$，代入 $(0,-1)$ 得 $-1=4a+3$，$a=-1$。\n所以 $y=-(x-2)^{2}+3$。' },
+
+  { id: 'v-quad3-2', variantOf: 'q-quad3-1', changed: 'condition', chapter: 'ch-quad', method: 'm-quad-3forms', tier: 'mid', tierName: '变式 · 改条件', kind: 'solve', score: 6,
+    stem: '已知二次函数图象与 $x$ 轴交于 $(-1,0)$、$(3,0)$，且过点 $(0,-3)$，求解析式。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '看给的条件类型', ask: '给了两个与 $x$ 轴交点，应设？', type: 'choice', options: ['一般式', '顶点式', '交点式'], key: 2, score: 1,
+        hint: '交点式 $y=a(x-x_1)(x-x_2)$。', why: '有交点用交点式。' },
+      { label: '选对应表达式', ask: '代入交点得？', type: 'fill', accept: ['y=a(x+1)(x-3)'], answer: 'y=a(x+1)(x-3)', score: 2,
+        hint: '注意符号。', why: '$y=a(x+1)(x-3)$。' },
+      { label: '代入求系数', ask: '代入 $(0,-3)$ 求 $a$？', type: 'fill', accept: ['a=1'], answer: 'a=1', score: 2,
+        hint: '$-3=a(1)(-3)$。', why: '$-3=-3a$，$a=1$。' },
+      { label: '化为要求的形式', ask: '解析式？', type: 'fill', accept: ['y=(x+1)(x-3)'], answer: 'y=(x+1)(x-3)', score: 1,
+        hint: '代回。', why: '$y=(x+1)(x-3)=x^{2}-2x-3$。' },
+    ],
+    solution: '设 $y=a(x+1)(x-3)$，代入 $(0,-3)$ 得 $-3=-3a$，$a=1$。\n所以 $y=(x+1)(x-3)$，即 $y=x^{2}-2x-3$。' },
+
+  { id: 'v-quad3-3', variantOf: 'q-quad3-1', changed: 'reverse', chapter: 'ch-quad', method: 'm-quad-3forms', tier: 'mid', tierName: '变式 · 逆向问', kind: 'solve', score: 6,
+    stem: '已知抛物线 $y=x^{2}-4x+3$，求它的顶点坐标与对称轴。', errorTags: ['concept', 'calc'],
+    steps: [
+      { label: '看给的条件类型', ask: '从一般式求顶点，先做什么？', type: 'choice', options: ['直接读', '配方或套公式', '求根', '画图'], key: 1, score: 1,
+        hint: '配方或对称轴公式。', why: '配方成顶点式，或用 $x=-\\dfrac{b}{2a}$。' },
+      { label: '选对应表达式', ask: '对称轴是？', type: 'fill', accept: ['x=2'], answer: 'x=2', score: 2,
+        hint: '$x=-\\dfrac{-4}{2}$。', why: '$x=2$。' },
+      { label: '代入求系数', ask: '顶点纵坐标？', type: 'fill', accept: ['-1'], answer: '-1', score: 2,
+        hint: '把 $x=2$ 代入。', why: '$4-8+3=-1$。' },
+      { label: '化为要求的形式', ask: '顶点式？', type: 'fill', accept: ['y=(x-2)^2-1'], answer: 'y=(x-2)^2-1', score: 1,
+        hint: '配方。', why: '$y=(x-2)^{2}-1$。' },
+    ],
+    solution: '$y=x^{2}-4x+3=(x-2)^{2}-1$。\n对称轴 $x=2$，顶点 $(2,-1)$。' },
+
+  /* ========== m-quad-translate ========== */
+  { id: 'q-quadt-1', chapter: 'ch-quad', method: 'm-quad-translate', tier: 'mid', tierName: '中档区 · 24 题', kind: 'solve', score: 6,
+    stem: '将抛物线 $y=x^{2}$ 先向右平移 2 个单位，再向上平移 3 个单位，求所得抛物线的解析式。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '化为顶点式', ask: '$y=x^{2}$ 的顶点是？', type: 'fill', accept: ['(0,0)'], answer: '(0,0)', score: 1,
+        hint: '最简单的抛物线。', why: '顶点 $(0,0)$。' },
+      { label: '确定平移方向', ask: '右移 2 个单位，$x$ 怎么变？', type: 'choice', options: ['$x+2$', '$x-2$', '$y+2$', '$y-2$'], key: 1, score: 2,
+        hint: '左加右减。', why: '右移是「减」，$x$ 换成 $x-2$。' },
+      { label: '写出新解析式', ask: '右移后解析式？', type: 'fill', accept: ['y=(x-2)^2'], answer: 'y=(x-2)^2', score: 1,
+        hint: '$x$ 换成 $x-2$。', why: '$y=(x-2)^{2}$。' },
+      { label: '需要时展开', ask: '再上移 3 个单位得？', type: 'fill', accept: ['y=(x-2)^2+3'], answer: 'y=(x-2)^2+3', score: 2,
+        hint: '上加下减，加在常数项。', why: '$y=(x-2)^{2}+3$。' },
+    ],
+    solution: '$y=x^{2}$ 右移 2 得 $y=(x-2)^{2}$，再上移 3 得 $y=(x-2)^{2}+3$。\n口诀：左加右减、上加下减。' },
+
+  { id: 'v-quadt-1', variantOf: 'q-quadt-1', changed: 'number', chapter: 'ch-quad', method: 'm-quad-translate', tier: 'mid', tierName: '变式 · 改数字', kind: 'solve', score: 6,
+    stem: '将 $y=x^{2}$ 向下平移 4 个单位，求解析式。', errorTags: ['calc'],
+    steps: [
+      { label: '化为顶点式', ask: '顶点？', type: 'fill', accept: ['(0,0)'], answer: '(0,0)', score: 1, hint: '原点。', why: '$(0,0)$。' },
+      { label: '确定平移方向', ask: '下移 4 个单位怎么变？', type: 'choice', options: ['$+4$', '$-4$'], key: 1, score: 2, hint: '上加下减。', why: '减 4。' },
+      { label: '写出新解析式', ask: '解析式？', type: 'fill', accept: ['y=x^2-4'], answer: 'y=x^2-4', score: 3, hint: '常数项 $-4$。', why: '$y=x^{2}-4$。' },
+    ],
+    solution: '$y=x^{2}-4$。' },
+
+  { id: 'v-quadt-2', variantOf: 'q-quadt-1', changed: 'condition', chapter: 'ch-quad', method: 'm-quad-translate', tier: 'mid', tierName: '变式 · 改条件', kind: 'solve', score: 6,
+    stem: '将 $y=2x^{2}$ 向左平移 1 个单位，再向下平移 2 个单位，求解析式。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '化为顶点式', ask: '顶点？', type: 'fill', accept: ['(0,0)'], answer: '(0,0)', score: 1, hint: '原点。', why: '$(0,0)$。' },
+      { label: '确定平移方向', ask: '左移 1 个单位，$x$ 怎么变？', type: 'choice', options: ['$x+1$', '$x-1$'], key: 0, score: 2, hint: '左加。', why: '$x$ 换成 $x+1$。' },
+      { label: '写出新解析式', ask: '左移后？', type: 'fill', accept: ['y=2(x+1)^2'], answer: 'y=2(x+1)^2', score: 1, hint: '代入。', why: '$y=2(x+1)^{2}$。' },
+      { label: '需要时展开', ask: '再下移 2 个单位？', type: 'fill', accept: ['y=2(x+1)^2-2'], answer: 'y=2(x+1)^2-2', score: 2, hint: '减 2。', why: '$y=2(x+1)^{2}-2$。' },
+    ],
+    solution: '$y=2x^{2}$ 左移 1 得 $y=2(x+1)^{2}$，再下移 2 得 $y=2(x+1)^{2}-2$。' },
+
+  { id: 'v-quadt-3', variantOf: 'q-quadt-1', changed: 'reverse', chapter: 'ch-quad', method: 'm-quad-translate', tier: 'mid', tierName: '变式 · 逆向问', kind: 'solve', score: 6,
+    stem: '抛物线 $y=(x-3)^{2}+1$ 是由 $y=x^{2}$ 怎样平移得到的？', errorTags: ['express'],
+    steps: [
+      { label: '化为顶点式', ask: '本题已是顶点式，顶点是？', type: 'fill', accept: ['(3,1)'], answer: '(3,1)', score: 2, hint: '$(h,k)$。', why: '$(3,1)$。' },
+      { label: '确定平移方向', ask: '顶点从 $(0,0)$ 到 $(3,1)$ 说明？', type: 'choice', options: ['右 3 上 1', '左 3 上 1', '右 3 下 1', '左 3 下 1'], key: 0, score: 2, hint: '横坐标增大是右移。', why: '右 3、上 1。' },
+      { label: '写出新解析式', ask: '验证：右移 3 个单位解析式应为？', type: 'fill', accept: ['y=(x-3)^2'], answer: 'y=(x-3)^2', score: 2, hint: '右移是减。', why: '$y=(x-3)^{2}$，再上移 1 得原式。' },
+    ],
+    solution: '顶点从 $(0,0)$ 移到 $(3,1)$，所以是向右 3 个单位、向上 1 个单位。' },
+
+  /* ========== m-quad-param ========== */
+  { id: 'q-quadparam-1', chapter: 'ch-quad', method: 'm-quad-param', tier: 'dist', tierName: '区分区 · 26 题型', kind: 'solve', score: 6,
+    stem: '已知二次函数 $y=x^{2}-2mx+3$，当 $x\\ge1$ 时 $y$ 随 $x$ 增大而增大，求 $m$ 的取值范围。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '确认二次项系数不为 0', ask: '本题 $a$ 是多少？', type: 'fill', accept: ['1'], answer: '1', score: 1, hint: '$x^{2}$ 的系数。', why: '$a=1\\ne0$，是二次函数。' },
+      { label: '求对称轴（含参）', ask: '对称轴是？', type: 'fill', accept: ['x=m'], answer: 'x=m', score: 1, hint: '$x=-\\dfrac{-2m}{2}$。', why: '$x=m$。' },
+      { label: '按参数分类讨论', ask: '$a>0$ 开口向上，递增区间是？', type: 'choice', options: ['$x<m$', '$x>m$', '全部', '无法确定'], key: 1, score: 2,
+        hint: '开口向上，对称轴右侧递增。', why: '递增区间是 $x>m$。' },
+      { label: '综合各情况写结论', ask: '要求 $x\\ge1$ 时递增，则？', type: 'choice', options: ['$m\\ge1$', '$m\\le1$', '$m=1$', '$m>1$'], key: 1, score: 2,
+        hint: '区间 $[1,+\\infty)$ 要包含在 $x>m$ 内。', why: '需 $1\\ge m$，即 $m\\le1$。' },
+    ],
+    solution: '对称轴 $x=m$，$a=1>0$ 开口向上，递增区间为 $x>m$。\n要求 $x\\ge1$ 时递增，需 $1\\ge m$，即 $m\\le1$。' },
+
+  { id: 'v-quadparam-1', variantOf: 'q-quadparam-1', changed: 'number', chapter: 'ch-quad', method: 'm-quad-param', tier: 'dist', tierName: '变式 · 改数字', kind: 'solve', score: 6,
+    stem: '已知 $y=x^{2}-4x+m$，当 $x\\ge3$ 时 $y$ 随 $x$ 增大而增大，求 $m$ 的取值范围。', errorTags: ['method'],
+    steps: [
+      { label: '确认二次项系数不为 0', ask: '$a$ 是多少？', type: 'fill', accept: ['1'], answer: '1', score: 1, hint: '隐含为 1。', why: '$a=1$。' },
+      { label: '求对称轴（含参）', ask: '对称轴？', type: 'fill', accept: ['x=2'], answer: 'x=2', score: 2, hint: '$x=-\\dfrac{-4}{2}$。', why: '$x=2$。' },
+      { label: '按参数分类讨论', ask: '递增区间是？', type: 'choice', options: ['$x<2$', '$x>2$'], key: 1, score: 1, hint: '开口向上。', why: '$x>2$。' },
+      { label: '综合各情况写结论', ask: '$x\\ge3$ 时递增恒成立吗？', type: 'judge', key: true, score: 2, hint: '$3>2$。', why: '恒成立，与 $m$ 无关。$m$ 可取任意实数。' },
+    ],
+    solution: '对称轴 $x=2$，递增区间 $x>2$。$x\\ge3$ 完全落在递增区间内，恒成立。\n所以 $m$ 可取任意实数。' },
+
+  { id: 'v-quadparam-2', variantOf: 'q-quadparam-1', changed: 'condition', chapter: 'ch-quad', method: 'm-quad-param', tier: 'dist', tierName: '变式 · 改条件', kind: 'solve', score: 6,
+    stem: '若 $y=(m-1)x^{2}+2x$ 是二次函数，求 $m$ 的取值范围。', errorTags: ['concept'],
+    steps: [
+      { label: '确认二次项系数不为 0', ask: '二次项系数是？', type: 'fill', accept: ['m-1'], answer: 'm-1', score: 2, hint: '$x^{2}$ 前的系数。', why: '$m-1$。' },
+      { label: '求对称轴（含参）', ask: '要求 $m-1\\ne0$，即？', type: 'choice', options: ['$m\\ne0$', '$m\\ne1$', '$m>1$', '$m\\ge1$'], key: 1, score: 2,
+        hint: '$m-1\\ne0$。', why: '$m\\ne1$。' },
+      { label: '按参数分类讨论', ask: '$m=1$ 时是什么函数？', type: 'choice', options: ['二次函数', '一次函数', '常数函数', '不是函数'], key: 1, score: 1,
+        hint: '代 $m=1$ 看。', why: '$y=2x$，是一次函数。' },
+      { label: '综合各情况写结论', ask: '结论是？', type: 'fill', accept: ['m≠1'], answer: 'm≠1', score: 1, hint: '排除 $m=1$。', why: '$m\\ne1$。' },
+    ],
+    solution: '二次项系数 $m-1\\ne0$，得 $m\\ne1$。\n当 $m=1$ 时 $y=2x$ 是一次函数，不是二次函数。' },
+
+  { id: 'v-quadparam-3', variantOf: 'q-quadparam-1', changed: 'reverse', chapter: 'ch-quad', method: 'm-quad-param', tier: 'dist', tierName: '变式 · 逆向问', kind: 'solve', score: 6,
+    stem: '已知 $y=x^{2}-2x+m$ 的图象与 $x$ 轴有两个不同交点，求 $m$ 的取值范围。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '确认二次项系数不为 0', ask: '$a$ 是多少？', type: 'fill', accept: ['1'], answer: '1', score: 1, hint: '隐含 1。', why: '$a=1$。' },
+      { label: '求对称轴（含参）', ask: '两个交点等价于？', type: 'choice', options: ['$\\Delta>0$', '$\\Delta=0$', '$\\Delta<0$', '$\\Delta\\ge0$'], key: 0, score: 2,
+        hint: '两个不同交点。', why: '$\\Delta>0$。' },
+      { label: '按参数分类讨论', ask: '$\\Delta=b^{2}-4ac$ 等于？', type: 'fill', accept: ['4-4m'], answer: '4-4m', score: 1, hint: '$4-4m$。', why: '$4-4m$。' },
+      { label: '综合各情况写结论', ask: '解 $4-4m>0$ 得？', type: 'fill', accept: ['m<1'], answer: 'm<1', score: 2, hint: '$4>4m$。', why: '$m<1$。' },
+    ],
+    solution: '两个不同交点 $\\Leftrightarrow\\Delta>0$。\n$\\Delta=4-4m>0$，得 $m<1$。' },
+
+  /* ========== m-congruent ========== */
+  { id: 'q-congr-1', chapter: 'ch-triangle', method: 'm-congruent', tier: 'send', tierName: '送分区 · 20 题', kind: 'solve', score: 5,
+    stem: '如图，$AB=AD$，$CB=CD$。求证：$\\triangle ABC\\cong\\triangle ADC$。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '找已有的相等条件', ask: '图上已知哪些相等？', type: 'choice', options: ['$AB=AD$、$CB=CD$、$AC$ 公共', '只有一组', '没有'], key: 0, score: 1,
+        hint: '还有一条公共边。', why: '$AB=AD$、$CB=CD$，$AC$ 是公共边。' },
+      { label: '确定用哪个判定', ask: '三边都相等，用哪个判定？', type: 'choice', options: ['SAS', 'SSS', 'ASA', 'AAS'], key: 1, score: 2,
+        hint: '三条边。', why: 'SSS。' },
+      { label: '补足缺少的条件', ask: '需要补条件吗？', type: 'judge', key: false, score: 1,
+        hint: 'SSS 三边已齐。', why: '三组边都相等，不需要补。' },
+      { label: '写全等并转化结论', ask: '按对应顶点写全等式？', type: 'fill', accept: ['△ABC≌△ADC'], answer: '△ABC≌△ADC', score: 1,
+        hint: '$A$ 对 $A$、$B$ 对 $D$、$C$ 对 $C$。', why: '$\\triangle ABC\\cong\\triangle ADC$（SSS）。' },
+    ],
+    solution: '在 $\\triangle ABC$ 和 $\\triangle ADC$ 中：\n$AB=AD$（已知），$CB=CD$（已知），$AC=AC$（公共边），\n$\\therefore\\triangle ABC\\cong\\triangle ADC$（SSS）。' },
+
+  { id: 'v-congr-1', variantOf: 'q-congr-1', changed: 'number', chapter: 'ch-triangle', method: 'm-congruent', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '已知 $AB=AC$，$AD$ 平分 $\\angle BAC$。求证：$\\triangle ABD\\cong\\triangle ACD$。', errorTags: ['method'],
+    steps: [
+      { label: '找已有的相等条件', ask: '已知哪些？', type: 'fill', accept: ['AB=AC，∠BAD=∠CAD，AD公共'], answer: 'AB=AC, ∠BAD=∠CAD, AD 公共', score: 2,
+        hint: '角平分线给出角相等。', why: '$AB=AC$、$\\angle BAD=\\angle CAD$、$AD$ 公共。' },
+      { label: '确定用哪个判定', ask: '两边夹一角，用？', type: 'choice', options: ['SSS', 'SAS', 'ASA', 'SSA'], key: 1, score: 2,
+        hint: '夹角。', why: 'SAS。' },
+      { label: '写全等并转化结论', ask: '全等式？', type: 'fill', accept: ['△ABD≌△ACD'], answer: '△ABD≌△ACD', score: 1,
+        hint: '对应写。', why: '$\\triangle ABD\\cong\\triangle ACD$（SAS）。' },
+    ],
+    solution: '在 $\\triangle ABD$ 和 $\\triangle ACD$ 中：\n$AB=AC$，$\\angle BAD=\\angle CAD$（角平分线），$AD=AD$（公共边），\n$\\therefore\\triangle ABD\\cong\\triangle ACD$（SAS）。' },
+
+  { id: 'v-congr-2', variantOf: 'q-congr-1', changed: 'condition', chapter: 'ch-triangle', method: 'm-congruent', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '在 $\\triangle ABC$ 和 $\\triangle DEF$ 中，$AB=DE$，$\\angle A=\\angle D$，$\\angle B=\\angle E$。两三角形全等吗？', errorTags: ['concept'],
+    steps: [
+      { label: '找已有的相等条件', ask: '已知哪些？', type: 'fill', accept: ['AB=DE，∠A=∠D，∠B=∠E'], answer: 'AB=DE, ∠A=∠D, ∠B=∠E', score: 2,
+        hint: '一边两角。', why: '一边与两角。' },
+      { label: '确定用哪个判定', ask: '两角夹一边，用？', type: 'choice', options: ['SAS', 'ASA', 'AAS', 'SSA'], key: 1, score: 2,
+        hint: '边在两角之间。', why: 'ASA（角边角）。' },
+      { label: '补足缺少的条件', ask: '两三角形全等吗？', type: 'judge', key: true, score: 1,
+        hint: 'ASA 可判。', why: '全等（ASA）。' },
+    ],
+    solution: '在 $\\triangle ABC$ 和 $\\triangle DEF$ 中：\n$\\angle A=\\angle D$，$AB=DE$，$\\angle B=\\angle E$，\n$\\therefore\\triangle ABC\\cong\\triangle DEF$（ASA）。' },
+
+  { id: 'v-congr-3', variantOf: 'q-congr-1', changed: 'reverse', chapter: 'ch-triangle', method: 'm-congruent', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '已知 $\\triangle ABC\\cong\\triangle DEF$，$AB=5$，$BC=7$，$\\angle B=60^{\\circ}$。求 $DE$ 的长与 $\\angle E$ 的度数。', errorTags: ['concept'],
+    steps: [
+      { label: '找已有的相等条件', ask: '$AB$ 对应哪条边？', type: 'fill', accept: ['DE'], answer: 'DE', score: 1,
+        hint: '全等式字母顺序对应。', why: '$A$ 对 $D$、$B$ 对 $E$，$AB$ 对 $DE$。' },
+      { label: '确定用哪个判定', ask: '所以 $DE$ 等于？', type: 'fill', accept: ['5'], answer: '5', score: 2,
+        hint: '全等三角形对应边相等。', why: '$DE=AB=5$。' },
+      { label: '写全等并转化结论', ask: '$\\angle E$ 对应哪个角？', type: 'fill', accept: ['∠B'], answer: '∠B', score: 1,
+        hint: '$E$ 对 $B$。', why: '$\\angle E$ 对应 $\\angle B$。' },
+      { label: '写全等并转化结论', ask: '$\\angle E$ 等于？', type: 'fill', accept: ['60'], answer: '60', score: 1,
+        hint: '全等对应角相等。', why: '$\\angle E=\\angle B=60^{\\circ}$。' },
+    ],
+    solution: '由 $\\triangle ABC\\cong\\triangle DEF$ 得对应边、对应角相等：\n$DE=AB=5$，$\\angle E=\\angle B=60^{\\circ}$。' },
+
+  /* ========== m-isosceles ========== */
+  { id: 'q-isos-1', chapter: 'ch-triangle', method: 'm-isosceles', tier: 'send', tierName: '送分区 · 20 题', kind: 'solve', score: 5,
+    stem: '在 $\\triangle ABC$ 中，$AB=AC$，$D$ 是 $BC$ 的中点。求证：$AD\\perp BC$。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '确认等腰与底边', ask: '哪两条边相等？底边是哪条？', type: 'choice', options: ['$AB=AC$，底边 $BC$', '$AB=BC$，底边 $AC$', '$AC=BC$，底边 $AB$'], key: 0, score: 1,
+        hint: '看已知。', why: '$AB=AC$，底边是 $BC$。' },
+      { label: '连底边中线', ask: '$D$ 是 $BC$ 中点，$AD$ 是什么线？', type: 'choice', options: ['中线', '高', '角平分线', '都是（三线合一）'], key: 0, score: 1,
+        hint: '先确定它已知的身份。', why: '$AD$ 是底边上的中线。' },
+      { label: '用三线合一得垂直与平分', ask: '由三线合一能直接得到什么？', type: 'choice', options: ['$AD\\perp BC$', '$AD=BC$', '$\\angle B=60^{\\circ}$'], key: 0, score: 2,
+        hint: '等腰三角形底边中线也是高。', why: '$AD\\perp BC$。' },
+      { label: '转化到要证的结论', ask: '结论得证了吗？', type: 'judge', key: true, score: 1,
+        hint: '已得垂直。', why: '得证。' },
+    ],
+    solution: '$\\because AB=AC$，$D$ 是 $BC$ 中点，\n$\\therefore AD\\perp BC$（等腰三角形三线合一）。' },
+
+  { id: 'v-isos-1', variantOf: 'q-isos-1', changed: 'number', chapter: 'ch-triangle', method: 'm-isosceles', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '在 $\\triangle ABC$ 中，$AB=AC$，$D$ 是 $BC$ 中点，$AB=5$，$BC=6$。求 $AD$ 的长。', errorTags: ['calc', 'method'],
+    steps: [
+      { label: '确认等腰与底边', ask: '底边是哪条？', type: 'fill', accept: ['BC'], answer: 'BC', score: 1, hint: '$AB=AC$。', why: '底边 $BC$。' },
+      { label: '连底边中线', ask: '由三线合一，$AD$ 与 $BC$ 什么关系？', type: 'choice', options: ['$AD\\perp BC$', '$AD\\parallel BC$', '无关系'], key: 0, score: 2,
+        hint: '三线合一。', why: '$AD\\perp BC$。' },
+      { label: '用三线合一得垂直与平分', ask: '$BD$ 等于？', type: 'fill', accept: ['3'], answer: '3', score: 1, hint: '$BC$ 的一半。', why: '$BD=3$。' },
+      { label: '转化到要证的结论', ask: '由勾股定理 $AD$ 等于？', type: 'fill', accept: ['4'], answer: '4', score: 1,
+        hint: '$AD=\\sqrt{AB^{2}-BD^{2}}$。', why: '$\\sqrt{25-9}=4$。' },
+    ],
+    solution: '由三线合一 $AD\\perp BC$，$BD=\\dfrac12 BC=3$。\n在 Rt$\\triangle ABD$ 中，$AD=\\sqrt{AB^{2}-BD^{2}}=\\sqrt{25-9}=4$。' },
+
+  { id: 'v-isos-2', variantOf: 'q-isos-1', changed: 'condition', chapter: 'ch-triangle', method: 'm-isosceles', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '在 $\\triangle ABC$ 中，$AB=AC$，$AD\\perp BC$ 于 $D$。求证：$BD=CD$。', errorTags: ['method'],
+    steps: [
+      { label: '确认等腰与底边', ask: '底边？', type: 'fill', accept: ['BC'], answer: 'BC', score: 1, hint: '$AB=AC$。', why: '$BC$。' },
+      { label: '连底边中线', ask: '已知 $AD\\perp BC$，$AD$ 是底边上的什么线？', type: 'choice', options: ['高', '中线', '角平分线', '都是'], key: 0, score: 1,
+        hint: '先看已知身份。', why: '$AD$ 是底边上的高。' },
+      { label: '用三线合一得垂直与平分', ask: '由三线合一，高也是？', type: 'choice', options: ['中线（平分底边）', '只有高'], key: 0, score: 2,
+        hint: '三线合一。', why: '也是中线，$BD=CD$。' },
+      { label: '转化到要证的结论', ask: '结论？', type: 'judge', key: true, score: 1, hint: '已得平分。', why: '得证。' },
+    ],
+    solution: '$\\because AB=AC$，$AD\\perp BC$，\n$\\therefore BD=CD$（等腰三角形三线合一：底边上的高也是中线）。' },
+
+  { id: 'v-isos-3', variantOf: 'q-isos-1', changed: 'reverse', chapter: 'ch-triangle', method: 'm-isosceles', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '在 $\\triangle ABC$ 中，$D$ 是 $BC$ 中点，且 $AD\\perp BC$。求证：$AB=AC$。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '确认等腰与底边', ask: '本题要证等腰，不能先用三线合一，应该用？', type: 'choice', options: ['全等三角形', '三线合一', '勾股定理'], key: 0, score: 2,
+        hint: '三线合一是等腰的性质，不能反过来直接用。', why: '要证等腰，需用全等（或垂直平分线性质）。' },
+      { label: '连底边中线', ask: '哪两个三角形可证全等？', type: 'fill', accept: ['△ABD和△ACD'], answer: '△ABD 和 △ACD', score: 1,
+        hint: '$AD$ 是公共边。', why: '$\\triangle ABD$ 与 $\\triangle ACD$。' },
+      { label: '用三线合一得垂直与平分', ask: '全等条件是？', type: 'choice', options: ['SAS（$BD=CD$、$\\angle ADB=\\angle ADC=90^{\\circ}$、$AD$ 公共）', 'SSS', 'ASA'], key: 0, score: 2,
+        hint: '两边夹角。', why: 'SAS。' },
+      { label: '转化到要证的结论', ask: '全等后得 $AB=AC$ 吗？', type: 'judge', key: true, score: 1, hint: '对应边相等。', why: '得证。' },
+    ],
+    solution: '在 $\\triangle ABD$ 和 $\\triangle ACD$ 中：\n$BD=CD$（中点），$\\angle ADB=\\angle ADC=90^{\\circ}$（垂直），$AD=AD$（公共边），\n$\\therefore\\triangle ABD\\cong\\triangle ACD$（SAS），\n$\\therefore AB=AC$。\n注意：三线合一是等腰的**性质**，要证等腰必须用全等。' },
+
+  /* ========== m-parallelogram ========== */
+  { id: 'q-parallelo-1', chapter: 'ch-quadrilateral', method: 'm-parallelogram', tier: 'send', tierName: '送分区 · 20 题', kind: 'solve', score: 5,
+    stem: '在四边形 $ABCD$ 中，$AB\\parallel CD$ 且 $AB=CD$。求证：四边形 $ABCD$ 是平行四边形。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '判断是证判定还是用性质', ask: '本题要证还是已知平行四边形？', type: 'choice', options: ['要证', '已知'], key: 0, score: 1, hint: '「求证是平行四边形」。', why: '要证，用判定定理。' },
+      { label: '选对应定理', ask: '$AB\\parallel CD$ 且 $AB=CD$ 属于哪条判定？', type: 'choice', options: ['两组对边分别平行', '一组对边平行且相等', '两组对边分别相等', '对角线互相平分'], key: 1, score: 2,
+        hint: '同一组对边。', why: '一组对边平行且相等。' },
+      { label: '找条件凑定理', ask: '条件已经齐了吗？', type: 'judge', key: true, score: 1, hint: '$AB$ 与 $CD$ 是对边。', why: '齐了。' },
+      { label: '写出结论', ask: '结论？', type: 'fill', accept: ['四边形ABCD是平行四边形'], answer: '四边形 ABCD 是平行四边形', score: 1,
+        hint: '按定理表述。', why: '得证。' },
+    ],
+    solution: '$\\because AB\\parallel CD$ 且 $AB=CD$，\n$\\therefore$ 四边形 $ABCD$ 是平行四边形（一组对边平行且相等的四边形是平行四边形）。' },
+
+  { id: 'v-parallelo-1', variantOf: 'q-parallelo-1', changed: 'number', chapter: 'ch-quadrilateral', method: 'm-parallelogram', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '在 $\\square ABCD$（平行四边形）中，$AB=5$，$AD=3$。求 $BC$ 与 $CD$ 的长。', errorTags: ['concept'],
+    steps: [
+      { label: '判断是证判定还是用性质', ask: '已知是平行四边形，用性质还是判定？', type: 'choice', options: ['性质', '判定'], key: 0, score: 1, hint: '已知结论。', why: '用性质。' },
+      { label: '选对应定理', ask: '平行四边形对边什么关系？', type: 'choice', options: ['相等', '互补', '垂直'], key: 0, score: 2, hint: '对边相等。', why: '对边相等。' },
+      { label: '找条件凑定理', ask: '$BC$ 等于？', type: 'fill', accept: ['3'], answer: '3', score: 1, hint: '$BC=AD$。', why: '$BC=AD=3$。' },
+      { label: '写出结论', ask: '$CD$ 等于？', type: 'fill', accept: ['5'], answer: '5', score: 1, hint: '$CD=AB$。', why: '$CD=AB=5$。' },
+    ],
+    solution: '平行四边形对边相等：$BC=AD=3$，$CD=AB=5$。' },
+
+  { id: 'v-parallelo-2', variantOf: 'q-parallelo-1', changed: 'condition', chapter: 'ch-quadrilateral', method: 'm-parallelogram', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '在四边形 $ABCD$ 中，对角线 $AC$、$BD$ 交于 $O$，且 $OA=OC$，$OB=OD$。求证：四边形 $ABCD$ 是平行四边形。', errorTags: ['method'],
+    steps: [
+      { label: '判断是证判定还是用性质', ask: '要证平行四边形，用哪条判定？', type: 'choice', options: ['两组对边分别平行', '对角线互相平分', '一组对边平行且相等'], key: 1, score: 2,
+        hint: '$OA=OC$、$OB=OD$ 说明什么？', why: '对角线互相平分。' },
+      { label: '选对应定理', ask: '$OA=OC$ 说明 $O$ 是？', type: 'fill', accept: ['AC的中点'], answer: 'AC 的中点', score: 1,
+        hint: '$O$ 在 $AC$ 上。', why: '$AC$ 的中点。' },
+      { label: '找条件凑定理', ask: '$OB=OD$ 说明？', type: 'fill', accept: ['O是BD的中点'], answer: 'O 是 BD 的中点', score: 1,
+        hint: '同理。', why: '$BD$ 的中点。' },
+      { label: '写出结论', ask: '所以？', type: 'judge', key: true, score: 1, hint: '对角线互相平分。', why: '是平行四边形。' },
+    ],
+    solution: '$\\because OA=OC$，$OB=OD$，\n$\\therefore$ 对角线 $AC$、$BD$ 互相平分，\n$\\therefore$ 四边形 $ABCD$ 是平行四边形。' },
+
+  { id: 'v-parallelo-3', variantOf: 'q-parallelo-1', changed: 'reverse', chapter: 'ch-quadrilateral', method: 'm-parallelogram', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '在平行四边形 $ABCD$ 中，$\\angle A=70^{\\circ}$。求 $\\angle B$、$\\angle C$ 的度数。', errorTags: ['concept', 'calc'],
+    steps: [
+      { label: '判断是证判定还是用性质', ask: '用性质还是判定？', type: 'choice', options: ['性质', '判定'], key: 0, score: 1, hint: '已知是平行四边形。', why: '用性质。' },
+      { label: '选对应定理', ask: '平行四边形邻角什么关系？', type: 'choice', options: ['相等', '互补', '互余'], key: 1, score: 2, hint: '$AB\\parallel CD$ 同旁内角。', why: '邻角互补。' },
+      { label: '找条件凑定理', ask: '$\\angle B$ 等于？', type: 'fill', accept: ['110'], answer: '110', score: 1, hint: '$180-70$。', why: '$110^{\\circ}$。' },
+      { label: '写出结论', ask: '$\\angle C$ 等于？', type: 'fill', accept: ['70'], answer: '70', score: 1, hint: '对角相等。', why: '$70^{\\circ}$。' },
+    ],
+    solution: '平行四边形邻角互补，对角相等：\n$\\angle B=180^{\\circ}-70^{\\circ}=110^{\\circ}$，$\\angle C=\\angle A=70^{\\circ}$。' },
+];
+
+/* ========== 几何剩余 + 统计 + 综合 ========== */
+export const QUESTIONS_3 = [
+  /* ---------- m-similar-4 ---------- */
+  { id: 'q-sim-1', chapter: 'ch-similar', method: 'm-similar-4', tier: 'mid', tierName: '中档区 · 22 题', kind: 'solve', score: 6,
+    stem: '如图，$DE\\parallel BC$，$AD=2$，$DB=3$，$DE=4$。求 $BC$ 的长。', errorTags: ['method', 'calc'],
+    fig: { viewBox: [0,0,220,170], alt: 'A 字型相似',
+      elems: [
+        { t:'poly', pts:[[110,25],[35,145],[185,145]], closed:true },
+        { t:'seg', a:[72,85], b:[148,85], dash:true },
+        { t:'pt', at:[110,25], label:'A', pos:'t' },
+        { t:'pt', at:[35,145], label:'B', pos:'bl' },
+        { t:'pt', at:[185,145], label:'C', pos:'br' },
+        { t:'pt', at:[72,85], label:'D', pos:'l' },
+        { t:'pt', at:[148,85], label:'E', pos:'r' },
+      ] },
+    steps: [
+      { label: '找平行或等角', ask: '$DE\\parallel BC$ 能得到哪些相等的角？', type: 'choice',
+        options: ['$\\angle ADE=\\angle B$，$\\angle AED=\\angle C$', '$\\angle ADE=\\angle C$', '没有相等角'], key: 0, score: 1,
+        hint: '平行线的同位角。', why: '平行得同位角相等。' },
+      { label: '确定相似模型', ask: '这属于哪个模型？', type: 'choice', options: ['A 字型', 'X 字型', '一线三等角'], key: 0, score: 1,
+        hint: '共顶点 $A$，底边平行。', why: 'A 字型相似。' },
+      { label: '写出对应比例式', ask: '相似比 $AD:AB$ 等于？', type: 'fill', accept: ['2:5', '2/5'], answer: '2:5', score: 2,
+        hint: '$AB=AD+DB=5$。', why: '$AD:AB=2:5$。' },
+      { label: '代入求值或证结论', ask: '$BC$ 等于？', type: 'fill', accept: ['10'], answer: '10', score: 2,
+        hint: '$\\dfrac{DE}{BC}=\\dfrac{2}{5}$，$DE=4$。', why: '$BC=4\\times\\dfrac52=10$。' },
+    ],
+    solution: '$\\because DE\\parallel BC$，$\\therefore\\triangle ADE\\sim\\triangle ABC$（A 字型）。\n$\\dfrac{DE}{BC}=\\dfrac{AD}{AB}=\\dfrac{2}{2+3}=\\dfrac25$。\n$BC=4\\times\\dfrac52=10$。' },
+
+  { id: 'v-sim-1', variantOf: 'q-sim-1', changed: 'number', chapter: 'ch-similar', method: 'm-similar-4', tier: 'mid', tierName: '变式 · 改数字', kind: 'solve', score: 6,
+    stem: '$DE\\parallel BC$，$AD=3$，$DB=6$，$BC=12$。求 $DE$。', errorTags: ['calc'],
+    steps: [
+      { label: '找平行或等角', ask: '相似吗？', type: 'judge', key: true, score: 1, hint: '平行即相似。', why: 'A 字型相似。' },
+      { label: '确定相似模型', ask: '相似比？', type: 'fill', accept: ['1:3', '1/3'], answer: '1:3', score: 2, hint: '$3:(3+6)$。', why: '$3:9=1:3$。' },
+      { label: '写出对应比例式', ask: '$DE$ 等于？', type: 'fill', accept: ['4'], answer: '4', score: 3, hint: '$12\\times\\dfrac13$。', why: '$4$。' },
+    ],
+    solution: '相似比 $\\dfrac{AD}{AB}=\\dfrac{3}{9}=\\dfrac13$，$DE=12\\times\\dfrac13=4$。' },
+
+  { id: 'v-sim-2', variantOf: 'q-sim-1', changed: 'condition', chapter: 'ch-similar', method: 'm-similar-4', tier: 'mid', tierName: '变式 · 改条件', kind: 'solve', score: 6,
+    stem: '如图，$AB\\parallel CD$，$AB=6$，$CD=9$，$AO=4$。求 $OC$。', errorTags: ['method', 'calc'],
+    fig: { viewBox: [0,0,220,170], alt: 'X 字型相似',
+      elems: [
+        { t:'seg', a:[30,40], b:[190,130] },
+        { t:'seg', a:[30,130], b:[190,40] },
+        { t:'seg', a:[30,40], b:[30,130], dash:true },
+        { t:'seg', a:[190,40], b:[190,130], dash:true },
+        { t:'pt', at:[30,40], label:'A', pos:'tl' },
+        { t:'pt', at:[30,130], label:'B', pos:'bl' },
+        { t:'pt', at:[190,40], label:'D', pos:'tr' },
+        { t:'pt', at:[190,130], label:'C', pos:'br' },
+        { t:'pt', at:[110,85], label:'O', pos:'tr' },
+      ] },
+    steps: [
+      { label: '找平行或等角', ask: '$AB\\parallel CD$ 得哪些等角？', type: 'choice',
+        options: ['内错角相等', '同位角相等', '无'], key: 0, score: 1, hint: '截线 $AC$、$BD$。', why: '内错角相等。' },
+      { label: '确定相似模型', ask: '属于哪个模型？', type: 'choice', options: ['A 字型', 'X 字型', '旋转型'], key: 1, score: 1,
+        hint: '对顶角 + 内错角。', why: 'X 字型。' },
+      { label: '写出对应比例式', ask: '$AO:OC$ 等于？', type: 'fill', accept: ['6:9', '2:3'], answer: '6:9', score: 2,
+        hint: '等于 $AB:CD$。', why: '$AO:OC=AB:CD=6:9$。' },
+      { label: '代入求值或证结论', ask: '$OC$ 等于？', type: 'fill', accept: ['6'], answer: '6', score: 2,
+        hint: '$\\dfrac{4}{OC}=\\dfrac69$。', why: '$OC=6$。' },
+    ],
+    solution: '$\\because AB\\parallel CD$，$\\therefore\\angle A=\\angle C$，$\\angle B=\\angle D$，\n$\\therefore\\triangle AOB\\sim\\triangle COD$（X 字型）。\n$\\dfrac{AO}{OC}=\\dfrac{AB}{CD}=\\dfrac69=\\dfrac23$，$OC=4\\times\\dfrac32=6$。' },
+
+  { id: 'v-sim-3', variantOf: 'q-sim-1', changed: 'reverse', chapter: 'ch-similar', method: 'm-similar-4', tier: 'mid', tierName: '变式 · 逆向问', kind: 'solve', score: 6,
+    stem: '两个相似三角形的相似比是 $2:3$，较小三角形的面积为 $8$。求较大三角形的面积。', errorTags: ['concept', 'calc'],
+    steps: [
+      { label: '找平行或等角', ask: '面积比与相似比什么关系？', type: 'choice', options: ['相等', '平方关系', '立方关系'], key: 1, score: 2,
+        hint: '面积是二维的。', why: '面积比 $=$ 相似比的平方。' },
+      { label: '确定相似模型', ask: '面积比等于？', type: 'fill', accept: ['4:9'], answer: '4:9', score: 2,
+        hint: '$2^{2}:3^{2}$。', why: '$4:9$。' },
+      { label: '写出对应比例式', ask: '较大三角形面积？', type: 'fill', accept: ['18'], answer: '18', score: 2,
+        hint: '$8\\times\\dfrac94$。', why: '$18$。' },
+    ],
+    solution: '相似比 $2:3$，面积比 $2^{2}:3^{2}=4:9$。\n设较大面积为 $S$，则 $\\dfrac{8}{S}=\\dfrac49$，$S=18$。' },
+
+  /* ---------- m-circle-aux ---------- */
+  { id: 'q-circle-1', chapter: 'ch-circle', method: 'm-circle-aux', tier: 'mid', tierName: '中档区 · 23 题', kind: 'solve', score: 6,
+    stem: '在 $\\odot O$ 中，弦 $AB=8$，圆心 $O$ 到 $AB$ 的距离为 $3$。求 $\\odot O$ 的半径。', errorTags: ['method', 'calc'],
+    fig: { viewBox: [0,0,220,170], alt: '垂径定理',
+      elems: [
+        { t:'circle', c:[110,85], r:60 },
+        { t:'seg', a:[50,85], b:[170,85] },
+        { t:'seg', a:[110,85], b:[110,45] },
+        { t:'right', at:[110,85], from:'up', to:'left', size:8 },
+        { t:'pt', at:[110,85], label:'O', pos:'bl' },
+        { t:'pt', at:[50,85], label:'A', pos:'l' },
+        { t:'pt', at:[170,85], label:'B', pos:'r' },
+        { t:'pt', at:[110,45], label:'C', pos:'t' },
+      ] },
+    steps: [
+      { label: '判断用哪条性质', ask: '已知弦和距离，用哪个定理？', type: 'choice', options: ['垂径定理', '圆周角定理', '切线长定理'], key: 0, score: 1,
+        hint: '垂直于弦的直径。', why: '垂径定理。' },
+      { label: '选辅助线', ask: '需要连哪条线？', type: 'choice', options: ['连半径 $OA$', '连弦', '作切线'], key: 0, score: 2,
+        hint: '构造直角三角形。', why: '连半径 $OA$，与弦心距、半弦构成直角三角形。' },
+      { label: '用定理转化', ask: '垂径定理给出 $AC$ 等于？', type: 'fill', accept: ['4'], answer: '4', score: 1,
+        hint: '直径平分弦。', why: '$AC=\\dfrac12 AB=4$。' },
+      { label: '求值或证结论', ask: '半径 $OA$ 等于？', type: 'fill', accept: ['5'], answer: '5', score: 2,
+        hint: '$\\sqrt{3^{2}+4^{2}}$。', why: '$\\sqrt{9+16}=5$。' },
+    ],
+    solution: '过 $O$ 作 $OC\\perp AB$ 于 $C$，则 $AC=\\dfrac12 AB=4$，$OC=3$。\n连 $OA$，在 Rt$\\triangle OAC$ 中，$OA=\\sqrt{3^{2}+4^{2}}=5$。\n所以半径为 5。' },
+
+  { id: 'v-circle-1', variantOf: 'q-circle-1', changed: 'number', chapter: 'ch-circle', method: 'm-circle-aux', tier: 'mid', tierName: '变式 · 改数字', kind: 'solve', score: 6,
+    stem: '半径 $5$，弦 $AB=6$，求圆心到 $AB$ 的距离。', errorTags: ['calc'],
+    steps: [
+      { label: '判断用哪条性质', ask: '用哪个定理？', type: 'fill', accept: ['垂径定理'], answer: '垂径定理', score: 1, hint: '弦与弦心距。', why: '垂径定理。' },
+      { label: '选辅助线', ask: '半弦长？', type: 'fill', accept: ['3'], answer: '3', score: 2, hint: '$6\\div2$。', why: '$3$。' },
+      { label: '用定理转化', ask: '弦心距等于？', type: 'fill', accept: ['4'], answer: '4', score: 3, hint: '$\\sqrt{5^{2}-3^{2}}$。', why: '$4$。' },
+    ],
+    solution: '半弦 $3$，半径 $5$，弦心距 $=\\sqrt{5^{2}-3^{2}}=4$。' },
+
+  { id: 'v-circle-2', variantOf: 'q-circle-1', changed: 'condition', chapter: 'ch-circle', method: 'm-circle-aux', tier: 'mid', tierName: '变式 · 改条件', kind: 'solve', score: 6,
+    stem: '在 $\\odot O$ 中，$AB$ 是直径，$C$ 在圆上，$\\angle CAB=30^{\\circ}$，$AB=10$。求 $BC$。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '判断用哪条性质', ask: '$AB$ 是直径说明 $\\angle ACB$ 等于？', type: 'fill', accept: ['90'], answer: '90', score: 2,
+        hint: '直径所对圆周角。', why: '$90^{\\circ}$。' },
+      { label: '选辅助线', ask: '在 Rt$\\triangle ABC$ 中，$BC$ 是 $\\angle A$ 的？', type: 'choice', options: ['对边', '邻边', '斜边'], key: 0, score: 1,
+        hint: '看 $\\angle A$。', why: '对边。' },
+      { label: '用定理转化', ask: '$\\sin30^{\\circ}$ 等于？', type: 'fill', accept: ['1/2'], answer: '1/2', score: 1, hint: '特殊角。', why: '$\\dfrac12$。' },
+      { label: '求值或证结论', ask: '$BC$ 等于？', type: 'fill', accept: ['5'], answer: '5', score: 2,
+        hint: '$BC=AB\\sin30^{\\circ}$。', why: '$10\\times\\dfrac12=5$。' },
+    ],
+    solution: '$\\because AB$ 是直径，$\\therefore\\angle ACB=90^{\\circ}$。\n$BC=AB\\cdot\\sin30^{\\circ}=10\\times\\dfrac12=5$。' },
+
+  { id: 'v-circle-3', variantOf: 'q-circle-1', changed: 'reverse', chapter: 'ch-circle', method: 'm-circle-aux', tier: 'mid', tierName: '变式 · 逆向问', kind: 'solve', score: 6,
+    stem: '圆内接四边形 $ABCD$ 中，$\\angle A=80^{\\circ}$。求 $\\angle C$。', errorTags: ['concept'],
+    steps: [
+      { label: '判断用哪条性质', ask: '圆内接四边形对角什么关系？', type: 'choice', options: ['相等', '互补', '互余'], key: 1, score: 2,
+        hint: '和为 $180^{\\circ}$。', why: '对角互补。' },
+      { label: '选辅助线', ask: '$\\angle C$ 与 $\\angle A$ 是对角吗？', type: 'judge', key: true, score: 1, hint: '$A$ 与 $C$ 相对。', why: '是对角。' },
+      { label: '用定理转化', ask: '$\\angle C$ 等于？', type: 'fill', accept: ['100'], answer: '100', score: 3,
+        hint: '$180-80$。', why: '$100^{\\circ}$。' },
+    ],
+    solution: '圆内接四边形对角互补：$\\angle C=180^{\\circ}-\\angle A=100^{\\circ}$。' },
+
+  /* ---------- m-tangent-2ways ---------- */
+  { id: 'q-tangent-1', chapter: 'ch-circle', method: 'm-tangent-2ways', tier: 'mid', tierName: '中档区 · 23 题', kind: 'solve', score: 6,
+    stem: '如图，$AB$ 是 $\\odot O$ 的直径，$AC$ 是弦，$\\angle CAB=30^{\\circ}$，过 $C$ 作 $\\odot O$ 的切线交 $AB$ 的延长线于 $P$。求证：$AC=PC$。',
+    errorTags: ['construct', 'express'],
+    fig: { viewBox: [0,0,240,170], alt: '切线',
+      elems: [
+        { t:'circle', c:[90,95], r:50 },
+        { t:'seg', a:[40,95], b:[140,95] },
+        { t:'seg', a:[40,95], b:[90,45] },
+        { t:'seg', a:[90,45], b:[195,120] },
+        { t:'seg', a:[90,95], b:[90,45], dash:true },
+        { t:'right', at:[90,45], from:'dr', to:'dl', size:7 },
+        { t:'pt', at:[40,95], label:'A', pos:'l' },
+        { t:'pt', at:[140,95], label:'B', pos:'b' },
+        { t:'pt', at:[90,45], label:'C', pos:'tl' },
+        { t:'pt', at:[90,95], label:'O', pos:'br' },
+        { t:'pt', at:[195,120], label:'P', pos:'br' },
+      ] },
+    steps: [
+      { label: '判断是证切线还是用切线', ask: '本题是证切线还是已知切线？', type: 'choice', options: ['证切线', '已知切线'], key: 1, score: 1,
+        hint: '「过 $C$ 作切线」。', why: '已知切线，用切线性质。' },
+      { label: '选对应路径', ask: '已知切线，先连哪条线？', type: 'choice', options: ['连 $OC$', '连 $BC$', '连 $AP$'], key: 0, score: 2,
+        hint: '过切点的半径。', why: '连 $OC$，则 $OC\\perp PC$。' },
+      { label: '连半径或作垂线', ask: '$\\triangle OAC$ 是什么三角形？', type: 'choice', options: ['等边', '等腰（$OA=OC$）', '直角'], key: 1, score: 2,
+        hint: '都是半径。', why: '$OA=OC$，等腰。' },
+      { label: '用切线性质求值', ask: '$\\angle AOC$ 等于？', type: 'fill', accept: ['120'], answer: '120', score: 1,
+        hint: '等腰三角形底角 $30^{\\circ}$。', why: '$180-30-30=120^{\\circ}$。' },
+    ],
+    solution: '连 $OC$。$\\because PC$ 是切线，$\\therefore OC\\perp PC$，$\\angle OCP=90^{\\circ}$。\n$\\because OA=OC$，$\\therefore\\angle OCA=\\angle A=30^{\\circ}$，$\\angle AOC=120^{\\circ}$。\n$\\angle P=180^{\\circ}-\\angle OCP-\\angle COP=180^{\\circ}-90^{\\circ}-60^{\\circ}=30^{\\circ}$。\n$\\therefore\\angle A=\\angle P=30^{\\circ}$，$AC=PC$。' },
+
+  { id: 'v-tangent-1', variantOf: 'q-tangent-1', changed: 'number', chapter: 'ch-circle', method: 'm-tangent-2ways', tier: 'mid', tierName: '变式 · 改数字', kind: 'solve', score: 6,
+    stem: '$PA$ 切 $\\odot O$ 于 $A$，$OA=3$，$OP=5$。求 $PA$。', errorTags: ['calc'],
+    steps: [
+      { label: '判断是证切线还是用切线', ask: '已知切线，$\\angle OAP$ 等于？', type: 'fill', accept: ['90'], answer: '90', score: 2,
+        hint: '切线垂直于半径。', why: '$90^{\\circ}$。' },
+      { label: '选对应路径', ask: '用哪个定理求 $PA$？', type: 'choice', options: ['勾股定理', '垂径定理', '圆周角定理'], key: 0, score: 1, hint: '直角三角形。', why: '勾股定理。' },
+      { label: '连半径或作垂线', ask: '$PA$ 等于？', type: 'fill', accept: ['4'], answer: '4', score: 3,
+        hint: '$\\sqrt{5^{2}-3^{2}}$。', why: '$4$。' },
+    ],
+    solution: '$\\because PA$ 是切线，$\\therefore OA\\perp PA$。\n$PA=\\sqrt{OP^{2}-OA^{2}}=\\sqrt{25-9}=4$。' },
+
+  { id: 'v-tangent-2', variantOf: 'q-tangent-1', changed: 'condition', chapter: 'ch-circle', method: 'm-tangent-2ways', tier: 'mid', tierName: '变式 · 改条件', kind: 'solve', score: 6,
+    stem: '在 $\\odot O$ 中，$OA$ 是半径，$A$ 在圆上，直线 $l$ 过 $A$ 且 $l\\perp OA$。求证：$l$ 是 $\\odot O$ 的切线。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '判断是证切线还是用切线', ask: '本题是证切线，用哪条判定？', type: 'choice', options: ['连半径证垂直', '作垂线证等于半径'], key: 0, score: 1,
+        hint: '已有点在圆上。', why: '点在圆上，用「连半径证垂直」。' },
+      { label: '选对应路径', ask: '条件已满足吗？', type: 'judge', key: true, score: 2,
+        hint: '$A$ 在圆上且 $l\\perp OA$。', why: '满足：经过半径外端且垂直于半径。' },
+      { label: '连半径或作垂线', ask: '结论？', type: 'fill', accept: ['l是⊙O的切线'], answer: 'l 是 ⊙O 的切线', score: 3,
+        hint: '按定理表述。', why: '得证。' },
+    ],
+    solution: '$\\because OA$ 是半径，$A$ 在圆上，且 $l\\perp OA$，\n$\\therefore l$ 是 $\\odot O$ 的切线（经过半径外端且垂直于这条半径的直线是切线）。' },
+
+  { id: 'v-tangent-3', variantOf: 'q-tangent-1', changed: 'reverse', chapter: 'ch-circle', method: 'm-tangent-2ways', tier: 'mid', tierName: '变式 · 逆向问', kind: 'solve', score: 6,
+    stem: '从圆外一点 $P$ 引 $\\odot O$ 的两条切线 $PA$、$PB$，$\\angle APB=60^{\\circ}$，$PA=4$。求 $\\odot O$ 的半径。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '判断是证切线还是用切线', ask: '用哪条性质？', type: 'choice', options: ['切线长定理', '垂径定理', '圆周角定理'], key: 0, score: 1,
+        hint: '两条切线。', why: '切线长定理：$PA=PB$，$OP$ 平分 $\\angle APB$。' },
+      { label: '选对应路径', ask: '$\\angle APO$ 等于？', type: 'fill', accept: ['30'], answer: '30', score: 2,
+        hint: '平分 $60^{\\circ}$。', why: '$30^{\\circ}$。' },
+      { label: '连半径或作垂线', ask: '在 Rt$\\triangle OAP$ 中，$\\tan30^{\\circ}=\\dfrac{OA}{PA}$，$OA$ 等于？', type: 'fill', accept: ['4√3/3'], answer: '4√3/3', score: 3,
+        hint: '$OA=PA\\tan30^{\\circ}$。', why: '$4\\times\\dfrac{\\sqrt3}{3}=\\dfrac{4\\sqrt3}{3}$。' },
+    ],
+    solution: '由切线长定理，$OP$ 平分 $\\angle APB$，$\\angle APO=30^{\\circ}$。\n$\\because OA\\perp PA$，$\\therefore OA=PA\\tan30^{\\circ}=4\\times\\dfrac{\\sqrt3}{3}=\\dfrac{4\\sqrt3}{3}$。' },
+
+  /* ---------- m-right-triangle ---------- */
+  { id: 'q-righttri-1', chapter: 'ch-trig', method: 'm-right-triangle', tier: 'send', tierName: '送分区 · 21 题', kind: 'solve', score: 5,
+    stem: '在 Rt$\\triangle ABC$ 中，$\\angle C=90^{\\circ}$，$\\angle A=30^{\\circ}$，$AB=8$。求 $BC$ 与 $AC$。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '找或构造直角三角形', ask: '本题已有直角三角形吗？', type: 'judge', key: true, score: 1, hint: '$\\angle C=90^{\\circ}$。', why: '已有。' },
+      { label: '确定用哪个三角函数', ask: '$BC$ 是 $\\angle A$ 的什么边？', type: 'choice', options: ['对边', '邻边', '斜边'], key: 0, score: 1,
+        hint: '看 $\\angle A$。', why: '对边。' },
+      { label: '列式求解', ask: '$BC$ 等于？', type: 'fill', accept: ['4'], answer: '4', score: 2,
+        hint: '$BC=AB\\sin30^{\\circ}$。', why: '$8\\times\\dfrac12=4$。' },
+      { label: '检验并写单位', ask: '$AC$ 等于？', type: 'fill', accept: ['4√3'], answer: '4√3', score: 1,
+        hint: '$AC=AB\\cos30^{\\circ}$。', why: '$8\\times\\dfrac{\\sqrt3}{2}=4\\sqrt3$。' },
+    ],
+    solution: '$BC=AB\\cdot\\sin30^{\\circ}=8\\times\\dfrac12=4$；\n$AC=AB\\cdot\\cos30^{\\circ}=8\\times\\dfrac{\\sqrt3}{2}=4\\sqrt3$。' },
+
+  { id: 'v-righttri-1', variantOf: 'q-righttri-1', changed: 'number', chapter: 'ch-trig', method: 'm-right-triangle', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: 'Rt$\\triangle ABC$ 中，$\\angle C=90^{\\circ}$，$\\angle B=45^{\\circ}$，$AC=6$。求 $AB$。', errorTags: ['calc'],
+    steps: [
+      { label: '找或构造直角三角形', ask: '有直角吗？', type: 'judge', key: true, score: 1, hint: '$\\angle C=90^{\\circ}$。', why: '有。' },
+      { label: '确定用哪个三角函数', ask: '$\\sin45^{\\circ}$ 等于？', type: 'fill', accept: ['√2/2'], answer: '√2/2', score: 2, hint: '特殊角。', why: '$\\dfrac{\\sqrt2}{2}$。' },
+      { label: '列式求解', ask: '$AB$ 等于？', type: 'fill', accept: ['6√2'], answer: '6√2', score: 2,
+        hint: '$AB=\\dfrac{AC}{\\sin45^{\\circ}}$。', why: '$6\\times\\sqrt2=6\\sqrt2$。' },
+    ],
+    solution: '$AB=\\dfrac{AC}{\\sin45^{\\circ}}=\\dfrac{6}{\\frac{\\sqrt2}{2}}=6\\sqrt2$。' },
+
+  { id: 'v-righttri-2', variantOf: 'q-righttri-1', changed: 'condition', chapter: 'ch-trig', method: 'm-right-triangle', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '如图，为测塔高，在 $A$ 处测得塔顶仰角 $30^{\\circ}$，向塔前进 $20$ 米到 $B$，测得仰角 $60^{\\circ}$。求塔高 $CD$。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '找或构造直角三角形', ask: '本题有几个直角三角形？', type: 'choice', options: ['1 个', '2 个', '没有'], key: 1, score: 1,
+        hint: '$\\triangle ACD$ 与 $\\triangle BCD$。', why: '两个。' },
+      { label: '确定用哪个三角函数', ask: '设 $CD=h$，$AD$ 等于？', type: 'fill', accept: ['h/tan30°', '√3h'], answer: '√3h', score: 2,
+        hint: '$\\tan30^{\\circ}=\\dfrac{h}{AD}$。', why: '$AD=\\dfrac{h}{\\tan30^{\\circ}}=\\sqrt3 h$。' },
+      { label: '列式求解', ask: '同理 $BD$ 等于？', type: 'fill', accept: ['h/√3', '√3h/3'], answer: 'h/√3', score: 1,
+        hint: '$\\tan60^{\\circ}=\\dfrac{h}{BD}$。', why: '$BD=\\dfrac{h}{\\sqrt3}$。' },
+      { label: '检验并写单位', ask: '由 $AD-BD=20$ 求 $h$？', type: 'fill', accept: ['10√3'], answer: '10√3', score: 1,
+        hint: '$\\sqrt3h-\\dfrac{h}{\\sqrt3}=20$。', why: '$h=10\\sqrt3$。' },
+    ],
+    solution: '设塔高 $CD=h$。在 Rt$\\triangle ACD$ 中 $AD=\\dfrac{h}{\\tan30^{\\circ}}=\\sqrt3 h$；\n在 Rt$\\triangle BCD$ 中 $BD=\\dfrac{h}{\\tan60^{\\circ}}=\\dfrac{h}{\\sqrt3}$。\n$AD-BD=AB=20$，即 $\\sqrt3h-\\dfrac{h}{\\sqrt3}=20$，解得 $h=10\\sqrt3$（米）。' },
+
+  { id: 'v-righttri-3', variantOf: 'q-righttri-1', changed: 'reverse', chapter: 'ch-trig', method: 'm-right-triangle', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: 'Rt$\\triangle ABC$ 中，$\\angle C=90^{\\circ}$，$AC=3$，$BC=3\\sqrt3$。求 $\\angle A$。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '找或构造直角三角形', ask: '已知两边求角，用哪个函数？', type: 'choice', options: ['$\\sin$', '$\\cos$', '$\\tan$'], key: 2, score: 2,
+        hint: '已知对边和邻边。', why: '$\\tan A=\\dfrac{BC}{AC}$，用正切。' },
+      { label: '确定用哪个三角函数', ask: '$\\tan A$ 等于？', type: 'fill', accept: ['√3'], answer: '√3', score: 1,
+        hint: '$\\dfrac{3\\sqrt3}{3}$。', why: '$\\sqrt3$。' },
+      { label: '列式求解', ask: '$\\angle A$ 等于？', type: 'fill', accept: ['60'], answer: '60', score: 2,
+        hint: '$\\tan60^{\\circ}=\\sqrt3$。', why: '$60^{\\circ}$。' },
+    ],
+    solution: '$\\tan A=\\dfrac{BC}{AC}=\\dfrac{3\\sqrt3}{3}=\\sqrt3$，\n$\\therefore\\angle A=60^{\\circ}$。' },
+
+  /* ---------- m-chart-read ---------- */
+  { id: 'q-chart-1', chapter: 'ch-stat', method: 'm-chart-read', tier: 'send', tierName: '送分区 · 25 题', kind: 'solve', score: 5,
+    stem: '某班 40 名学生参加课外活动，扇形统计图中「体育」占 $25\\%$。求参加体育的人数。', errorTags: ['calc'],
+    steps: [
+      { label: '读图找总量', ask: '总量是多少？', type: 'fill', accept: ['40'], answer: '40', score: 1, hint: '全班人数。', why: '40 人。' },
+      { label: '算占比或频数', ask: '「体育」占 $25\\%$ 表示什么？', type: 'choice', options: ['占全班人数的 $25\\%$', '有 25 人', '占 $25$ 度'], key: 0, score: 2,
+        hint: '百分比是占比。', why: '占比。' },
+      { label: '注意图表类型差异', ask: '人数等于？', type: 'fill', accept: ['10'], answer: '10', score: 2,
+        hint: '$40\\times25\\%$。', why: '$10$。' },
+    ],
+    solution: '$40\\times25\\%=10$（人）。\n注意：扇形图给的是占比，必须乘总数才是人数。' },
+
+  { id: 'v-chart-1', variantOf: 'q-chart-1', changed: 'number', chapter: 'ch-stat', method: 'm-chart-read', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '扇形图中某部分对应圆心角 $90^{\\circ}$，总人数 200。求该部分人数。', errorTags: ['calc'],
+    steps: [
+      { label: '读图找总量', ask: '圆心角 $90^{\\circ}$ 对应占比？', type: 'fill', accept: ['25%', '1/4'], answer: '25%', score: 2,
+        hint: '$\\dfrac{90}{360}$。', why: '$\\dfrac14=25\\%$。' },
+      { label: '算占比或频数', ask: '人数等于？', type: 'fill', accept: ['50'], answer: '50', score: 3,
+        hint: '$200\\times\\dfrac14$。', why: '$50$。' },
+    ],
+    solution: '占比 $=\\dfrac{90}{360}=\\dfrac14$，人数 $=200\\times\\dfrac14=50$。' },
+
+  { id: 'v-chart-2', variantOf: 'q-chart-1', changed: 'condition', chapter: 'ch-stat', method: 'm-chart-read', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '频率分布直方图中，某组「频率/组距」为 $0.2$，组距为 $5$。求该组频率。', errorTags: ['concept'],
+    steps: [
+      { label: '读图找总量', ask: '直方图纵轴是什么？', type: 'choice', options: ['频数', '频率/组距', '频率'], key: 1, score: 2,
+        hint: '不是频数。', why: '频率/组距。' },
+      { label: '算占比或频数', ask: '频率等于？', type: 'fill', accept: ['1'], answer: '1', score: 2,
+        hint: '$0.2\\times5$。', why: '$1$。' },
+      { label: '注意图表类型差异', ask: '该组矩形面积等于？', type: 'fill', accept: ['1'], answer: '1', score: 1,
+        hint: '面积即频率。', why: '$1$。' },
+    ],
+    solution: '频率 $=$（频率/组距）$\\times$ 组距 $=0.2\\times5=1$。\n直方图中矩形面积就是频率。' },
+
+  { id: 'v-chart-3', variantOf: 'q-chart-1', changed: 'reverse', chapter: 'ch-stat', method: 'm-chart-read', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '条形图中三组人数分别为 10、15、25。求第一组占总数的百分比。', errorTags: ['calc'],
+    steps: [
+      { label: '读图找总量', ask: '总数等于？', type: 'fill', accept: ['50'], answer: '50', score: 2, hint: '$10+15+25$。', why: '$50$。' },
+      { label: '算占比或频数', ask: '第一组占比？', type: 'fill', accept: ['20%'], answer: '20%', score: 3,
+        hint: '$\\dfrac{10}{50}$。', why: '$20\\%$。' },
+    ],
+    solution: '总数 $=10+15+25=50$，第一组占比 $=\\dfrac{10}{50}=20\\%$。' },
+
+  /* ---------- m-three-measures ---------- */
+  { id: 'q-measure-1', chapter: 'ch-stat', method: 'm-three-measures', tier: 'send', tierName: '送分区 · 25 题', kind: 'solve', score: 5,
+    stem: '数据：$2, 3, 5, 5, 7, 9$。求这组数据的平均数、中位数、众数。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '排序（求中位数必须）', ask: '数据已排序吗？', type: 'judge', key: true, score: 1, hint: '从小到大。', why: '已排序。' },
+      { label: '分别计算', ask: '平均数等于？', type: 'fill', accept: ['31/6'], answer: '31/6', score: 1,
+        hint: '$(2+3+5+5+7+9)\\div6$。', why: '$\\dfrac{31}{6}$。' },
+      { label: '比较稳定性用方差', ask: '中位数等于？', type: 'fill', accept: ['5'], answer: '5', score: 2,
+        hint: '偶数个取中间两个的平均。', why: '$\\dfrac{5+5}{2}=5$。' },
+      { label: '结合实际解释', ask: '众数等于？', type: 'fill', accept: ['5'], answer: '5', score: 1,
+        hint: '出现最多的。', why: '$5$ 出现 2 次。' },
+    ],
+    solution: '平均数 $=\\dfrac{2+3+5+5+7+9}{6}=\\dfrac{31}{6}$；\n中位数：中间两数都是 5，故为 5；\n众数：5 出现次数最多，为 5。' },
+
+  { id: 'v-measure-1', variantOf: 'q-measure-1', changed: 'number', chapter: 'ch-stat', method: 'm-three-measures', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '数据：$1, 2, 3, 4, 5$。求中位数。', errorTags: ['calc'],
+    steps: [
+      { label: '排序（求中位数必须）', ask: '共几个数？', type: 'fill', accept: ['5'], answer: '5', score: 1, hint: '数一数。', why: '5 个。' },
+      { label: '分别计算', ask: '奇数个取哪个位置？', type: 'choice', options: ['第 2 个', '第 3 个', '第 4 个'], key: 1, score: 2, hint: '正中间。', why: '第 3 个。' },
+      { label: '比较稳定性用方差', ask: '中位数等于？', type: 'fill', accept: ['3'], answer: '3', score: 2, hint: '第 3 个数。', why: '$3$。' },
+    ],
+    solution: '排序后共 5 个，取第 3 个，中位数为 3。' },
+
+  { id: 'v-measure-2', variantOf: 'q-measure-1', changed: 'condition', chapter: 'ch-stat', method: 'm-three-measures', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '甲组数据方差为 $2$，乙组方差为 $5$。哪组数据更稳定？', errorTags: ['concept'],
+    steps: [
+      { label: '排序（求中位数必须）', ask: '比较稳定性看什么？', type: 'choice', options: ['平均数', '中位数', '方差'], key: 2, score: 2, hint: '波动程度。', why: '方差。' },
+      { label: '分别计算', ask: '方差小说明？', type: 'choice', options: ['波动大', '波动小', '无关系'], key: 1, score: 1, hint: '方差衡量波动。', why: '波动小。' },
+      { label: '比较稳定性用方差', ask: '哪组更稳定？', type: 'fill', accept: ['甲'], answer: '甲', score: 2, hint: '$2<5$。', why: '甲组。' },
+    ],
+    solution: '甲组方差 $2<$ 乙组方差 $5$，所以甲组数据更稳定。\n关键：方差越小越稳定。' },
+
+  { id: 'v-measure-3', variantOf: 'q-measure-1', changed: 'reverse', chapter: 'ch-stat', method: 'm-three-measures', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '一组数据 $3, 4, x, 6, 7$ 的平均数是 5，求 $x$。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '排序（求中位数必须）', ask: '平均数公式是？', type: 'choice', options: ['$\\dfrac{\\text{总和}}{5}=5$', '$\\text{总和}=5$', '$x=5$'], key: 0, score: 2,
+        hint: '总和除以个数。', why: '总和除以 5 等于 5。' },
+      { label: '分别计算', ask: '总和等于？', type: 'fill', accept: ['25'], answer: '25', score: 1, hint: '$5\\times5$。', why: '$25$。' },
+      { label: '比较稳定性用方差', ask: '$x$ 等于？', type: 'fill', accept: ['5'], answer: '5', score: 2,
+        hint: '$3+4+x+6+7=25$。', why: '$20+x=25$，$x=5$。' },
+    ],
+    solution: '由平均数 $5$ 得总和 $=5\\times5=25$。\n$3+4+x+6+7=25$，即 $20+x=25$，$x=5$。' },
+
+  /* ---------- m-tree-diagram ---------- */
+  { id: 'q-tree-1', chapter: 'ch-prob', method: 'm-tree-diagram', tier: 'send', tierName: '送分区 · 14 题', kind: 'solve', score: 5,
+    stem: '袋中有 2 个红球、1 个白球，从中不放回地摸两次。求两次都是红球的概率。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '判断是否放回', ask: '本题放回吗？', type: 'choice', options: ['放回', '不放回'], key: 1, score: 1, hint: '「不放回」。', why: '不放回。' },
+      { label: '画树状图或列表', ask: '第一次摸到红球的概率？', type: 'fill', accept: ['2/3'], answer: '2/3', score: 1,
+        hint: '3 个球中 2 个红。', why: '$\\dfrac23$。' },
+      { label: '数总结果与有利结果', ask: '第一次摸红后，第二次摸红的概率？', type: 'fill', accept: ['1/2'], answer: '1/2', score: 2,
+        hint: '剩 2 个球，1 红 1 白。', why: '$\\dfrac12$。' },
+      { label: '算概率', ask: '两次都红的概率？', type: 'fill', accept: ['1/3'], answer: '1/3', score: 1,
+        hint: '$\\dfrac23\\times\\dfrac12$。', why: '$\\dfrac13$。' },
+    ],
+    solution: '第一次摸红概率 $\\dfrac23$；第一次摸红后剩 1 红 1 白，第二次摸红概率 $\\dfrac12$。\n$P=\\dfrac23\\times\\dfrac12=\\dfrac13$。\n注意：不放回，第二次的总数减少。' },
+
+  { id: 'v-tree-1', variantOf: 'q-tree-1', changed: 'number', chapter: 'ch-prob', method: 'm-tree-diagram', tier: 'send', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '掷两枚均匀骰子，求点数和为 7 的概率。', errorTags: ['calc'],
+    steps: [
+      { label: '判断是否放回', ask: '两枚骰子互相影响吗？', type: 'judge', key: false, score: 1, hint: '独立。', why: '独立，各自 6 种结果。' },
+      { label: '画树状图或列表', ask: '总结果数？', type: 'fill', accept: ['36'], answer: '36', score: 1, hint: '$6\\times6$。', why: '$36$。' },
+      { label: '数总结果与有利结果', ask: '和为 7 的组合有几个？', type: 'fill', accept: ['6'], answer: '6', score: 2,
+        hint: '$(1,6)(2,5)(3,4)(4,3)(5,2)(6,1)$。', why: '6 个。' },
+      { label: '算概率', ask: '概率等于？', type: 'fill', accept: ['1/6'], answer: '1/6', score: 1, hint: '$\\dfrac{6}{36}$。', why: '$\\dfrac16$。' },
+    ],
+    solution: '总结果 $6\\times6=36$，和为 7 的有 6 种：$(1,6),(2,5),(3,4),(4,3),(5,2),(6,1)$。\n$P=\\dfrac{6}{36}=\\dfrac16$。' },
+
+  { id: 'v-tree-2', variantOf: 'q-tree-1', changed: 'condition', chapter: 'ch-prob', method: 'm-tree-diagram', tier: 'send', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '袋中有 2 红 1 白，放回地摸两次。求两次都是红球的概率。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '判断是否放回', ask: '本题放回吗？', type: 'choice', options: ['放回', '不放回'], key: 0, score: 1, hint: '「放回」。', why: '放回。' },
+      { label: '画树状图或列表', ask: '第二次摸红概率？', type: 'fill', accept: ['2/3'], answer: '2/3', score: 2,
+        hint: '放回后仍是 3 个球。', why: '$\\dfrac23$（与第一次相同）。' },
+      { label: '数总结果与有利结果', ask: '两次都红概率？', type: 'fill', accept: ['4/9'], answer: '4/9', score: 2,
+        hint: '$\\dfrac23\\times\\dfrac23$。', why: '$\\dfrac49$。' },
+    ],
+    solution: '放回时每次概率都是 $\\dfrac23$，$P=\\dfrac23\\times\\dfrac23=\\dfrac49$。\n对比不放回的 $\\dfrac13$，可见「放回与否」影响很大。' },
+
+  { id: 'v-tree-3', variantOf: 'q-tree-1', changed: 'reverse', chapter: 'ch-prob', method: 'm-tree-diagram', tier: 'send', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '掷一枚均匀骰子两次，求至少出现一次 6 的概率。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '判断是否放回', ask: '「至少一次」直接算难吗？', type: 'judge', key: true, score: 1, hint: '分类多。', why: '直接算要分一次、两次，较繁。' },
+      { label: '画树状图或列表', ask: '用对立事件：两次都不是 6 的概率？', type: 'fill', accept: ['25/36'], answer: '25/36', score: 2,
+        hint: '$\\dfrac56\\times\\dfrac56$。', why: '$\\dfrac{25}{36}$。' },
+      { label: '数总结果与有利结果', ask: '至少一次 6 的概率？', type: 'fill', accept: ['11/36'], answer: '11/36', score: 2,
+        hint: '$1-\\dfrac{25}{36}$。', why: '$\\dfrac{11}{36}$。' },
+    ],
+    solution: '「至少一次 6」的对立事件是「两次都不是 6」。\n$P(\\text{都不是}6)=\\dfrac56\\times\\dfrac56=\\dfrac{25}{36}$，\n$P(\\text{至少一次}6)=1-\\dfrac{25}{36}=\\dfrac{11}{36}$。' },
+
+  /* ---------- m-boundary ---------- */
+  { id: 'q-bound-1', chapter: 'ch-newdef', method: 'm-boundary', tier: 'dist', tierName: '区分区 · 16 题', kind: 'solve', score: 5,
+    stem: '若关于 $x$ 的不等式 $x<a$ 的正整数解恰有 3 个，求 $a$ 的取值范围。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '写出临界条件', ask: '正整数解恰有 3 个，是哪三个？', type: 'fill', accept: ['1,2,3'], answer: '1,2,3', score: 1,
+        hint: '从 1 开始数。', why: '1、2、3。' },
+      { label: '判断是否含等号', ask: '$x<a$ 不含等号，所以 $a$ 能等于 4 吗？', type: 'choice', options: ['能', '不能'], key: 0, score: 2,
+        hint: '$x<4$ 时正整数解是 1,2,3。', why: '能，$a=4$ 时解仍是 1、2、3。' },
+      { label: '分类讨论', ask: '$a$ 能等于 3 吗？', type: 'choice', options: ['能', '不能'], key: 1, score: 2,
+        hint: '$x<3$ 时只有 1、2 两个解。', why: '不能，$a=3$ 时解只有 1、2。' },
+      { label: '写出范围并验证端点', ask: '$a$ 的范围是？', type: 'choice', options: ['$3<a\\le4$', '$3\\le a<4$', '$3<a<4$', '$3\\le a\\le4$'], key: 0, score: 1,
+        hint: '$a>3$ 且 $a\\le4$。', why: '$3<a\\le4$。' },
+    ],
+    solution: '正整数解为 1、2、3，说明 $x<3$ 不够（只有 1、2），$x<5$ 太多（会含 4）。\n所以 $3<a\\le4$。\n关键：$a=4$ 时 $x<4$ 的解恰为 1、2、3，可以取；$a=3$ 时只有 1、2，不可取。' },
+
+  { id: 'v-bound-1', variantOf: 'q-bound-1', changed: 'number', chapter: 'ch-newdef', method: 'm-boundary', tier: 'dist', tierName: '变式 · 改数字', kind: 'solve', score: 5,
+    stem: '若 $x\\le a$ 的正整数解恰有 2 个，求 $a$ 的范围。', errorTags: ['method'],
+    steps: [
+      { label: '写出临界条件', ask: '正整数解是哪两个？', type: 'fill', accept: ['1,2'], answer: '1,2', score: 1, hint: '从 1 数。', why: '1、2。' },
+      { label: '判断是否含等号', ask: '$x\\le a$ 含等号，$a$ 能等于 2 吗？', type: 'judge', key: true, score: 2, hint: '$x\\le2$ 解为 1、2。', why: '能。' },
+      { label: '分类讨论', ask: '$a$ 能等于 1 吗？', type: 'judge', key: false, score: 1, hint: '$x\\le1$ 只有 1 个解。', why: '不能。' },
+      { label: '写出范围并验证端点', ask: '$a$ 的范围？', type: 'choice', options: ['$1\\le a<2$', '$1<a\\le2$', '$1<a<2$'], key: 0, score: 1,
+        hint: '$a\\ge1$ 且 $a<2$。', why: '$1\\le a<2$。' },
+    ],
+    solution: '正整数解为 1、2。$a=2$ 时 $x\\le2$ 含 1、2，可取；$a=1$ 时只有 1，不可取。\n所以 $1\\le a<2$。' },
+
+  { id: 'v-bound-2', variantOf: 'q-bound-1', changed: 'condition', chapter: 'ch-newdef', method: 'm-boundary', tier: 'dist', tierName: '变式 · 改条件', kind: 'solve', score: 5,
+    stem: '若不等式组 $\\begin{cases}x>2\\\\x<a\\end{cases}$ 有解，求 $a$ 的范围。', errorTags: ['method'],
+    steps: [
+      { label: '写出临界条件', ask: '不等式组有解的条件是？', type: 'choice', options: ['$a>2$', '$a\\ge2$', '$a<2$'], key: 0, score: 2,
+        hint: '「大小小大中间找」要有区间。', why: '$a>2$ 才有 $2<x<a$ 这个区间。' },
+      { label: '判断是否含等号', ask: '$a=2$ 时有解吗？', type: 'judge', key: false, score: 2, hint: '$x>2$ 且 $x<2$ 无解。', why: '无解。' },
+      { label: '分类讨论', ask: '结论？', type: 'fill', accept: ['a>2'], answer: 'a>2', score: 1, hint: '不含等号。', why: '$a>2$。' },
+    ],
+    solution: '不等式组有解需 $2<a$，即 $a>2$。\n$a=2$ 时 $x>2$ 且 $x<2$ 无解，所以不能取等号。' },
+
+  { id: 'v-bound-3', variantOf: 'q-bound-1', changed: 'reverse', chapter: 'ch-newdef', method: 'm-boundary', tier: 'dist', tierName: '变式 · 逆向问', kind: 'solve', score: 5,
+    stem: '已知关于 $x$ 的方程 $x^{2}-2x+m=0$ 有两个正根，求 $m$ 的范围。', errorTags: ['method', 'concept'],
+    steps: [
+      { label: '写出临界条件', ask: '有两个根的条件？', type: 'choice', options: ['$\\Delta>0$', '$\\Delta\\ge0$', '$\\Delta<0$'], key: 0, score: 1,
+        hint: '两个根（不一定不同）。', why: '两个正根可以相同，$\\Delta\\ge0$；若要求两个不同正根则 $\\Delta>0$。此处按两个根（可同）用 $\\Delta\\ge0$。' },
+      { label: '判断是否含等号', ask: '两根都为正，还需什么条件？', type: 'choice', options: ['和为正且积为正', '和为正', '积为正'], key: 0, score: 2,
+        hint: '韦达定理两个都要。', why: '和 $>0$ 且积 $>0$，两根才同为正。' },
+      { label: '分类讨论', ask: '由韦达定理，和 $=2>0$ 恒成立，积 $=m$，所以？', type: 'fill', accept: ['m>0'], answer: 'm>0', score: 2,
+        hint: '$m>0$。', why: '$m>0$。' },
+    ],
+    solution: '两根都为正需：$\\Delta\\ge0$ 且 $x_1+x_2>0$ 且 $x_1x_2>0$。\n$\\Delta=4-4m\\ge0$ 得 $m\\le1$；$x_1+x_2=2>0$ 恒成立；$x_1x_2=m>0$。\n所以 $0<m\\le1$。' },
+
+  /* ---------- m-model-4step ---------- */
+  { id: 'q-model-1', chapter: 'ch-design', method: 'm-model-4step', tier: 'mid', tierName: '中档区 · 22 题', kind: 'solve', score: 6,
+    stem: '某商店进价为 40 元的商品，售价 60 元时每月卖 200 件。售价每降 1 元，月销量增加 20 件。求售价定为多少时月利润最大，最大利润多少？',
+    errorTags: ['method', 'express', 'calc'],
+    steps: [
+      { label: '设变量', ask: '设降价 $x$ 元，单件利润是？', type: 'fill', accept: ['20-x'], answer: '20-x', score: 1,
+        hint: '原利润 $60-40=20$，降 $x$ 元后减 $x$。', why: '单件利润 $20-x$。' },
+      { label: '建立关系式', ask: '销量是？', type: 'fill', accept: ['200+20x'], answer: '200+20x', score: 1,
+        hint: '每降 1 元增 20 件。', why: '$200+20x$。' },
+      { label: '确定取值范围', ask: '总利润 $W$ 等于？', type: 'fill', accept: ['W=(20-x)(200+20x)'], answer: 'W=(20-x)(200+20x)', score: 2,
+        hint: '单件利润乘销量。', why: '$W=(20-x)(200+20x)$。' },
+      { label: '求最值并回到实际', ask: '化简后 $W$ 的最大值在 $x$ 等于？', type: 'fill', accept: ['5'], answer: '5', score: 2,
+        hint: '$W=-20x^{2}+200x+4000$，对称轴 $x=5$。', why: '$x=5$ 时 $W$ 最大。' },
+    ],
+    solution: '设降价 $x$ 元。单件利润 $20-x$，销量 $200+20x$。\n$W=(20-x)(200+20x)=-20x^{2}+200x+4000=-20(x-5)^{2}+4500$。\n当 $x=5$ 时 $W$ 最大为 4500 元，此时售价 $60-5=55$ 元。\n（需 $0\\le x\\le20$，$x=5$ 在范围内。）' },
+
+  { id: 'v-model-1', variantOf: 'q-model-1', changed: 'number', chapter: 'ch-design', method: 'm-model-4step', tier: 'mid', tierName: '变式 · 改数字', kind: 'solve', score: 6,
+    stem: '进价 30 元，售价 50 元时每月卖 100 件，每降 1 元增 10 件。求最大月利润。', errorTags: ['method', 'calc'],
+    steps: [
+      { label: '设变量', ask: '设降价 $x$ 元，单件利润？', type: 'fill', accept: ['20-x'], answer: '20-x', score: 1, hint: '$50-30=20$。', why: '$20-x$。' },
+      { label: '建立关系式', ask: '销量？', type: 'fill', accept: ['100+10x'], answer: '100+10x', score: 1, hint: '每降 1 增 10。', why: '$100+10x$。' },
+      { label: '确定取值范围', ask: '$W$ 等于？', type: 'fill', accept: ['W=(20-x)(100+10x)'], answer: 'W=(20-x)(100+10x)', score: 2, hint: '利润乘销量。', why: '$W=(20-x)(100+10x)$。' },
+      { label: '求最值并回到实际', ask: '最大值？', type: 'fill', accept: ['2250'], answer: '2250', score: 2,
+        hint: '$W=-10(x-5)^{2}+2250$。', why: '$2250$ 元。' },
+    ],
+    solution: '$W=(20-x)(100+10x)=-10x^{2}+100x+2000=-10(x-5)^{2}+2250$。\n最大利润 2250 元（$x=5$，售价 45 元）。' },
+
+  { id: 'v-model-2', variantOf: 'q-model-1', changed: 'condition', chapter: 'ch-design', method: 'm-model-4step', tier: 'mid', tierName: '变式 · 改条件', kind: 'solve', score: 6,
+    stem: '用 20 米篱笆围一个矩形菜园，一边靠墙（墙足够长），求菜园的最大面积。', errorTags: ['method', 'express'],
+    steps: [
+      { label: '设变量', ask: '设垂直于墙的边为 $x$，平行于墙的边是？', type: 'fill', accept: ['20-2x'], answer: '20-2x', score: 1,
+        hint: '两条垂直边共 $2x$。', why: '$20-2x$。' },
+      { label: '建立关系式', ask: '面积 $S$ 等于？', type: 'fill', accept: ['S=x(20-2x)'], answer: 'S=x(20-2x)', score: 2,
+        hint: '长乘宽。', why: '$S=x(20-2x)$。' },
+      { label: '确定取值范围', ask: '$x$ 的范围？', type: 'choice', options: ['$x>0$', '$0<x<10$', '$0<x\\le10$'], key: 1, score: 1,
+        hint: '$20-2x>0$。', why: '$0<x<10$。' },
+      { label: '求最值并回到实际', ask: '最大面积？', type: 'fill', accept: ['50'], answer: '50', score: 2,
+        hint: '$S=-2(x-5)^{2}+50$。', why: '$50$ 平方米。' },
+    ],
+    solution: '设垂直墙的边为 $x$ 米，则平行墙的边为 $20-2x$ 米（$0<x<10$）。\n$S=x(20-2x)=-2x^{2}+20x=-2(x-5)^{2}+50$。\n当 $x=5$ 时 $S$ 最大为 50 平方米。' },
+
+  { id: 'v-model-3', variantOf: 'q-model-1', changed: 'reverse', chapter: 'ch-design', method: 'm-model-4step', tier: 'mid', tierName: '变式 · 逆向问', kind: 'solve', score: 6,
+    stem: '某商品进价 40 元，售价 60 元时月销 200 件，每涨 1 元少卖 10 件。若要使月利润为 3750 元，售价应定为多少？', errorTags: ['method', 'calc', 'express'],
+    steps: [
+      { label: '设变量', ask: '设涨价 $x$ 元，单件利润？', type: 'fill', accept: ['20+x'], answer: '20+x', score: 1,
+        hint: '原利润 $60-40=20$，涨 $x$ 元后为 $20+x$。', why: '单件利润 $20+x$。' },
+      { label: '建立关系式', ask: '销量？', type: 'fill', accept: ['200-10x'], answer: '200-10x', score: 1,
+        hint: '每涨 1 元少卖 10 件。', why: '$200-10x$。' },
+      { label: '确定取值范围', ask: '$W$ 展开后等于？', type: 'fill', accept: ['4000-10x^2'], answer: '4000-10x^2', score: 2,
+        hint: '$(20+x)(200-10x)$ 展开，交叉项恰好抵消。', why: '$W=4000-200x+200x-10x^{2}=4000-10x^{2}$。' },
+      { label: '求最值并回到实际', ask: '令 $W=3750$ 解得 $x$？', type: 'fill', accept: ['5'], answer: '5', score: 2,
+        hint: '$4000-10x^{2}=3750$，$10x^{2}=250$。', why: '$x^{2}=25$，$x=5$（涨价，取正）。' },
+    ],
+    solution: '设涨价 $x$ 元。单件利润 $20+x$，销量 $200-10x$。\n$W=(20+x)(200-10x)=4000-10x^{2}$（交叉项 $-200x+200x$ 抵消）。\n令 $4000-10x^{2}=3750$，得 $x^{2}=25$，$x=5$（涨价取正）。\n所以售价应定为 $60+5=65$ 元。\n关键：这类题的利润函数可能不含一次项，最值在涨价 0 元处（$W=4000$），目标值必须小于等于 4000 才可达。' },
+];
+
+/* ========== 补齐：k 几何意义 / 手拉手 / 半角 / 三条线段 / 旋转折叠 ========== */
+export const QUESTIONS_4 = [
+  /* ---------- m-k-meaning ---------- */
+  { id: 'q-kmean-1', chapter: 'ch-linear', method: 'm-k-meaning', tier: 'mid', tierName: '中档区 · 21 题', kind: 'solve', score: 6,
+    stem: '反比例函数 $y=\\dfrac{4}{x}$ 图象上一点 $P$，过 $P$ 作两坐标轴的垂线，求与坐标轴围成的矩形面积。', errorTags: ['concept', 'calc'],
+    steps: [
+      { label: '设点坐标', ask: '设 $P\\left(a,\\dfrac{4}{a}\\right)$，矩形面积怎么表示？', type: 'choice',
+        options: ['$|a|\\cdot\\left|\\dfrac{4}{a}\\right|$', '$a+\\dfrac{4}{a}$', '$a\\cdot\\dfrac{4}{a}$ 取负', '无法表示'], key: 0, score: 2,
+        hint: '横坐标乘纵坐标，都取绝对值。', why: '面积 $=|a|\\cdot\\left|\\dfrac4a\\right|=4$。' },
+      { label: '用 $k$ 表示面积', ask: '所以面积等于？', type: 'fill', accept: ['4'], answer: '4', score: 2,
+        hint: '$|k|=4$。', why: '面积 $=|k|=4$。' },
+      { label: '三角形面积是矩形的一半', ask: '若改为过原点与 $P$ 的三角形，面积是？', type: 'fill', accept: ['2'], answer: '2', score: 2,
+        hint: '矩形的一半。', why: '$\\dfrac12\\times4=2$。' },
+    ],
+    solution: '设 $P\\left(a,\\dfrac4a\\right)$，矩形面积 $=|a|\\cdot\\left|\\dfrac4a\\right|=4=|k|$。\n过原点与 $P$ 的三角形面积 $=\\dfrac12|k|=2$。' },
+
+  { id: 'v-kmean-1', variantOf: 'q-kmean-1', changed: 'number', chapter: 'ch-linear', method: 'm-k-meaning', tier: 'mid', tierName: '变式 · 改数字', kind: 'solve', score: 6,
+    stem: '反比例函数 $y=-\\dfrac{6}{x}$ 图象上一点到两坐标轴围成的矩形面积是？', errorTags: ['calc'],
+    steps: [
+      { label: '设点坐标', ask: '面积取 $k$ 还是 $|k|$？', type: 'choice', options: ['$k$', '$|k|$'], key: 1, score: 2, hint: '面积恒正。', why: '取绝对值。' },
+      { label: '用 $k$ 表示面积', ask: '面积等于？', type: 'fill', accept: ['6'], answer: '6', score: 2, hint: '$|-6|$。', why: '$6$。' },
+      { label: '三角形面积是矩形的一半', ask: '三角形面积？', type: 'fill', accept: ['3'], answer: '3', score: 2, hint: '一半。', why: '$3$。' },
+    ],
+    solution: '面积 $=|-6|=6$；三角形面积 $=3$。' },
+
+  { id: 'v-kmean-2', variantOf: 'q-kmean-1', changed: 'condition', chapter: 'ch-linear', method: 'm-k-meaning', tier: 'mid', tierName: '变式 · 改条件', kind: 'solve', score: 6,
+    stem: '若反比例函数 $y=\\dfrac{k}{x}$ 图象上一点到两坐标轴围成的矩形面积为 5，求 $k$。', errorTags: ['method', 'concept'],
+    steps: [
+      { label: '设点坐标', ask: '由面积 5 得 $|k|$ 等于？', type: 'fill', accept: ['5'], answer: '5', score: 2, hint: '面积 $=|k|$。', why: '$|k|=5$。' },
+      { label: '用 $k$ 表示面积', ask: '$k$ 有几个值？', type: 'choice', options: ['只有 5', '只有 $-5$', '$\\pm5$'], key: 2, score: 2, hint: '绝对值方程。', why: '$k=\\pm5$。' },
+      { label: '三角形面积是矩形的一半', ask: '若图象在第二、四象限，$k=$？', type: 'fill', accept: ['-5'], answer: '-5', score: 2, hint: '二四象限 $k<0$。', why: '$k=-5$。' },
+    ],
+    solution: '$|k|=5$，$k=\\pm5$。若图象在二、四象限，$k<0$，故 $k=-5$。' },
+
+  { id: 'v-kmean-3', variantOf: 'q-kmean-1', changed: 'reverse', chapter: 'ch-linear', method: 'm-k-meaning', tier: 'mid', tierName: '变式 · 逆向问', kind: 'solve', score: 6,
+    stem: '反比例函数 $y=\\dfrac{3}{x}$ 与正比例函数 $y=-x$ 交于 $A$、$B$，求 $\\triangle OAB$ 面积。', errorTags: ['concept', 'express'],
+    steps: [
+      { label: '设点坐标', ask: '联立 $\\dfrac3x=-x$ 得？', type: 'choice', options: ['$x^{2}=3$', '$x^{2}=-3$', '$x=3$'], key: 1, score: 2,
+        hint: '移项后 $x^{2}=-3$。', why: '$x^{2}=-3$，无实数解。' },
+      { label: '用 $k$ 表示面积', ask: '说明两图象有交点吗？', type: 'judge', key: false, score: 2,
+        hint: '$x^{2}=-3$ 无解。', why: '无交点。' },
+      { label: '三角形面积是矩形的一半', ask: '所以面积是？', type: 'fill', accept: ['0'], answer: '0', score: 2,
+        hint: '没有交点就没有三角形。', why: '$k>0$ 的双曲线在一三象限，$y=-x$ 过二四象限，不相交，面积为 0。' },
+    ],
+    solution: '联立 $\\dfrac3x=-x$ 得 $x^{2}=-3$，无实数解。\n$y=\\dfrac3x$（$k>0$）在一、三象限，$y=-x$ 在二、四象限，两者不相交。\n所以不存在 $A$、$B$，面积为 0。\n关键：判断象限是否相交，比硬算更快。' },
+
+  /* ---------- m-hand-in-hand ---------- */
+  { id: 'q-hand-1', chapter: 'ch-geo-aux', method: 'm-hand-in-hand', tier: 'dist', tierName: '区分区 · 27 题', kind: 'solve', score: 7,
+    stem: '如图，$\\triangle ABC$ 与 $\\triangle CDE$ 都是等边三角形，$B$、$C$、$D$ 共线。求证：$AD=BE$。', errorTags: ['construct', 'express'],
+    fig: { viewBox: [0,0,240,180], alt: '手拉手模型',
+      elems: [
+        { t:'poly', pts:[[30,140],[130,140],[80,60]], closed:true },
+        { t:'poly', pts:[[130,140],[210,140],[170,80]], closed:true },
+        { t:'seg', a:[30,140], b:[170,80], dash:true },
+        { t:'seg', a:[80,60], b:[210,140], dash:true },
+        { t:'pt', at:[30,140], label:'A', pos:'bl' },
+        { t:'pt', at:[130,140], label:'C', pos:'br' },
+        { t:'pt', at:[80,60], label:'B', pos:'tl' },
+        { t:'pt', at:[210,140], label:'E', pos:'br' },
+        { t:'pt', at:[170,80], label:'D', pos:'tr' },
+      ] },
+    steps: [
+      { label: '找共顶点的等腰三角形', ask: '哪两个三角形共顶点？', type: 'choice',
+        options: ['$\\triangle ABC$ 与 $\\triangle CDE$ 共顶点 $C$', '共顶点 $B$', '不共顶点'], key: 0, score: 1,
+        hint: '看哪个点是公共的。', why: '共顶点 $C$。' },
+      { label: '确认顶角相等', ask: '$\\angle ACB$ 与 $\\angle DCE$ 各是多少度？', type: 'fill', accept: ['60'], answer: '60', score: 2,
+        hint: '等边三角形。', why: '都是 $60^{\\circ}$。' },
+      { label: '旋转得全等', ask: '$\\triangle ACD$ 与 $\\triangle BCE$ 全等的理由是？', type: 'choice',
+        options: ['SAS（$AC=BC$、$\\angle ACD=\\angle BCE$、$CD=CE$）', 'SSS', 'ASA'], key: 0, score: 2,
+        hint: '两边夹角。', why: 'SAS。' },
+      { label: '用全等得结论', ask: '全等后能推出？', type: 'fill', accept: ['AD=BE'], answer: 'AD=BE', score: 2,
+        hint: '对应边。', why: '$AD=BE$。' },
+    ],
+    solution: '$\\because\\triangle ABC$、$\\triangle CDE$ 都是等边三角形，\n$\\therefore AC=BC$，$CD=CE$，$\\angle ACB=\\angle DCE=60^{\\circ}$。\n$\\therefore\\angle ACD=\\angle BCE$（都等于 $60^{\\circ}+\\angle BCD$）。\n在 $\\triangle ACD$ 和 $\\triangle BCE$ 中：\n$AC=BC$，$\\angle ACD=\\angle BCE$，$CD=CE$，\n$\\therefore\\triangle ACD\\cong\\triangle BCE$（SAS），\n$\\therefore AD=BE$。' },
+
+  { id: 'v-hand-1', variantOf: 'q-hand-1', changed: 'number', chapter: 'ch-geo-aux', method: 'm-hand-in-hand', tier: 'dist', tierName: '变式 · 改数字', kind: 'solve', score: 6,
+    stem: '两个等腰直角三角形 $\\triangle AOB$ 与 $\\triangle COD$ 共顶点 $O$，$\\angle AOB=\\angle COD=90^{\\circ}$，$OA=OB$，$OC=OD$。求证：$AC=BD$。',
+    errorTags: ['construct', 'express'],
+    steps: [
+      { label: '找共顶点的等腰三角形', ask: '共顶点是？', type: 'fill', accept: ['O'], answer: 'O', score: 1, hint: '两个三角形都含 $O$。', why: '$O$。' },
+      { label: '确认顶角相等', ask: '两顶角都是？', type: 'fill', accept: ['90'], answer: '90', score: 2, hint: '直角。', why: '$90^{\\circ}$。' },
+      { label: '旋转得全等', ask: '哪两个三角形全等？', type: 'choice', options: ['$\\triangle AOC$ 与 $\\triangle BOD$', '$\\triangle AOB$ 与 $\\triangle COD$', '$\\triangle AOD$ 与 $\\triangle BOC$'], key: 0, score: 2,
+        hint: '把 $A$ 与 $B$、$C$ 与 $D$ 交叉连。', why: '$\\triangle AOC\\cong\\triangle BOD$（SAS）。' },
+      { label: '用全等得结论', ask: '所以？', type: 'fill', accept: ['AC=BD'], answer: 'AC=BD', score: 1, hint: '对应边。', why: '$AC=BD$。' },
+    ],
+    solution: '$\\because OA=OB$，$OC=OD$，$\\angle AOC=\\angle BOD$（都等于 $90^{\\circ}+\\angle BOC$），\n$\\therefore\\triangle AOC\\cong\\triangle BOD$（SAS），\n$\\therefore AC=BD$。' },
+
+  { id: 'v-hand-2', variantOf: 'q-hand-1', changed: 'condition', chapter: 'ch-geo-aux', method: 'm-hand-in-hand', tier: 'dist', tierName: '变式 · 改条件', kind: 'solve', score: 6,
+    stem: '若手拉手模型中两个等腰三角形的顶角不相等，还能用这个模型吗？', errorTags: ['concept'],
+    steps: [
+      { label: '找共顶点的等腰三角形', ask: '手拉手模型的前提是什么？', type: 'choice',
+        options: ['共顶点 + 顶角相等', '只需共顶点', '只需顶角相等'], key: 0, score: 2,
+        hint: '两个条件。', why: '两个都要。' },
+      { label: '确认顶角相等', ask: '顶角不等时，夹角还相等吗？', type: 'judge', key: false, score: 2,
+        hint: '夹角由顶角相加得到。', why: '夹角不再相等，SAS 不成立。' },
+      { label: '旋转得全等', ask: '所以？', type: 'choice', options: ['仍能全等', '不能直接套用'], key: 1, score: 2,
+        hint: '前提不满足。', why: '不能直接套用，需要另找关系。' },
+    ],
+    solution: '手拉手模型要求两个等腰三角形共顶点且顶角相等。\n顶角不等时，两夹角 $\\angle ACD$ 与 $\\angle BCE$ 不再相等，SAS 不成立，模型失效。' },
+
+  { id: 'v-hand-3', variantOf: 'q-hand-1', changed: 'reverse', chapter: 'ch-geo-aux', method: 'm-hand-in-hand', tier: 'dist', tierName: '变式 · 逆向问', kind: 'solve', score: 6,
+    stem: '在等边三角形手拉手模型中，$AD$ 与 $BE$ 交于 $P$。求 $\\angle APB$。', errorTags: ['construct', 'express'],
+    steps: [
+      { label: '找共顶点的等腰三角形', ask: '先要证什么？', type: 'fill', accept: ['AD=BE', '△ACD≌△BCE'], answer: '△ACD≌△BCE', score: 1,
+        hint: '同母题。', why: '$\\triangle ACD\\cong\\triangle BCE$。' },
+      { label: '确认顶角相等', ask: '全等给出哪个角相等？', type: 'choice', options: ['$\\angle CAD=\\angle CBE$', '$\\angle ACD=\\angle BCE$'], key: 0, score: 2,
+        hint: '对应角。', why: '$\\angle CAD=\\angle CBE$。' },
+      { label: '旋转得全等', ask: '由 $\\angle CAD=\\angle CBE$ 与对顶角，能得？', type: 'choice',
+        options: ['$\\triangle APB$ 中两角和为 $60^{\\circ}$', '三角形全等', '无结论'], key: 0, score: 2,
+        hint: '三角形内角和。', why: '可推出 $\\angle APB=120^{\\circ}$。' },
+      { label: '用全等得结论', ask: '$\\angle APB$ 等于？', type: 'fill', accept: ['120'], answer: '120', score: 1,
+        hint: '$180-60$。', why: '$120^{\\circ}$。' },
+    ],
+    solution: '同母题可证 $\\triangle ACD\\cong\\triangle BCE$，得 $\\angle CAD=\\angle CBE$。\n设 $AD$ 与 $BE$ 交于 $P$，$AD$ 与 $BC$ 交于 $Q$。\n在 $\\triangle AQC$ 与 $\\triangle BQP$ 中，$\\angle AQC=\\angle BQP$（对顶角），$\\angle CAQ=\\angle QBP$，\n$\\therefore\\angle APB=\\angle ACB=60^{\\circ}$ 的补角，即 $\\angle APB=180^{\\circ}-60^{\\circ}=120^{\\circ}$。' },
+
+  /* ---------- m-half-angle ---------- */
+  { id: 'q-half-1', chapter: 'ch-geo-aux', method: 'm-half-angle', tier: 'dist', tierName: '区分区 · 27 题', kind: 'solve', score: 7,
+    stem: '正方形 $ABCD$ 中，$E$、$F$ 分别在 $BC$、$CD$ 上，$\\angle EAF=45^{\\circ}$。求证：$EF=BE+DF$。',
+    errorTags: ['construct', 'express'],
+    fig: { viewBox: [0,0,220,190], alt: '半角模型',
+      elems: [
+        { t:'poly', pts:[[40,150],[180,150],[180,30],[40,30]], closed:true },
+        { t:'seg', a:[40,30], b:[120,150] },
+        { t:'seg', a:[40,30], b:[180,80] },
+        { t:'seg', a:[120,150], b:[180,80], dash:true },
+        { t:'pt', at:[40,150], label:'A', pos:'bl' },
+        { t:'pt', at:[180,150], label:'B', pos:'br' },
+        { t:'pt', at:[180,30], label:'C', pos:'tr' },
+        { t:'pt', at:[40,30], label:'D', pos:'tl' },
+        { t:'pt', at:[120,150], label:'E', pos:'b' },
+        { t:'pt', at:[180,80], label:'F', pos:'r' },
+      ] },
+    steps: [
+      { label: '确认半角关系', ask: '$\\angle EAF=45^{\\circ}$ 与 $\\angle BAD=90^{\\circ}$ 什么关系？', type: 'choice',
+        options: ['$\\angle EAF=\\dfrac12\\angle BAD$', '相等', '无关'], key: 0, score: 1,
+        hint: '$45=\\dfrac12\\times90$。', why: '半角关系。' },
+      { label: '旋转小三角形', ask: '把 $\\triangle ABE$ 绕 $A$ 旋转多少度可与 $\\triangle ADF$ 拼合？', type: 'choice',
+        options: ['$90^{\\circ}$', '$45^{\\circ}$', '$180^{\\circ}$'], key: 0, score: 2,
+        hint: '正方形顶角是 $90^{\\circ}$。', why: '旋转 $90^{\\circ}$，$AB$ 与 $AD$ 重合。' },
+      { label: '证全等', ask: '旋转后 $\\triangle AEF$ 与 $\\triangle AGF$ 全等的理由是？', type: 'choice',
+        options: ['SAS（$AE=AG$、$\\angle EAF=\\angle GAF=45^{\\circ}$、$AF$ 公共）', 'SSS', 'ASA'], key: 0, score: 2,
+        hint: '两边夹角。', why: 'SAS。' },
+      { label: '得线段关系', ask: '所以 $EF$ 等于？', type: 'fill', accept: ['BE+DF', 'DF+BE'], answer: 'BE+DF', score: 2,
+        hint: '$EF=FG=DG+DF=BE+DF$。', why: '$EF=BE+DF$。' },
+    ],
+    solution: '把 $\\triangle ABE$ 绕 $A$ 旋转 $90^{\\circ}$ 到 $\\triangle ADG$，则 $AG=AE$，$DG=BE$，$G$、$D$、$F$ 共线。\n$\\angle GAF=\\angle GAD+\\angle DAF=\\angle BAE+\\angle DAF=90^{\\circ}-45^{\\circ}=45^{\\circ}=\\angle EAF$。\n在 $\\triangle AEF$ 和 $\\triangle AGF$ 中：$AE=AG$，$\\angle EAF=\\angle GAF$，$AF=AF$，\n$\\therefore\\triangle AEF\\cong\\triangle AGF$（SAS），\n$\\therefore EF=GF=DG+DF=BE+DF$。' },
+
+  { id: 'v-half-1', variantOf: 'q-half-1', changed: 'number', chapter: 'ch-geo-aux', method: 'm-half-angle', tier: 'dist', tierName: '变式 · 改数字', kind: 'solve', score: 6,
+    stem: '正方形 $ABCD$ 边长 4，$\\angle EAF=45^{\\circ}$，$BE=1$，$DF=2$。求 $EF$。', errorTags: ['calc'],
+    steps: [
+      { label: '确认半角关系', ask: '由母题结论 $EF=$？', type: 'fill', accept: ['BE+DF'], answer: 'BE+DF', score: 2, hint: '半角模型结论。', why: '$EF=BE+DF$。' },
+      { label: '旋转小三角形', ask: '代入数值？', type: 'fill', accept: ['3'], answer: '3', score: 2, hint: '$1+2$。', why: '$3$。' },
+      { label: '证全等', ask: '边长 4 这个条件用到了吗？', type: 'judge', key: false, score: 2, hint: '求 $EF$ 不需要。', why: '不需要，结论与边长无关。' },
+    ],
+    solution: '由半角模型结论 $EF=BE+DF=1+2=3$。\n注意：正方形边长 4 是干扰条件，求 $EF$ 不需要。' },
+
+  { id: 'v-half-2', variantOf: 'q-half-1', changed: 'condition', chapter: 'ch-geo-aux', method: 'm-half-angle', tier: 'dist', tierName: '变式 · 改条件', kind: 'solve', score: 6,
+    stem: '若 $\\angle EAF=40^{\\circ}$ 而正方形顶角仍为 $90^{\\circ}$，$EF=BE+DF$ 还成立吗？', errorTags: ['concept'],
+    steps: [
+      { label: '确认半角关系', ask: '$40^{\\circ}$ 是 $90^{\\circ}$ 的一半吗？', type: 'judge', key: false, score: 2, hint: '一半是 $45^{\\circ}$。', why: '不是。' },
+      { label: '旋转小三角形', ask: '旋转后 $\\angle GAF$ 等于？', type: 'fill', accept: ['50'], answer: '50', score: 2,
+        hint: '$90-40$。', why: '$50^{\\circ}$。' },
+      { label: '证全等', ask: '$\\angle EAF=\\angle GAF$ 成立吗？', type: 'judge', key: false, score: 2,
+        hint: '$40\\ne50$。', why: '不成立，全等证不出，结论不成立。' },
+    ],
+    solution: '半角模型要求 $\\angle EAF$ 恰为顶角的一半（$45^{\\circ}$）。\n若为 $40^{\\circ}$，旋转后 $\\angle GAF=90^{\\circ}-40^{\\circ}=50^{\\circ}\\ne40^{\\circ}$，\n全等不成立，$EF=BE+DF$ 不再成立。' },
+
+  { id: 'v-half-3', variantOf: 'q-half-1', changed: 'reverse', chapter: 'ch-geo-aux', method: 'm-half-angle', tier: 'dist', tierName: '变式 · 逆向问', kind: 'solve', score: 6,
+    stem: '正方形 $ABCD$ 中，$EF=BE+DF$。求证：$\\angle EAF=45^{\\circ}$。', errorTags: ['construct', 'express'],
+    steps: [
+      { label: '确认半角关系', ask: '本题是半角模型的逆向，先做什么？', type: 'choice', options: ['旋转构造', '直接算角', '作高'], key: 0, score: 2,
+        hint: '同母题的构造。', why: '旋转 $\\triangle ABE$ 到 $\\triangle ADG$。' },
+      { label: '旋转小三角形', ask: '旋转后 $FG$ 等于？', type: 'fill', accept: ['BE+DF', 'DF+BE'], answer: 'BE+DF', score: 2,
+        hint: '$FG=DG+DF$，$DG=BE$。', why: '$FG=BE+DF=EF$。' },
+      { label: '证全等', ask: '$\\triangle AEF\\cong\\triangle AGF$ 的理由？', type: 'choice',
+        options: ['SSS（$AE=AG$、$AF$ 公共、$EF=GF$）', 'SAS', 'ASA'], key: 0, score: 2,
+        hint: '三边。', why: 'SSS。' },
+      { label: '得线段关系', ask: '所以 $\\angle EAF$ 等于？', type: 'fill', accept: ['45'], answer: '45', score: 1,
+        hint: '$\\angle EAF=\\angle GAF=\\dfrac12\\angle BAD$。', why: '$45^{\\circ}$。' },
+    ],
+    solution: '把 $\\triangle ABE$ 绕 $A$ 旋转 $90^{\\circ}$ 到 $\\triangle ADG$，则 $AG=AE$，$DG=BE$，$G$、$D$、$F$ 共线。\n$FG=DG+DF=BE+DF=EF$。\n在 $\\triangle AEF$ 和 $\\triangle AGF$ 中：$AE=AG$，$AF=AF$，$EF=GF$，\n$\\therefore\\triangle AEF\\cong\\triangle AGF$（SSS），\n$\\therefore\\angle EAF=\\angle GAF=\\dfrac12\\angle BAD=45^{\\circ}$。' },
+
+  /* ---------- m-three-segments ---------- */
+  { id: 'q-3seg-1', chapter: 'ch-geo-aux', method: 'm-three-segments', tier: 'dist', tierName: '区分区 · 27 题', kind: 'solve', score: 7,
+    stem: '在 $\\triangle ABC$ 中，$\\angle BAC=90^{\\circ}$，$AB=AC$，$D$ 是 $BC$ 上一点。求证：$BD^{2}+CD^{2}=2AD^{2}$。',
+    errorTags: ['construct', 'express'],
+    steps: [
+      { label: '判断关系类型', ask: '本题是哪种关系？', type: 'choice', options: ['线性 $a=b+c$', '平方关系'], key: 1, score: 1,
+        hint: '有平方。', why: '平方关系。' },
+      { label: '选方法', ask: '平方关系该用什么方法？', type: 'choice', options: ['截长补短', '勾股定理或相似', '旋转'], key: 1, score: 2,
+        hint: '平方对应勾股。', why: '勾股定理。' },
+      { label: '构造辅助线', ask: '作 $AE\\perp BC$ 于 $E$，则 $AE$ 与 $BC$ 什么关系？', type: 'choice',
+        options: ['$AE$ 平分 $BC$', '$AE=BC$', '无关'], key: 0, score: 2,
+        hint: '等腰直角三角形斜边上的高。', why: '$E$ 是 $BC$ 中点。' },
+      { label: '写出等量关系', ask: '用勾股定理展开 $BD^{2}+CD^{2}$，可得？', type: 'fill', accept: ['2AD^2', '2AD²'], answer: '2AD^2', score: 2,
+        hint: '$BD=BE-DE$，$CD=CE+DE$，$BE=CE$。', why: '$2AD^{2}$。' },
+    ],
+    solution: '作 $AE\\perp BC$ 于 $E$。$\\because AB=AC$，$\\angle BAC=90^{\\circ}$，$\\therefore BE=CE=AE$。\n设 $BE=CE=AE=a$，$DE=x$。则 $BD=a-x$，$CD=a+x$。\n$BD^{2}+CD^{2}=(a-x)^{2}+(a+x)^{2}=2a^{2}+2x^{2}=2(a^{2}+x^{2})$。\n又 $AD^{2}=AE^{2}+DE^{2}=a^{2}+x^{2}$，\n$\\therefore BD^{2}+CD^{2}=2AD^{2}$。' },
+
+  { id: 'v-3seg-1', variantOf: 'q-3seg-1', changed: 'number', chapter: 'ch-geo-aux', method: 'm-three-segments', tier: 'dist', tierName: '变式 · 改数字', kind: 'solve', score: 6,
+    stem: '等腰直角三角形 $ABC$ 中，$AB=AC=4$，$D$ 为 $BC$ 中点，求 $AD$。', errorTags: ['calc'],
+    steps: [
+      { label: '判断关系类型', ask: '$BC$ 等于？', type: 'fill', accept: ['4√2'], answer: '4√2', score: 2, hint: '$\\sqrt{4^{2}+4^{2}}$。', why: '$4\\sqrt2$。' },
+      { label: '选方法', ask: '$AD$ 是斜边中线，等于？', type: 'choice', options: ['$\\dfrac12 BC$', '$BC$', '$2BC$'], key: 0, score: 2,
+        hint: '斜边中线定理。', why: '$\\dfrac12 BC$。' },
+      { label: '构造辅助线', ask: '$AD$ 等于？', type: 'fill', accept: ['2√2'], answer: '2√2', score: 2, hint: '$\\dfrac12\\times4\\sqrt2$。', why: '$2\\sqrt2$。' },
+    ],
+    solution: '$BC=\\sqrt{4^{2}+4^{2}}=4\\sqrt2$。\n$AD$ 是斜边中线，$AD=\\dfrac12 BC=2\\sqrt2$。' },
+
+  { id: 'v-3seg-2', variantOf: 'q-3seg-1', changed: 'condition', chapter: 'ch-geo-aux', method: 'm-three-segments', tier: 'dist', tierName: '变式 · 改条件', kind: 'solve', score: 6,
+    stem: '在 $\\triangle ABC$ 中，$AB=AC$，$D$ 是 $BC$ 上一点，$BD=3$，$CD=5$，$AD=4$。判断 $\\triangle ABC$ 是什么三角形。',
+    errorTags: ['method', 'calc'],
+    steps: [
+      { label: '判断关系类型', ask: '$BD^{2}+AD^{2}$ 等于？', type: 'fill', accept: ['25'], answer: '25', score: 2, hint: '$9+16$。', why: '$25$。' },
+      { label: '选方法', ask: '$CD^{2}$ 等于？', type: 'fill', accept: ['25'], answer: '25', score: 2, hint: '$5^{2}$。', why: '$25$。' },
+      { label: '构造辅助线', ask: '$BD^{2}+AD^{2}=CD^{2}$ 说明？', type: 'choice', options: ['$\\angle ADB=90^{\\circ}$', '$\\angle ADB=60^{\\circ}$', '无结论'], key: 0, score: 2,
+        hint: '勾股定理逆定理。', why: '$\\angle ADB=90^{\\circ}$，即 $AD\\perp BC$。' },
+    ],
+    solution: '$BD^{2}+AD^{2}=9+16=25=CD^{2}$，\n由勾股定理逆定理，$\\angle ADB=90^{\\circ}$，即 $AD\\perp BC$。\n又 $AB=AC$，$\\therefore AD$ 是底边上的高，由三线合一 $D$ 是 $BC$ 中点。\n但 $BD=3\\ne CD=5$，矛盾，说明题设 $AD=4$ 与 $AB=AC$ 不能同时成立。\n（这类题的考点是：先用勾股逆定理判断垂直，再检验条件是否自洽。）' },
+
+  { id: 'v-3seg-3', variantOf: 'q-3seg-1', changed: 'reverse', chapter: 'ch-geo-aux', method: 'm-three-segments', tier: 'dist', tierName: '变式 · 逆向问', kind: 'solve', score: 6,
+    stem: '求证：$a=b+c$ 型关系常用什么方法？', errorTags: ['concept'],
+    steps: [
+      { label: '判断关系类型', ask: '$a=b+c$ 是哪种关系？', type: 'choice', options: ['线性关系', '平方关系'], key: 0, score: 2, hint: '没有平方。', why: '线性。' },
+      { label: '选方法', ask: '线性关系用？', type: 'choice', options: ['截长补短', '勾股定理', '相似'], key: 0, score: 2, hint: '把长线段拆开或把短的接上。', why: '截长补短。' },
+      { label: '构造辅助线', ask: '截长的具体做法是？', type: 'fill', accept: ['在长线段上截取一段等于短线段'], answer: '在长线段上截取一段等于短线段', score: 2,
+        hint: '在 $a$ 上截取 $b$，证剩余等于 $c$。', why: '截取后证剩余段等于 $c$。' },
+    ],
+    solution: '$a=b+c$ 是线性关系，用截长补短：\n截长——在长线段 $a$ 上截取一段等于 $b$，证明剩余段等于 $c$；\n补短——把短线段延长，使延长后等于另一条。\n平方关系（$a^{2}=b^{2}+c^{2}$）才用勾股定理或相似。' },
+];
