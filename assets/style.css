@@ -1804,7 +1804,10 @@ a.coverage-row:hover { border-color: var(--accent); transform: translateX(3px); 
 .se-fb { border-radius: var(--r-sm); padding: 12px 14px; font-size: .88rem; line-height: 1.75; }
 .se-fb b { display: block; margin-bottom: 4px; }
 .se-fb.ok { background: var(--ok-soft); color: var(--ok); }
-.se-fb.ok span { color: var(--text-2); font-weight: 400; display: block; }
+/* 只让「解析文字」这层换行。用 > 限定直接子级，
+   否则会命中公式的 .math-inline，导致每个公式和标点各自独占一行。 */
+.se-fb.ok > span { color: var(--text-2); font-weight: 400; display: block; }
+.se-fb .math { display: inline-block; }
 .se-fb.bad { background: var(--rose-soft); color: var(--rose); }
 .se-hint {
   margin-top: 8px; padding: 9px 12px; border-radius: 8px;
@@ -1966,3 +1969,19 @@ a.coverage-row:hover { border-color: var(--accent); transform: translateX(3px); 
   color: var(--text-2); letter-spacing: .04em; padding: 9px 16px;
   border-top: 1px solid var(--border);
 }
+
+/* ---------- 公式 SVG 的尺寸兜底 ----------
+   MathJax 输出的 width/height 用 ex 单位，在 font-size 变化的容器里
+   （如 .se-fb 的 .88rem）会被解析成很小的像素值，导致公式看起来"消失"。
+   这里用 viewBox 的宽高比 + 1em 基准强制缩放，不依赖 ex。 */
+.math svg {
+  display: inline-block;
+  vertical-align: middle;
+  /* 1em ≈ 16px；MathJax 的 1ex 约等于 0.45em，viewBox 高度通常 700-900 单位 */
+  height: 1.15em;
+  width: auto;
+}
+/* 行间公式单独处理：跟随内容宽度 */
+.math-block svg { height: 1.6em; max-width: 100%; }
+/* 反馈区字号偏小，公式略放大保证可读 */
+.se-fb .math svg, .se-hint .math svg, .se-ans .math svg, .se-step-fb .math svg { height: 1.3em; }
