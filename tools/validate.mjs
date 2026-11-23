@@ -185,6 +185,94 @@ CHAPTERS.forEach((c) => {
   if (cn < 2) W(`章节 ${c.id} 概念卡偏少：${cn}`);
 });
 
+/* ---------------- ③d 渲染字段覆盖 ----------------
+   构建期把含公式的字段渲染成 *Html，运行时引擎必须用 *Html 而不是原文。
+   两类错误都会让页面显示 "$...$" 原文：
+     (a) 有公式但没生成 *Html    → 数据层漏了
+     (b) 生成了 *Html 但引擎没用 → 引擎漏了（截图发现的正是这类）
+
+   注意：必须读**构建产物** dist/data/ch/*.js，src/ 里是未渲染的原始数据。 */
+const CH_DIR = join(ROOT, 'dist/data/ch');
+if (existsSync(CH_DIR)) {
+  readdirSync(CH_DIR).filter((f) => f.endsWith('.js')).forEach((f) => {
+    const raw = readFileSync(join(CH_DIR, f), 'utf8');
+    const m = raw.match(/=(\{.*\});\s*$/s);
+    if (!m) return E(`分片 ${f} 无法解析`);
+    /* 分片是 JS 对象字面量（key 无引号），不是纯 JSON。
+       用 new Function 在隔离作用域里求值——文件是我们自己构建产出的，
+       不是外部输入，风险可控。 */
+    let data;
+    try {
+      data = new Function('return (' + m[1] + ');')();
+    } catch (e) {
+      return E(`分片 ${f} 解析失败：${e.message}`);
+    }
+    const hasMath = (v) => typeof v === 'string' && v.includes('$');
+    (data.questions || []).forEach((q) => {
+      if (hasMath(q.stem) && !q.stemHtml) E(`${q.id}.stem 含公式但没有 stemHtml`);
+      if (hasMath(q.solution) && !q.solutionHtml) E(`${q.id}.solution 含公式但没有 solutionHtml`);
+      if (Array.isArray(q.options)) {
+        q.options.forEach((o, i) => {
+          if (hasMath(o) && !(q.optionsHtml && q.optionsHtml[i] != null)) E(`${q.id}.options[${i}] 含公式但没有 optionsHtml`);
+        });
+      }
+      (q.steps || []).forEach((s, i) => {
+        ['ask', 'hint', 'why', 'answer', 'label'].forEach((k) => {
+          if (hasMath(s[k]) && !s[k + 'Html']) E(`${q.id}.steps[${i}].${k} 含公式但没有 ${k}Html`);
+        });
+        if (Array.isArray(s.options)) {
+          s.options.forEach((o, j) => {
+            if (hasMath(o) && !(s.optionsHtml && s.optionsHtml[j] != null)) E(`${q.id}.steps[${i}].options[${j}] 含公式但没有 optionsHtml`);
+          });
+        }
+        if (Array.isArray(s.hints)) {
+          s.hints.forEach((h, j) => {
+            if (hasMath(h) && !(s.hintsHtml && s.hintsHtml[j] != null)) E(`${q.id}.steps[${i}].hints[${j}] 含公式但没有 hintsHtml`);
+          });
+        }
+      });
+    });
+    (data.concepts || []).forEach((c) => {
+      if (hasMath(c.claim) && !c.claimHtml) E(`${c.id}.claim 含公式但没有 claimHtml`);
+      (c.must || []).forEach((mm, i) => {
+        if (hasMath(mm) && !(c.mustHtml && c.mustHtml[i] != null)) E(`${c.id}.must[${i}] 含公式但没有 mustHtml`);
+      });
+      (c.tests || []).forEach((t, i) => {
+        if (hasMath(t.q) && !t.qHtml) E(`${c.id}.tests[${i}].q 含公式但没有 qHtml`);
+        if (hasMath(t.why) && !t.whyHtml) E(`${c.id}.tests[${i}].why 含公式但没有 whyHtml`);
+      });
+    });
+  });
+}
+
+/* 引擎源码检查：每个 *Html 字段都必须被引擎引用，否则等于白渲染 */
+const ENGINE_PATH = join(ROOT, 'assets/step-engine.js');
+if (existsSync(ENGINE_PATH)) {
+  const eng = readFileSync(ENGINE_PATH, 'utf8');
+  [
+    ['stemHtml', '题干'],
+    ['solutionHtml', '完整解答'],
+    ['askHtml', '步骤提问'],
+    ['whyHtml', '解析'],
+    ['hintHtml', '提示'],
+    ['answerHtml', '参考答案'],
+    ['labelHtml', '步骤标签'],
+    ['optionsHtml', '选项'],
+    ['hintsHtml', '分层提示'],
+  ].forEach(([field, label]) => {
+    const key = field.replace(/Html$/, '');
+    /* 引擎有两种用法：
+       (a) 直接取 s.whyHtml
+       (b) 通过 fieldHtml(s, 'why') 动态拼字段名
+       两种都算用到了。 */
+    const direct = eng.includes(field);
+    const dynamic = eng.includes(`fieldHtml(`) && eng.includes(`'${key}'`);
+    if (!direct && !dynamic) {
+      E(`step-engine.js 未使用 ${field}（${label}）——构建期渲染了但引擎没用，会显示公式原文`);
+    }
+  });
+}
+
 /* ---------------- ④ 产物与链接 ---------------- */
 const PAGES = ['index.html', 'concept.html', 'drill.html', 'method.html', 'map.html',
   'graph.html', 'wrong.html', 'content.html', 'dist/data/meta.js',
