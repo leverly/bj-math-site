@@ -305,7 +305,7 @@ function buildHome() {
 <section class="hero">
   <div class="hero-split">
     <div>
-      <div class="hero-badge"><span class="dot-live"></span>P0 管线验证版 · 对齐北京卷 28 题结构</div>
+      <div class="hero-badge"><span class="dot-live"></span>18 章 · 300 题 · 29 张方法卡 · 对齐北京卷 28 题结构</div>
       <h1>北京中考数学，<br><span class="accent-word">先看懂题，再动手算</span></h1>
       <p class="lede">
  本站不按「知识点清单」组织，而按<b>方法</b>组织：每张方法卡第一行写的是
@@ -388,36 +388,6 @@ function buildHome() {
     <a class="btn sm soft" href="method.html">全部方法卡 →</a>
   </div>
   <div class="grid c2 track-grid">${methodCards}</div>
-</section>
-
-<section class="section reveal">
-  <div class="section-head">
-    <div class="section-head-left">
-      <span class="kicker">这个版本做了什么</span>
-      <h2>P0：先证明管线成立</h2>
-      <span class="sub">公式、图形、分步引擎三件技术未知，各用最小内容验证。内容规模在 P1 之后铺开</span>
-    </div>
-  </div>
-  <div class="grid c3">
-    <div class="card tool-card">
-      <div class="card-ico blue">∑</div>
-      <h3>公式构建期预渲染</h3>
-      <p class="desc">MathJax 在构建时输出内联 SVG，共享字形缓存。运行时零依赖、零字体文件，<code>file://</code> 直接可读。</p>
-      <div class="meta" style="margin-top:12px">单条约 1.4 KB · 全局字形 defs</div>
-    </div>
-    <div class="card tool-card">
-      <div class="card-ico purple">△</div>
-      <h3>几何图声明式生成</h3>
-      <p class="desc">数据里只写坐标与元素类型，构建期编译成 SVG。不用 foreignObject，<code>file://</code> 下也不错位。</p>
-      <div class="meta" style="margin-top:12px">13 种原语 · 单图约 1.6 KB</div>
-    </div>
-    <div class="card tool-card">
-      <div class="card-ico ok">⋯</div>
-      <h3>步骤级判定</h3>
-      <p class="desc">判定的单位是「步」不是「题」。答错时记下卡在第几步——这是错因诊断的原始数据，四选一记不出来。</p>
-      <div class="meta" style="margin-top:12px">三种模式 · stuckStep 落库</div>
-    </div>
-  </div>
 </section>
 `;
 
@@ -1457,12 +1427,13 @@ function buildContent() {
 
 <section class="section" style="margin-top:20px">
   <div class="card" style="padding:22px 24px">
-    <h3>当前版本：P0 管线验证版</h3>
-    <p class="desc">这一版的目的不是覆盖考点，而是验证三件技术未知：公式能否离线渲染、几何图能否声明式生成、解答题能否做步骤级判定。内容规模（${METHODS.length} 张方法卡、${QUESTIONS.length} 题）只够压测，不够备考。</p>
-    <div class="grid c3" style="margin-top:16px">
-      <div><b>${METHODS.length}</b><br><span style="color:var(--text-2);font-size:.86rem">方法卡</span></div>
-      <div><b>${QUESTIONS.length}</b><br><span style="color:var(--text-2);font-size:.86rem">题目</span></div>
-      <div><b>${CHAPTERS.length}</b><br><span style="color:var(--text-2);font-size:.86rem">章节</span></div>
+    <h3>当前版本：P1 送分区版</h3>
+    <p class="desc">覆盖卷面<b>送分区 58 分</b>与中档区主要题型。内容按课标知识块组织，方法卡按「识别信号」编排，错题按五类错因归类。当前 ${STATS.chapters} 章、${STATS.methods} 张方法卡、${STATS.questions} 题、${STATS.concepts} 条概念卡、${FORMULAS.length} 条公式——<b>不是完整套卷</b>，用于按题型反复练方法与步骤。</p>
+    <div class="grid c4" style="margin-top:16px">
+      <div><b>${STATS.chapters}</b><br><span style="color:var(--text-2);font-size:.86rem">章节</span></div>
+      <div><b>${STATS.methods}</b><br><span style="color:var(--text-2);font-size:.86rem">方法卡</span></div>
+      <div><b>${STATS.questions}</b><br><span style="color:var(--text-2);font-size:.86rem">题目</span></div>
+      <div><b>${STATS.concepts}</b><br><span style="color:var(--text-2);font-size:.86rem">概念卡</span></div>
     </div>
   </div>
 </section>

@@ -33,7 +33,7 @@ export const METHODS = [
   },
   {
     id: 'm-frac-simplify', chapter: 'ch-frac', name: '分式化简求值', tier: 'send',
-    signal: '题面出现「先化简，再求值」且含分式，或出现 $\\dfrac{\\ \\ }{}$ 形式的代数式要求化简。',
+    signal: '题面出现「先化简，再求值」且含分式，或出现分数形式的代数式要求化简。',
     steps: [
       { label: '先分解因式', ask: '化简分式的第一步是什么？', score: 1 },
       { label: '通分或约分', ask: '加减要通分，乘除要约分——本题是哪一种？', score: 1 },
