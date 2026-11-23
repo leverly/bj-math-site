@@ -259,6 +259,40 @@
     return n;
   };
 
+  /** 批量标记已掌握（一次移除多条） */
+  Z.qMasterBatch = function (ids) {
+    var n = 0;
+    (ids || []).forEach(function (id) {
+      if (qlog.wrong[id]) { delete qlog.wrong[id]; n++; }
+    });
+    if (n) {
+      store(QLOG_KEY, qlog);
+      document.dispatchEvent(new CustomEvent('bj:qlog'));
+    }
+    return n;
+  };
+
+  /**
+   * 错题列表（供错题本页分页/搜索用）。
+   * 每条带上原始记录 + 题目元信息摘要，避免页面反复查表。
+   */
+  Z.wrongList = function () {
+    return Object.keys(qlog.wrong).map(function (id) {
+      var w = qlog.wrong[id];
+      return {
+        id: id,
+        errorType: w.errorType || 'method',
+        chapter: w.chapter || '',
+        method: w.method || '',
+        tier: w.tier || '',
+        stuckStep: w.stuckStep == null ? -1 : w.stuckStep,
+        times: w.n || 1,
+        timeMs: w.timeMs || 0,
+        src: w.src || '',
+      };
+    });
+  };
+
   /** 按错因分栏 */
   Z.wrongByType = function () {
     var out = {};

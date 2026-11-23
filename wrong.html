@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>错题本与诊断 · 北京中考数学领航</title>
-<meta name="description" content="错题自动收纳、可逐题重做；弱点按可训练单元聚合，给下一步练什么。">
-<meta property="og:title" content="错题本与诊断 · 北京中考数学领航">
-<meta property="og:description" content="错题自动收纳、可逐题重做；弱点按可训练单元聚合，给下一步练什么。">
+<title>智能错题本 · 北京中考数学领航</title>
+<meta name="description" content="自动收录错题，按错因分组；支持搜索、分页、批量重做本页、打印错题纸。">
+<meta property="og:title" content="智能错题本 · 北京中考数学领航">
+<meta property="og:description" content="自动收录错题，按错因分组；支持搜索、分页、批量重做本页、打印错题纸。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232563eb'/%3E%3Cstop offset='1' stop-color='%234f46e5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-family='system-ui,sans-serif' font-size='14' font-weight='800' fill='%23fff' text-anchor='middle'%3E%E6%95%B0%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/style.css?v=f97b12d3">
+<link rel="stylesheet" href="assets/style.css?v=91042eac">
 <script>try{var m=JSON.parse(localStorage.getItem('bj-theme-manual')||'null');var h=new Date().getHours();var t=(m==='light'||m==='dark')?m:((h>=19||h<6)?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){var h2=new Date().getHours();document.documentElement.setAttribute('data-theme',(h2>=19||h2<6)?'dark':'light');}</script>
 </head>
 <body data-base="">
@@ -33,9 +33,9 @@
 <div class="wrap">
 
 <div class="page-head">
-  <div class="crumb"><a href="index.html">首页</a> / 错题本与诊断</div>
-  <h1>错题本与诊断</h1>
-  <p class="lede">答错的题自动收进<b>错题本</b>，可以随时重做、逐题移出；<b>诊断</b>则把错题聚合成可训练单元，告诉你下一步练什么。两件事分开看。</p>
+  <div class="crumb"><a href="index.html">首页</a> / 智能错题本</div>
+  <h1>智能错题本</h1>
+  <p class="lede">做错的题自动收录，按错因分组。可以<b>批量重做本页</b>、<b>打印错题纸</b>睡前或考前纸质复盘，也可以逐题标记已掌握。答对后自动移出。</p>
 </div>
 
 <section class="section" style="margin-top:20px">
@@ -49,38 +49,52 @@
 
 <section class="section" style="margin-top:22px">
   <div class="tabs" id="tabs">
-    <button class="tab on" data-tab="book">错题本 <span id="tabN">0</span></button>
+    <button class="tab on" data-tab="all">全部 <span id="nAll">0</span></button>
+    <button class="tab" data-tab="concept">概念不清 <span id="nConcept">0</span></button>
+    <button class="tab" data-tab="method">方法未掌握 <span id="nMethod">0</span></button>
+    <button class="tab" data-tab="construct">构造不出 <span id="nConstruct">0</span></button>
+    <button class="tab" data-tab="calc">计算失误 <span id="nCalc">0</span></button>
+    <button class="tab" data-tab="express">表达不规范 <span id="nExpress">0</span></button>
     <button class="tab" data-tab="diag">弱点诊断</button>
   </div>
 </section>
 
-<!-- ============ Tab 1：错题本 ============ -->
+<!-- ============ 错题本 ============ -->
 <div id="pane-book">
-  <section class="section" style="margin-top:18px">
-    <div class="section-head">
-      <div class="section-head-left">
-        <span class="kicker">错题本</span>
-        <h2>按错因分组，可逐题重做</h2>
-        <span class="sub">点「重做这题」立即重练；答对后自动移出，也可以手动移除</span>
-      </div>
-      <button class="btn ghost sm" id="clearAll">清空错题本</button>
+  <section class="section" style="margin-top:16px">
+    <div class="toolbar">
+      <input class="field" id="wq" type="search" placeholder="在错题本里搜索：题干、章节、方法卡…" autocomplete="off">
+      <select class="field" id="psize">
+        <option value="10">每页 10 条</option>
+        <option value="20">每页 20 条</option>
+        <option value="50">每页 50 条</option>
+      </select>
+      <button class="btn primary sm" id="redoBtn">重做本页</button>
+      <button class="btn soft sm" id="printBtn">🖨️ 打印错题纸</button>
+      <button class="btn ghost sm" id="clearBtn">清空本类</button>
     </div>
-    <div id="bookList"></div>
+    <div id="wbList"></div>
+    <div class="pager" id="wbPager"></div>
+    <div class="empty" id="wbEmpty" style="display:none">
+      <b>错题本是空的</b>
+      <span>去 <a href="drill.html">分步刷题</a> 或 <a href="concept.html">概念自测</a>，做错的题会自动收进来</span>
+    </div>
   </section>
-  <section class="section" id="redoSection" style="display:none;margin-top:24px">
+
+  <section class="section" id="redoZone" style="display:none;margin-top:24px">
     <div class="section-head">
       <div class="section-head-left">
         <span class="kicker">重做</span>
-        <h2>立即重练这一题</h2>
-        <span class="sub">答对会自动移出错题本</span>
+        <h2>本页错题重做</h2>
+        <span class="sub" id="redoInfo"></span>
       </div>
       <button class="btn ghost sm" id="redoClose">收起</button>
     </div>
-    <div id="redoMount"></div>
+    <div id="redoHost"></div>
   </section>
 </div>
 
-<!-- ============ Tab 2：弱点诊断 ============ -->
+<!-- ============ 弱点诊断 ============ -->
 <div id="pane-diag" style="display:none">
   <section class="section" style="margin-top:18px">
     <div class="section-head">
@@ -98,7 +112,6 @@
       <div class="section-head-left">
         <span class="kicker">错因分布</span>
         <h2>你主要错在哪一层</h2>
-        <span class="sub">五类错因的补救动作完全不同，先看清主因再决定练什么</span>
       </div>
     </div>
     <div id="errBars" class="traps"></div>
@@ -150,15 +163,22 @@
     <span>例题为原创 · 非真题 · 解答题不自动判分</span>
   </div>
 </footer>
-<script src="assets/app.js?v=81a5f406"></script>
+<script src="assets/app.js?v=55567570"></script>
 <script src="assets/step-engine.js?v=bcd6b56a"></script>
-<script src="dist/data/meta.js?v=81a5f406"></script>
+<script src="dist/data/meta.js?v=55567570"></script>
 <script>
 (function(){
   var ERR_META = {"concept":{"n":"概念不清","d":"定义、定理的适用条件没弄清","fix":"去做条件判断题","href":"concept.html"},"method":{"n":"方法未掌握","d":"没思路，或选错了工具","fix":"看识别信号 + 母题","href":"method.html"},"construct":{"n":"构造不出","d":"几何题看不出辅助线","fix":"看构造模型","href":"method.html"},"calc":{"n":"计算失误","d":"会做但算错","fix":"进计算专项（连对 3 次出册）","href":"drill.html?scope=wrong"},"express":{"n":"表达不规范","d":"审题漏条件、步骤跳步","fix":"做找错练习","href":"drill.html?scope=wrong"}};
   var ERR_NAME = BJM.ERR_NAME;
   var META = window.BJM.META || { chapters: [], methods: [] };
+  var PSIZE_KEY = 'bj-wb-psize';
+
   var loadedAll = false;
+  var tab = 'all';
+  var page = 0;
+  var query = '';
+  var PAGE_SIZE = parseInt(localStorage.getItem(PSIZE_KEY) || '10', 10);
+  if ([10, 20, 50].indexOf(PAGE_SIZE) < 0) PAGE_SIZE = 10;
 
   function CH(){ return window.BJM.CH || {}; }
 
@@ -173,7 +193,6 @@
         document.head.appendChild(s);
       });
     })).then(function(){
-      // 注入字形 defs，否则公式不可见
       var ch = CH(), seen = {};
       Object.keys(ch).forEach(function(id){
         var d = ch[id].defs;
@@ -197,191 +216,229 @@
   }
   function mname(id){
     var m = (META.methods || []).find(function(x){ return x.id === id; });
-    return m ? m.name : id;
+    return m ? m.name : '';
   }
   function cname(id){
     var c = (META.chapters || []).find(function(x){ return x.id === id; });
-    return c ? (c.no + '. ' + c.name) : id;
+    return c ? (c.no + '. ' + c.name) : '';
   }
-  function pct(r){ return Math.round(r * 100) + '%'; }
-  function rateClass(r){ return r >= 0.85 ? 'ok' : r >= 0.6 ? 'warn' : 'bad'; }
 
-  /* ============ Tab 切换 ============ */
-  var tab = 'book';
+  /* ============ Tab ============ */
   [].forEach.call(document.querySelectorAll('#tabs .tab'), function(b){
     b.addEventListener('click', function(){
       [].forEach.call(document.querySelectorAll('#tabs .tab'), function(x){ x.classList.remove('on'); });
       b.classList.add('on');
       tab = b.getAttribute('data-tab');
-      document.getElementById('pane-book').style.display = tab === 'book' ? '' : 'none';
-      document.getElementById('pane-diag').style.display = tab === 'diag' ? '' : 'none';
+      page = 0;
+      var isDiag = tab === 'diag';
+      document.getElementById('pane-book').style.display = isDiag ? 'none' : '';
+      document.getElementById('pane-diag').style.display = isDiag ? '' : 'none';
+      if (!isDiag) draw();
     });
   });
 
-  /* ============ 错题本 ============ */
-  function renderBook(){
-    var byType = BJM.wrongByType();
-    var qm = qmap();
-    var host = document.getElementById('bookList');
-    var any = false, html = '';
-
-    BJM.ERR_TYPES.forEach(function(t){
-      var items = byType[t] || [];
-      if (!items.length) return;
-      any = true;
-      var meta = ERR_META[t] || { n: t, d: '', fix: '', href: 'drill.html' };
-      html += '<div class="wb-group">' +
-        '<div class="wb-group-head">' +
-          '<div>' +
-            '<b>' + meta.n + '</b>' +
-            '<span class="wb-count">' + items.length + ' 题</span>' +
-            '<span class="wb-hint">' + meta.d + '</span>' +
-          '</div>' +
-          '<div class="wb-group-act">' +
-            '<a class="wb-fix" href="' + meta.href + '">' + meta.fix + ' →</a>' +
-            '<button class="btn ghost xs" data-clear-type="' + t + '">清空这类</button>' +
-          '</div>' +
-        '</div>';
-
-      items.forEach(function(w){
+  /* ============ 数据 ============ */
+  function currentItems(){
+    var list = BJM.wrongList();
+    if (tab !== 'all' && tab !== 'diag') {
+      list = list.filter(function(w){ return w.errorType === tab; });
+    }
+    if (query) {
+      var qm = qmap();
+      var t = query.toLowerCase();
+      list = list.filter(function(w){
         var q = qm[w.id];
-        if (!q) {
-          html += '<div class="wb-item"><div class="wb-stem">' + w.id + '（题目数据未找到）</div></div>';
-          return;
-        }
-        var stepTxt = w.stuckStep >= 0 ? ('卡在第 ' + (w.stuckStep + 1) + ' 步') : '';
-        var metaLine = [cname(w.chapter), w.method ? mname(w.method) : '', stepTxt, '错 ' + w.n + ' 次']
-          .filter(Boolean).join(' · ');
-
-        // 选项：优先构建期渲染的 optionsHtml
-        var firstStep = (q.steps || [])[0];
-        var opts = q.options || (firstStep && firstStep.options);
-        var optsHtml = q.optionsHtml || (firstStep && firstStep.optionsHtml);
-        var optsBlock = '';
-        if (opts && opts.length) {
-          var key = (q.answer != null) ? q.answer : (firstStep && firstStep.key);
-          optsBlock = '<div class="wb-opts">' + opts.map(function(o, k){
-            var cls = (k === key) ? ' right' : '';
-            var txt = (optsHtml && optsHtml[k] != null) ? optsHtml[k] : BJM.esc(o);
-            return '<div class="wb-opt' + cls + '"><span class="wb-key">' + 'ABCD'[k] + '</span><span>' + txt + '</span></div>';
-          }).join('') + '</div>';
-        }
-
-        html += '<div class="wb-item" data-id="' + w.id + '">' +
-          '<div class="wb-stem">' + (q.stemHtml || BJM.esc(q.stem || '')) + '</div>' +
-          (q.figHtml ? '<div class="wb-fig">' + q.figHtml + '</div>' : '') +
-          optsBlock +
-          (q.solutionHtml ? '<details class="wb-sol"><summary>看完整解答</summary><div>' + q.solutionHtml + '</div></details>' : '') +
-          '<div class="wb-foot">' +
-            '<span class="wb-meta">' + metaLine + '</span>' +
-            '<span class="wb-act">' +
-              '<button class="btn primary xs" data-redo="' + w.id + '">重做这题</button>' +
-              '<button class="btn ghost xs" data-drop="' + w.id + '">移出</button>' +
-            '</span>' +
-          '</div>' +
-        '</div>';
+        var hay = [
+          w.id, w.errorType, ERR_NAME[w.errorType] || '',
+          cname(w.chapter), mname(w.method),
+          q ? (q.stem || '') : '',
+          q ? (q.tierName || '') : '',
+        ].join(' ').toLowerCase();
+        return hay.indexOf(t) >= 0;
       });
-      html += '</div>';
-    });
+    }
+    // 错得多的排前面
+    list.sort(function(a, b){ return b.times - a.times; });
+    return list;
+  }
 
-    host.innerHTML = any ? html :
-      '<div class="empty"><b>错题本是空的</b>去 <a href="drill.html">分步刷题</a> 练一组，答错的题会自动收进来。</div>';
+  /* ============ 单条渲染 ============ */
+  function itemHtml(w){
+    var qm = qmap();
+    var q = qm[w.id];
+    var meta = ERR_META[w.errorType] || { n: w.errorType };
+    var metaLine = [cname(w.chapter), mname(w.method),
+      w.stuckStep >= 0 ? ('卡在第 ' + (w.stuckStep + 1) + ' 步') : '',
+      '错 ' + w.times + ' 次'].filter(Boolean).join(' · ');
 
-    // 重做
-    [].forEach.call(host.querySelectorAll('[data-redo]'), function(b){
-      b.addEventListener('click', function(){ redo(b.getAttribute('data-redo')); });
-    });
-    // 逐题移出
-    [].forEach.call(host.querySelectorAll('[data-drop]'), function(b){
+    if (!q) {
+      return '<div class="wb-item"><div class="wb-stem">' + w.id + '（题目数据未找到）</div></div>';
+    }
+
+    // 选项（送分题在 q 上，多步题在首步上）
+    var firstStep = (q.steps || [])[0];
+    var opts = q.options || (firstStep && firstStep.options);
+    var optsHtml = q.optionsHtml || (firstStep && firstStep.optionsHtml);
+    var optsBlock = '';
+    if (opts && opts.length) {
+      var key = (q.answer != null) ? q.answer : (firstStep && firstStep.key);
+      optsBlock = '<div class="wb-opts">' + opts.map(function(o, k){
+        var cls = (k === key) ? ' right' : '';
+        var txt = (optsHtml && optsHtml[k] != null) ? optsHtml[k] : BJM.esc(o);
+        return '<div class="wb-opt' + cls + '"><span class="wb-key">' + 'ABCD'[k] + '</span><span>' + txt + '</span></div>';
+      }).join('') + '</div>';
+    }
+
+    return '<div class="wb-item" data-id="' + w.id + '">' +
+      '<div class="wb-head">' +
+        '<span class="wb-type ' + w.errorType + '">' + (meta.n || w.errorType) + '</span>' +
+        (w.tier ? '<span class="wb-tier">' + (BJM.META.tiers[w.tier] || w.tier) + '</span>' : '') +
+        '<span class="wb-head-meta">' + metaLine + '</span>' +
+      '</div>' +
+      '<div class="wb-stem">' + (q.stemHtml || BJM.esc(q.stem || '')) + '</div>' +
+      (q.figHtml ? '<div class="wb-fig">' + q.figHtml + '</div>' : '') +
+      optsBlock +
+      (q.solutionHtml ? '<details class="wb-sol"><summary>看完整解答</summary><div>' + q.solutionHtml + '</div></details>' : '') +
+      '<div class="wb-foot">' +
+        '<span class="wb-act">' +
+          '<button class="btn ghost xs" data-master="' + w.id + '">✓ 已掌握</button>' +
+          '<a class="btn ghost xs" href="' + ((meta.href) || 'method.html') + '">去补这一类 →</a>' +
+        '</span>' +
+      '</div>' +
+    '</div>';
+  }
+
+  /* ============ 主渲染 ============ */
+  function draw(){
+    var items = currentItems();
+    var total = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+    if (page >= total) page = total - 1;
+    if (page < 0) page = 0;
+    var slice = items.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+    // Tab 计数
+    var all = BJM.wrongList();
+    var byType = {};
+    all.forEach(function(w){ byType[w.errorType] = (byType[w.errorType] || 0) + 1; });
+    var setN = function(id, v){ var e = document.getElementById(id); if (e) e.textContent = v; };
+    setN('nAll', all.length);
+    setN('nConcept', byType.concept || 0);
+    setN('nMethod', byType.method || 0);
+    setN('nConstruct', byType.construct || 0);
+    setN('nCalc', byType.calc || 0);
+    setN('nExpress', byType.express || 0);
+
+    var host = document.getElementById('wbList');
+    var empty = document.getElementById('wbEmpty');
+    var pager = document.getElementById('wbPager');
+    var redoBtn = document.getElementById('redoBtn');
+    var printBtn = document.getElementById('printBtn');
+    var clearBtn = document.getElementById('clearBtn');
+
+    if (!items.length) {
+      host.innerHTML = '';
+      pager.innerHTML = '';
+      empty.style.display = '';
+      redoBtn.disabled = true;
+      printBtn.disabled = true;
+      clearBtn.disabled = true;
+      return;
+    }
+    empty.style.display = 'none';
+    redoBtn.disabled = false;
+    printBtn.disabled = false;
+    clearBtn.disabled = false;
+
+    host.innerHTML = slice.map(itemHtml).join('');
+
+    // 分页（>9 页折叠）
+    var html = '<button data-pg="' + (page - 1) + '"' + (page === 0 ? ' disabled' : '') + '>‹</button>';
+    for (var i = 0; i < total; i++) {
+      if (total > 9 && i > 1 && i < total - 2 && Math.abs(i - page) > 1) {
+        if (i === 2 || i === total - 3) html += '<span class="pg-dots">…</span>';
+        continue;
+      }
+      html += '<button data-pg="' + i + '"' + (i === page ? ' class="on"' : '') + '>' + (i + 1) + '</button>';
+    }
+    html += '<button data-pg="' + (page + 1) + '"' + (page === total - 1 ? ' disabled' : '') + '>›</button>';
+    pager.innerHTML = html;
+    [].forEach.call(pager.querySelectorAll('[data-pg]'), function(b){
       b.addEventListener('click', function(){
-        BJM.qClearWrong(b.getAttribute('data-drop'));
+        var p = parseInt(b.getAttribute('data-pg'), 10);
+        if (!isNaN(p)) { page = p; draw(); window.scrollTo({ top: 180, behavior: 'smooth' }); }
+      });
+    });
+
+    // 已掌握
+    [].forEach.call(host.querySelectorAll('[data-master]'), function(b){
+      b.addEventListener('click', function(){
+        BJM.qClearWrong(b.getAttribute('data-master'));
         BJM.toast('已移出错题本');
-        refresh();
-      });
-    });
-    // 清空某类
-    [].forEach.call(host.querySelectorAll('[data-clear-type]'), function(b){
-      b.addEventListener('click', function(){
-        var t = b.getAttribute('data-clear-type');
-        var n = (BJM.wrongByType()[t] || []).length;
-        if (!n) return;
-        if (!confirm('确定清空「' + (ERR_META[t] || {}).n + '」的 ' + n + ' 道错题？')) return;
-        BJM.qClearWrongByType(t);
-        BJM.toast('已清空 ' + n + ' 道');
-        refresh();
+        draw();
       });
     });
   }
 
-  /* ============ 重做 ============ */
-  function redo(id){
+  /* ============ 批量重做本页 ============ */
+  function redoPage(){
+    var items = currentItems();
+    var slice = items.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+    if (!slice.length) return;
     var qm = qmap();
-    var q = qm[id];
-    if (!q) { BJM.toast('题目数据未找到'); return; }
-    var sec = document.getElementById('redoSection');
-    sec.style.display = '';
+    var qs = slice.map(function(w){ return qm[w.id]; }).filter(Boolean);
+    if (!qs.length) { BJM.toast('本页题目数据未加载'); return; }
+
+    var zone = document.getElementById('redoZone');
+    zone.style.display = '';
+    document.getElementById('redoInfo').textContent = '本页 ' + qs.length + ' 题 · 答对即移出错题本';
+
     BJM.step({
-      mount: '#redoMount',
-      questions: [q],
+      mount: '#redoHost',
+      questions: qs,
       mode: 'guided',
       shuffle: false,
       backHref: 'wrong.html',
       backLabel: '返回错题本',
-      onAnswer: function(qq, ok, rec){
+      onAnswer: function(q, ok, rec){
         BJM.qRecord({
-          id: qq.id, chapter: qq.chapter, method: qq.method, tier: qq.tier,
+          id: q.id, chapter: q.chapter, method: q.method, tier: q.tier,
           result: rec.result, stuckStep: rec.stuckStep,
           errorType: ok ? null : (rec.stuckStep === 0 ? 'concept' : 'method'),
           timeMs: rec.timeMs, src: 'redo',
         });
         BJM.bumpDay('questions', 1);
-        if (ok) BJM.toast('答对了，已移出错题本');
       },
-      onFinish: function(){
-        setTimeout(function(){ refresh(); }, 400);
+      onFinish: function(res){
+        setTimeout(function(){ refreshStats(); draw(); }, 300);
       },
     });
-    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    zone.scrollIntoView({ block: 'start', behavior: 'smooth' });
   }
-
-  document.getElementById('redoClose').addEventListener('click', function(){
-    document.getElementById('redoSection').style.display = 'none';
-  });
-
-  document.getElementById('clearAll').addEventListener('click', function(){
-    var n = BJM.wrongIds().length;
-    if (!n) { BJM.toast('错题本已经是空的'); return; }
-    if (!confirm('确定清空全部 ' + n + ' 道错题？（作答统计会保留）')) return;
-    BJM.qClearAllWrong();
-    BJM.toast('已清空错题本');
-    refresh();
-  });
 
   /* ============ 弱点诊断 ============ */
   function renderActions(){
     var acts = BJM.nextActions(6);
     var el = document.getElementById('actions');
     if (!acts.length) {
-      el.innerHTML = '<div class="empty">还没有足够数据。先去 <a href="drill.html">分步刷题</a> 练两组，这里会告诉你下一步练什么。</div>';
+      el.innerHTML = '<div class="empty">还没有足够数据。先去 <a href="drill.html">分步刷题</a> 练两组。</div>';
       return;
     }
     el.innerHTML = acts.map(function(a, i){
       var isM = a.kind === 'method';
       var title = isM ? mname(a.key) : cname(a.key);
-      var sub = isM ? '方法卡' : '章节';
       var errName = a.topErr ? (ERR_NAME[a.topErr] || a.topErr) : '—';
       var stuck = a.topStuck >= 0 ? ('第 ' + (a.topStuck + 1) + ' 步') : '—';
+      var cls = a.rate >= 0.85 ? 'ok' : a.rate >= 0.6 ? 'warn' : 'bad';
       return '<div class="card weak-card" style="margin-bottom:12px;padding:16px 18px">' +
         '<div class="weak-head">' +
           '<span class="weak-rank">' + (i + 1) + '</span>' +
           '<div class="weak-main">' +
-            '<div class="weak-title">' + title + ' <span class="weak-tag">' + sub + '</span></div>' +
-            '<div class="weak-meta">练过 ' + a.answered + ' 题 · 正确率 <b class="' + rateClass(a.rate) + '">' + pct(a.rate) + '</b>' +
+            '<div class="weak-title">' + title + ' <span class="weak-tag">' + (isM ? '方法卡' : '章节') + '</span></div>' +
+            '<div class="weak-meta">练过 ' + a.answered + ' 题 · 正确率 <b class="' + cls + '">' + Math.round(a.rate * 100) + '%</b>' +
               ' · 错 ' + a.wrongN + ' 题 · 主因 ' + errName + ' · 常卡 ' + stuck + '</div>' +
           '</div>' +
           '<a class="btn primary sm" href="' + a.href + '">专项训练 →</a>' +
-        '</div>' +
-      '</div>';
+        '</div></div>';
     }).join('');
   }
 
@@ -394,8 +451,7 @@
       var meta = ERR_META[s.type] || { n: s.type, d: '', fix: '', href: 'drill.html' };
       if (!s.n) {
         return '<div class="trap" style="border-left-color:var(--border);opacity:.6">' +
-          '<div class="trap-t">' + meta.n +
-            ' <span style="font-weight:400;color:var(--text-3);font-size:.8rem">暂无记录</span></div>' +
+          '<div class="trap-t">' + meta.n + ' <span style="font-weight:400;color:var(--text-3);font-size:.8rem">暂无记录</span></div>' +
           '<div class="trap-why">' + meta.d + '</div></div>';
       }
       var share = total ? Math.round(s.n / total * 100) : 0;
@@ -408,8 +464,7 @@
           s.n + ' 次 · 占 ' + share + '% · 正确率 ' + rateP + '%</span></div>' +
         '<div class="err-bar"><i style="width:' + barW + '%;background:' + color + '"></i></div>' +
         '<div class="trap-why">' + meta.d + '</div>' +
-        '<div style="margin-top:8px;font-size:.84rem"><b style="color:var(--accent)">补救：</b>' +
-          '<a href="' + meta.href + '">' + meta.fix + '</a></div>' +
+        '<div style="margin-top:8px;font-size:.84rem"><b style="color:var(--accent)">补救：</b><a href="' + meta.href + '">' + meta.fix + '</a></div>' +
       '</div>';
     }).join('');
   }
@@ -419,7 +474,7 @@
     var keys = Object.keys(dist).map(Number).filter(function(k){ return k >= 0; }).sort(function(a,b){ return a-b; });
     var el = document.getElementById('stuckBars');
     if (!keys.length) {
-      el.innerHTML = '<div class="empty" style="padding:6px 0">还没有记录到卡点。答题时答错的步骤会被记下来。</div>';
+      el.innerHTML = '<div class="empty" style="padding:6px 0">还没有记录到卡点。</div>';
       return;
     }
     var max = Math.max.apply(null, keys.map(function(k){ return dist[k]; }));
@@ -430,33 +485,77 @@
       return '<div class="stuck-col" title="第 ' + (k+1) + ' 步：' + n + ' 次（' + advice + '）">' +
         '<div class="stuck-bar-wrap"><i style="height:' + h + '%"></i></div>' +
         '<div class="stuck-label">第' + (k+1) + '步</div>' +
-        '<div class="stuck-num">' + n + '</div>' +
-      '</div>';
+        '<div class="stuck-num">' + n + '</div></div>';
     }).join('') + '</div>' +
-    '<p class="setup-hint" style="margin-top:10px">柱越高说明这一步越常卡。' +
-      '第 1 步卡得多 → 优先回概念卡；中后段卡得多 → 进计算专项。</p>';
+    '<p class="setup-hint" style="margin-top:10px">柱越高说明这一步越常卡。第 1 步卡得多 → 优先回概念卡；中后段卡得多 → 进计算专项。</p>';
   }
 
-  function refresh(){
+  function refreshStats(){
     var t = BJM.totalAnswered();
     var set = function(sel, v){ var e = document.querySelector(sel); if (e) e.textContent = v; };
     set('#kTotal', t.n);
     set('#kRate', t.n ? Math.round(t.rate * 100) + '%' : '—');
     set('#kWrong', BJM.wrongIds().length);
     set('#kWeak', BJM.nextActions(99).length);
-    set('#tabN', BJM.wrongIds().length);
-    renderBook();
+  }
+
+  function refresh(){
+    refreshStats();
+    draw();
     renderActions();
     renderErrBars();
     renderStuck();
   }
+
+  /* ============ 工具栏 ============ */
+  document.getElementById('wq').addEventListener('input', function(e){
+    query = e.target.value.trim();
+    page = 0;
+    draw();
+  });
+
+  var psizeSel = document.getElementById('psize');
+  psizeSel.value = String(PAGE_SIZE);
+  psizeSel.addEventListener('change', function(){
+    PAGE_SIZE = parseInt(psizeSel.value, 10);
+    try { localStorage.setItem(PSIZE_KEY, String(PAGE_SIZE)); } catch (e) {}
+    page = 0;
+    draw();
+  });
+
+  document.getElementById('redoBtn').addEventListener('click', redoPage);
+  document.getElementById('redoClose').addEventListener('click', function(){
+    document.getElementById('redoZone').style.display = 'none';
+  });
+
+  document.getElementById('printBtn').addEventListener('click', function(){
+    // 打印前展开所有解答，打印后恢复
+    var opened = [];
+    [].forEach.call(document.querySelectorAll('.wb-sol'), function(d){
+      if (!d.open) { d.open = true; opened.push(d); }
+    });
+    window.print();
+    setTimeout(function(){ opened.forEach(function(d){ d.open = false; }); }, 300);
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', function(){
+    var label = tab === 'all' ? '全部错题' : (ERR_META[tab] || {}).n;
+    var n = currentItems().length;
+    if (!n) return;
+    if (!confirm('确定清空「' + label + '」的 ' + n + ' 道错题？（作答统计会保留）')) return;
+    if (tab === 'all') BJM.qClearAllWrong();
+    else BJM.qClearWrongByType(tab);
+    BJM.toast('已清空 ' + n + ' 道');
+    page = 0;
+    refresh();
+  });
 
   BJM.ready(function(){
     refresh();
     loadAll().then(refresh);
   });
   document.addEventListener('bj:qlog', refresh);
-  document.addEventListener('bj:day', refresh);
+  document.addEventListener('bj:day', refreshStats);
 })();
 </script>
 </body>

@@ -1974,17 +1974,25 @@ a.coverage-row:hover { border-color: var(--accent); transform: translateX(3px); 
    MathJax 输出的 width/height 用 ex 单位，在 font-size 变化的容器里
    （如 .se-fb 的 .88rem）会被解析成很小的像素值，导致公式看起来"消失"。
    这里用 viewBox 的宽高比 + 1em 基准强制缩放，不依赖 ex。 */
+/* MathJax 的 width/height 用 ex 单位，在字号变化的容器里会被算成很小的像素值。
+   固定 height 又会把分式/根式这类纵向结构压扁。
+   所以：height 用 auto 让 viewBox 决定宽高比，min-height 保证纯文字公式不塌，
+   max-height 防止超长公式撑破行。 */
 .math svg {
   display: inline-block;
   vertical-align: middle;
-  /* 1em ≈ 16px；MathJax 的 1ex 约等于 0.45em，viewBox 高度通常 700-900 单位 */
-  height: 1.15em;
+  height: auto;
+  min-height: 1.1em;
+  max-height: 3em;
   width: auto;
+  max-width: 100%;
 }
-/* 行间公式单独处理：跟随内容宽度 */
-.math-block svg { height: 1.6em; max-width: 100%; }
-/* 反馈区字号偏小，公式略放大保证可读 */
-.se-fb .math svg, .se-hint .math svg, .se-ans .math svg, .se-step-fb .math svg { height: 1.3em; }
+/* 行间公式可以更高 */
+.math-block svg { min-height: 1.5em; max-height: 8em; }
+/* 反馈区/提示区字号偏小，公式略放大保证可读 */
+.se-fb .math svg, .se-hint .math svg, .se-ans .math svg, .se-step-fb .math svg {
+  min-height: 1.25em;
+}
 
 /* ==========================================================
    弱点诊断：掌握度环 / 弱点卡 / 卡点柱 / 错因条
@@ -2275,53 +2283,73 @@ details[open] > summary::before { content: '▾ '; }
   .mrow-signal { -webkit-line-clamp: 2; }
 }
 
+
 /* ==========================================================
-   错题本（Tab + 分组 + 逐题卡片）
+   智能错题本（参考河北站设计）
+   Tab 分类 / 搜索 / 分页 / 批量重做 / 打印
    ========================================================== */
-.tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--border); }
+
+/* ---------- Tab ---------- */
+.tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .tab {
   font-family: inherit; cursor: pointer; background: none; border: 0;
-  padding: 11px 18px; font-size: .94rem; font-weight: 700; color: var(--text-3);
+  padding: 11px 16px; font-size: .9rem; font-weight: 700; color: var(--text-3);
   border-bottom: 2.5px solid transparent; margin-bottom: -1px;
   transition: color .16s var(--ease), border-color .16s var(--ease);
-  display: inline-flex; align-items: center; gap: 7px;
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
 }
 .tab:hover { color: var(--text); }
 .tab.on { color: var(--accent); border-bottom-color: var(--accent); }
 .tab span {
-  font-size: .74rem; font-weight: 800; padding: 1px 7px; border-radius: var(--r-pill);
-  background: var(--rose-soft); color: var(--rose); min-width: 18px; text-align: center;
+  font-size: .72rem; font-weight: 800; padding: 1px 7px; border-radius: var(--r-pill);
+  background: var(--bg-3); color: var(--text-3); min-width: 18px; text-align: center;
 }
+.tab.on span { background: var(--rose-soft); color: var(--rose); }
 
-/* 分组 */
-.wb-group { margin-bottom: 26px; }
-.wb-group-head {
-  display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
-  padding: 13px 16px; border-radius: var(--r-sm) var(--r-sm) 0 0;
-  background: var(--surface-2); border: 1px solid var(--border); border-bottom: 0;
-  flex-wrap: wrap;
+/* ---------- 工具栏 ---------- */
+.toolbar {
+  display: flex; gap: 9px; align-items: center; flex-wrap: wrap;
+  margin-bottom: 16px;
 }
-.wb-group-head b { font-size: 1rem; }
-.wb-count {
-  font-size: .76rem; font-weight: 700; color: var(--rose);
-  background: var(--rose-soft); padding: 2px 8px; border-radius: var(--r-pill);
-  margin-left: 8px;
+.toolbar .field {
+  font-family: inherit; padding: 9px 13px; border-radius: 10px;
+  border: 1.5px solid var(--border-2); background: var(--surface);
+  color: var(--text); font-size: .88rem;
 }
-.wb-hint { display: block; font-size: .8rem; color: var(--text-3); margin-top: 4px; }
-.wb-group-act { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.wb-fix { font-size: .82rem; font-weight: 650; color: var(--accent); text-decoration: none; }
-.wb-fix:hover { text-decoration: underline; }
+.toolbar #wq { flex: 1; min-width: 200px; }
+.toolbar #psize { max-width: 130px; }
+.toolbar .btn:disabled { opacity: .45; cursor: default; }
 
-/* 单题 */
+/* ---------- 错题条目 ---------- */
 .wb-item {
   padding: 16px 18px; background: var(--surface);
-  border: 1px solid var(--border); border-top: 0;
+  border: 1px solid var(--border); border-radius: var(--r);
+  margin-bottom: 11px; box-shadow: var(--shadow-1);
 }
-.wb-item:last-child { border-radius: 0 0 var(--r-sm) var(--r-sm); }
-.wb-stem { font-size: .94rem; line-height: 1.8; font-weight: 550; }
-.wb-fig { margin: 10px 0; display: flex; justify-content: center; }
+.wb-head {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.wb-type {
+  font-size: .7rem; font-weight: 800; padding: 2px 9px; border-radius: var(--r-pill);
+  background: var(--rose-soft); color: var(--rose); white-space: nowrap;
+}
+.wb-type.concept { background: var(--accent-soft); color: var(--accent); }
+.wb-type.method { background: var(--accent-2-soft); color: var(--accent-2); }
+.wb-type.construct { background: var(--rose-soft); color: var(--rose); }
+.wb-type.calc { background: var(--gold-soft); color: var(--gold); }
+.wb-type.express { background: var(--bg-3); color: var(--text-2); }
+.wb-tier {
+  font-size: .68rem; font-weight: 700; padding: 2px 8px; border-radius: var(--r-pill);
+  background: var(--bg-3); color: var(--text-3);
+}
+.wb-head-meta { font-size: .76rem; color: var(--text-3); margin-left: auto; }
+
+.wb-stem { font-size: .95rem; line-height: 1.85; font-weight: 550; }
+.wb-fig { margin: 12px 0; display: flex; justify-content: center; }
 .wb-fig .fig { max-width: 320px; margin: 0; }
-.wb-opts { margin: 11px 0; display: grid; gap: 6px; }
+
+.wb-opts { margin: 12px 0; display: grid; gap: 6px; }
 .wb-opt {
   display: flex; gap: 9px; align-items: flex-start;
   padding: 8px 12px; border-radius: 8px; font-size: .88rem; line-height: 1.7;
@@ -2334,8 +2362,9 @@ details[open] > summary::before { content: '▾ '; }
   font-size: .72rem; font-weight: 800;
 }
 .wb-opt.right .wb-key { background: var(--ok); color: #fff; }
+
 .wb-sol {
-  margin: 10px 0; background: var(--surface-2); border-radius: 8px;
+  margin: 11px 0; background: var(--surface-2); border-radius: 8px;
   border: 1px solid var(--border); overflow: hidden;
 }
 .wb-sol > summary {
@@ -2348,25 +2377,74 @@ details[open] > summary::before { content: '▾ '; }
 .wb-sol > div { padding: 0 13px 13px; font-size: .88rem; line-height: 1.9; color: var(--text-2); }
 
 .wb-foot {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: flex-end;
   gap: 12px; margin-top: 12px; padding-top: 11px;
-  border-top: 1px dashed var(--border); flex-wrap: wrap;
+  border-top: 1px dashed var(--border);
 }
-.wb-meta { font-size: .76rem; color: var(--text-3); }
 .wb-act { display: flex; gap: 8px; }
 
+/* ---------- 分页 ---------- */
+.pager {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 22px; flex-wrap: wrap;
+}
+.pager button {
+  font-family: inherit; cursor: pointer; border-radius: 9px;
+  border: 1.5px solid var(--border-2); background: var(--surface);
+  color: var(--text-2); font-size: .84rem; font-weight: 650;
+  min-width: 36px; height: 36px; padding: 0 11px;
+  transition: border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease);
+}
+.pager button:hover:not(:disabled):not(.on) {
+  border-color: var(--accent); color: var(--accent); background: var(--accent-soft);
+}
+.pager button.on {
+  background: var(--accent-grad); border-color: transparent; color: #fff;
+  box-shadow: var(--shadow-accent);
+}
+.pager button:disabled { opacity: .38; cursor: default; }
+.pg-dots { color: var(--text-3); padding: 0 3px; }
+
+/* ---------- 空状态 ---------- */
+.empty b { display: block; margin-bottom: 6px; }
+.empty span { font-size: .88rem; color: var(--text-2); }
+
 @media (max-width: 640px) {
-  .wb-group-head { flex-direction: column; }
-  .wb-group-act { width: 100%; justify-content: space-between; }
-  .wb-foot { flex-direction: column; align-items: stretch; }
-  .wb-act { justify-content: flex-end; }
+  .wb-head-meta { margin-left: 0; width: 100%; }
+  .toolbar #wq { min-width: 100%; }
+  .pager button { min-width: 32px; height: 32px; font-size: .8rem; }
 }
 
-/* ---------- 行内公式高度按复杂度自适应 ----------
-   height:1.15em 对纯文字公式合适，但含分式/根式/上下标时会把内容压扁。
-   用 viewBox 的宽高比判断：高宽比 > 0.5 说明是纵向结构（分式、根式、矩阵），
-   需要更高的显示高度。纯 CSS 无法读 viewBox，所以用 min-height + 让 svg 自然撑开。 */
-.math svg { height: auto; min-height: 1.15em; max-height: 3.2em; }
-.math-inline > svg { vertical-align: -0.28em; }
-/* 含分式的公式（MathJax 会输出更高的 viewBox）自然获得更大高度 */
-.math-block svg { height: auto; max-height: 8em; }
+/* ==========================================================
+   打印错题纸
+   ========================================================== */
+@media print {
+  .hdr, .foot, .scroll-progress, .toast,
+  .tabs, .toolbar, .pager, #redoZone, .wb-foot, .wb-act,
+  .section-head .btn, #pane-diag { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+  .main { padding: 0 !important; }
+  .wrap { max-width: none !important; padding: 0 !important; }
+  .kv { display: none !important; }
+  .page-head { margin-bottom: 14px; }
+  .page-head h1 { font-size: 1.5rem; }
+  .page-head .lede { font-size: .8rem; color: #444; }
+
+  .wb-item {
+    box-shadow: none !important; border: 1px solid #cbd5e1 !important;
+    break-inside: avoid; page-break-inside: avoid;
+    margin-bottom: 10px; padding: 12px 14px;
+  }
+  .wb-stem { font-size: .92rem; }
+  .wb-opt { background: #f8fafc !important; border: 1px solid #e2e8f0; }
+  .wb-opt.right { background: #f0fdf4 !important; border-color: #86efac; }
+  .wb-sol { border: 1px solid #e2e8f0 !important; background: #fff !important; }
+  .wb-sol > summary { display: none !important; }
+  .wb-sol > div { display: block !important; padding: 10px 12px !important; }
+  details > summary { display: none !important; }
+  details > div { display: block !important; }
+  .fig { max-width: 260px !important; }
+  .math-defs { display: none; }
+  /* 打印时公式转黑 */
+  .math svg, .fig { color: #000 !important; }
+}
