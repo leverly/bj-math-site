@@ -285,7 +285,11 @@ function buildHome() {
     </div>`;
   }).join('');
 
-  const methodCards = METHODS.map((m) => {
+  /* 首页只放示例，不铺全部——完整列表在 method.html，那里有分页。
+     选 4 张覆盖三种层级，让读者一眼看到「识别信号」的写法差异。 */
+  const sampleIds = ['m-quad-interval', 'm-midpoint-4', 'm-factor-4', 'm-newdef-3step'];
+  const sampleMethods = sampleIds.map((id) => METHODS.find((m) => m.id === id)).filter(Boolean);
+  const methodCards = sampleMethods.map((m) => {
     const ch = CH_BY_ID.get(m.chapter);
     return `<a class="card track-card" href="method/${m.id}.html">
       <div class="track-head">
@@ -385,11 +389,11 @@ function buildHome() {
 <section class="section reveal">
   <div class="section-head">
     <div class="section-head-left">
-      <span class="kicker">方法卡</span>
+      <span class="kicker">方法卡 · 示例 4 / ${METHODS.length}</span>
       <h2>先认题型，再谈方法</h2>
-      <span class="sub">每张卡第一行是「识别信号」——什么题面出现时该想到它。这是理科与背单词最不一样的地方</span>
+      <span class="sub">每张卡第一行是「识别信号」——什么题面出现时该想到它。下面 4 张覆盖送分 / 中档 / 区分三层</span>
     </div>
-    <a class="btn sm soft" href="method.html">全部方法卡 →</a>
+    <a class="btn sm soft" href="method.html">查看全部 ${METHODS.length} 张 →</a>
   </div>
   <div class="grid c2 track-grid">${methodCards}</div>
 </section>
@@ -446,76 +450,135 @@ function buildHome() {
    ========================================================== */
 function buildMethodIndex() {
   const R = newRenderers();
-  const blocks = [...new Set(METHODS.map((m) => (CH_BY_ID.get(m.chapter) || {}).block || '其他'))];
+  const PAGE_SIZE = 9;
 
-  const groups = blocks.map((block) => {
-    const list = METHODS.filter((m) => ((CH_BY_ID.get(m.chapter) || {}).block || '其他') === block);
-    const cards = list.map((m) => {
-      const ch = CH_BY_ID.get(m.chapter);
-      return `<a class="card" href="method/${m.id}.html">
-        <div class="card-ico ${m.tier === 'dist' ? 'rose' : 'purple'}">${m.tier === 'dist' ? '🎯' : '📐'}</div>
-        <h3>${esc(m.name)}</h3>
-        <div class="meta">${esc(ch ? ch.name : '')} · ${TIER_NAME[m.tier]}</div>
-        <p class="desc" style="margin-top:8px;font-size:.86rem">${R.math.render(m.signal)}</p>
-      </a>`;
-    }).join('');
-    return `<section class="section">
-      <div class="section-head">
-        <div class="section-head-left">
-          <span class="kicker">${esc(block)}</span>
-          <h2>${list.length} 张方法卡</h2>
-        </div>
-      </div>
-      <div class="grid c3">${cards}</div>
-    </section>`;
-  }).join('');
+  /* 扁平列表 + 分页。分页与搜索共存：搜索时忽略页码，显示全部命中。 */
+  const all = METHODS.map((m) => {
+    const ch = CH_BY_ID.get(m.chapter);
+    return {
+      id: m.id, name: m.name, tier: m.tier,
+      chapterName: ch ? ch.name : '',
+      block: (ch || {}).block || '其他',
+      signalHtml: R.math.render(m.signal),
+      steps: (m.steps || []).length,
+      pitfalls: (m.pitfalls || []).length,
+      qCount: (m.variantIds || []).length + 1,
+      search: (m.name + ' ' + m.signal + ' ' + (ch ? ch.name : '')).replace(/\s+/g, ''),
+    };
+  });
+
+  const cardHtml = (m) => `<a class="card mcard" data-id="${m.id}" data-tier="${m.tier}" data-search="${esc(m.search)}" href="method/${m.id}.html">
+    <div class="mcard-top">
+      <div class="card-ico ${m.tier === 'dist' ? 'rose' : 'purple'}">${m.tier === 'dist' ? '🎯' : '📐'}</div>
+      <span class="mcard-tier ${m.tier}">${TIER_NAME[m.tier]}</span>
+    </div>
+    <h3>${esc(m.name)}</h3>
+    <div class="meta">${esc(m.chapterName)} · ${m.steps} 步 · ${m.pitfalls} 个误用 · ${m.qCount} 题</div>
+    <p class="desc" style="margin-top:8px;font-size:.85rem">${m.signalHtml}</p>
+  </a>`;
+
+  const cardsHtml = all.map(cardHtml).join('');
+
+  const tierChips = ['all', 'send', 'mid', 'dist'].map((t) =>
+    `<button class="chip${t === 'all' ? ' on' : ''}" data-tier="${t}">${t === 'all' ? '全部' : TIER_NAME[t]}</button>`
+  ).join('');
 
   const body = `
 <div class="page-head">
   <div class="crumb"><a href="index.html">首页</a> / 方法卡</div>
   <h1>方法卡索引</h1>
-  <p class="lede">按<b>方法</b>组织，不按章节。搜索框支持输入题面片段——学生记不住「二次函数区间最值」这个名字，但记得「m≤x≤n」。</p>
+  <p class="lede">共 <b>${METHODS.length}</b> 张。按<b>方法</b>组织，不按章节。搜索框支持输入题面片段——学生记不住「二次函数区间最值」这个名字，但记得「m≤x≤n」。</p>
 </div>
 
 <section class="section" style="margin-top:20px">
   <div class="card" style="padding:18px 20px">
     <label class="field" style="display:flex;gap:10px;align-items:center">
       <span class="kicker" style="white-space:nowrap">按信号搜索</span>
-      <input id="mSearch" type="text" placeholder="输入题面片段，如：三条线段 / 中点 / m≤x≤n / 切线" style="flex:1;padding:11px 14px;border-radius:10px;border:1.5px solid var(--border-2);background:var(--surface);color:var(--text);font-size:.95rem">
+      <input id="mSearch" type="text" placeholder="输入题面片段，如：三条线段 / 中点 / 切线 / 面积" style="flex:1;padding:11px 14px;border-radius:10px;border:1.5px solid var(--border-2);background:var(--surface);color:var(--text);font-size:.95rem">
     </label>
-    <div id="mHint" class="setup-hint" style="margin-top:10px">共 ${METHODS.length} 张卡 · 输入关键词实时过滤</div>
+    <div class="chips" id="tierChips" style="margin-top:12px">${tierChips}</div>
+    <div id="mHint" class="setup-hint" style="margin-top:10px">共 ${METHODS.length} 张卡 · 每页 ${PAGE_SIZE} 张</div>
   </div>
 </section>
 
-<div id="mGroups">${groups}</div>
+<section class="section" style="margin-top:22px">
+  <div class="grid c3" id="mGrid">${cardsHtml}</div>
+  <div class="pager" id="mPager"></div>
+</section>
 `;
 
   const script = `
 (function(){
+  var PAGE_SIZE = ${PAGE_SIZE};
   var input = document.getElementById('mSearch');
   var hint = document.getElementById('mHint');
-  var groups = document.getElementById('mGroups');
-  var cards = [].slice.call(groups.querySelectorAll('.card'));
-  // 建立每张卡的检索文本（含识别信号纯文本）
-  var meta = window.BJM.META || { methods: [] };
-  cards.forEach(function(c){
-    c.__text = (c.textContent || '').replace(/\\s+/g, '');
-  });
-  input.addEventListener('input', function(){
+  var grid = document.getElementById('mGrid');
+  var pager = document.getElementById('mPager');
+  var cards = [].slice.call(grid.querySelectorAll('.mcard'));
+  var tier = 'all';
+  var page = 1;
+
+  function filtered(){
     var q = input.value.trim().replace(/\\s+/g, '');
-    var shown = 0;
-    cards.forEach(function(c){
-      var hit = !q || c.__text.indexOf(q) >= 0;
-      c.style.display = hit ? '' : 'none';
-      if (hit) shown++;
+    return cards.filter(function(c){
+      var okTier = tier === 'all' || c.getAttribute('data-tier') === tier || true;
+      // tier 从卡片里取不到，用 data-tier 属性（下面补）
+      var t = c.getAttribute('data-tier');
+      okTier = tier === 'all' || t === tier;
+      var okQ = !q || (c.getAttribute('data-search') || '').indexOf(q) >= 0;
+      return okTier && okQ;
     });
-    // 隐藏空分组
-    [].forEach.call(groups.querySelectorAll('.section'), function(sec){
-      var any = [].some.call(sec.querySelectorAll('.card'), function(c){ return c.style.display !== 'none'; });
-      sec.style.display = any ? '' : 'none';
+  }
+
+  function render(){
+    var q = input.value.trim().replace(/\\s+/g, '');
+    var list = filtered();
+    var searching = !!q;
+    var totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+    if (page > totalPages) page = totalPages;
+
+    // 搜索时显示全部命中，不分页（结果本来就不多）
+    var show = searching ? list : list.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    cards.forEach(function(c){ c.style.display = 'none'; });
+    show.forEach(function(c){ c.style.display = ''; });
+
+    // 分页控件
+    if (searching) {
+      pager.innerHTML = '';
+      hint.textContent = '命中 ' + list.length + ' / ' + cards.length + ' 张卡';
+      return;
+    }
+    hint.textContent = '共 ' + list.length + ' 张卡 · 第 ' + page + ' / ' + totalPages + ' 页';
+    if (totalPages <= 1) { pager.innerHTML = ''; return; }
+    var html = '';
+    html += '<button class="pg-btn" data-p="' + Math.max(1, page - 1) + '"' + (page === 1 ? ' disabled' : '') + '>← 上一页</button>';
+    for (var i = 1; i <= totalPages; i++) {
+      html += '<button class="pg-num' + (i === page ? ' on' : '') + '" data-p="' + i + '">' + i + '</button>';
+    }
+    html += '<button class="pg-btn" data-p="' + Math.min(totalPages, page + 1) + '"' + (page === totalPages ? ' disabled' : '') + '>下一页 →</button>';
+    pager.innerHTML = html;
+    [].forEach.call(pager.querySelectorAll('button[data-p]'), function(b){
+      b.addEventListener('click', function(){
+        page = parseInt(b.getAttribute('data-p'), 10);
+        render();
+        document.querySelector('#mGrid').scrollIntoView({ block: 'start', behavior: 'smooth' });
+      });
     });
-    hint.textContent = q ? ('命中 ' + shown + ' / ' + cards.length + ' 张卡') : ('共 ' + cards.length + ' 张卡 · 输入关键词实时过滤');
+  }
+
+  input.addEventListener('input', function(){ page = 1; render(); });
+
+  [].forEach.call(document.querySelectorAll('#tierChips .chip'), function(c){
+    c.addEventListener('click', function(){
+      [].forEach.call(document.querySelectorAll('#tierChips .chip'), function(x){ x.classList.remove('on'); });
+      c.classList.add('on');
+      tier = c.getAttribute('data-tier');
+      page = 1;
+      render();
+    });
   });
+
+  render();
 })();
 `;
 

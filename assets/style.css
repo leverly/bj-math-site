@@ -2079,3 +2079,42 @@ details[open] > summary::before { content: '▾ '; }
   .weak-head .btn { width: 100%; }
   .stuck-chart { height: 96px; gap: 8px; }
 }
+
+/* ==========================================================
+   方法卡索引：卡片 + 分页
+   ========================================================== */
+.mcard { display: flex; flex-direction: column; gap: 2px; }
+.mcard-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.mcard-tier {
+  font-size: .68rem; font-weight: 700; padding: 2px 8px; border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+.mcard-tier.send { background: var(--ok-soft); color: var(--ok); }
+.mcard-tier.mid { background: var(--accent-soft); color: var(--accent); }
+.mcard-tier.dist { background: var(--rose-soft); color: var(--rose); }
+
+.pager {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  margin-top: 26px; flex-wrap: wrap;
+}
+.pg-btn, .pg-num {
+  font-family: inherit; cursor: pointer; border-radius: 9px;
+  border: 1.5px solid var(--border-2); background: var(--surface);
+  color: var(--text-2); font-size: .84rem; font-weight: 650;
+  transition: border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease);
+}
+.pg-btn { padding: 8px 14px; }
+.pg-num { width: 36px; height: 36px; display: grid; place-items: center; }
+.pg-btn:hover:not(:disabled), .pg-num:hover:not(.on) {
+  border-color: var(--accent); color: var(--accent); background: var(--accent-soft);
+}
+.pg-num.on {
+  background: var(--accent-grad); border-color: transparent; color: #fff;
+  box-shadow: var(--shadow-accent);
+}
+.pg-btn:disabled { opacity: .4; cursor: default; }
+
+@media (max-width: 640px) {
+  .pg-num { width: 32px; height: 32px; font-size: .8rem; }
+  .pg-btn { padding: 7px 11px; font-size: .8rem; }
+}
