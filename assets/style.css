@@ -2274,3 +2274,99 @@ details[open] > summary::before { content: '▾ '; }
   .mrow-meta { display: none; }
   .mrow-signal { -webkit-line-clamp: 2; }
 }
+
+/* ==========================================================
+   错题本（Tab + 分组 + 逐题卡片）
+   ========================================================== */
+.tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--border); }
+.tab {
+  font-family: inherit; cursor: pointer; background: none; border: 0;
+  padding: 11px 18px; font-size: .94rem; font-weight: 700; color: var(--text-3);
+  border-bottom: 2.5px solid transparent; margin-bottom: -1px;
+  transition: color .16s var(--ease), border-color .16s var(--ease);
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.tab:hover { color: var(--text); }
+.tab.on { color: var(--accent); border-bottom-color: var(--accent); }
+.tab span {
+  font-size: .74rem; font-weight: 800; padding: 1px 7px; border-radius: var(--r-pill);
+  background: var(--rose-soft); color: var(--rose); min-width: 18px; text-align: center;
+}
+
+/* 分组 */
+.wb-group { margin-bottom: 26px; }
+.wb-group-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+  padding: 13px 16px; border-radius: var(--r-sm) var(--r-sm) 0 0;
+  background: var(--surface-2); border: 1px solid var(--border); border-bottom: 0;
+  flex-wrap: wrap;
+}
+.wb-group-head b { font-size: 1rem; }
+.wb-count {
+  font-size: .76rem; font-weight: 700; color: var(--rose);
+  background: var(--rose-soft); padding: 2px 8px; border-radius: var(--r-pill);
+  margin-left: 8px;
+}
+.wb-hint { display: block; font-size: .8rem; color: var(--text-3); margin-top: 4px; }
+.wb-group-act { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.wb-fix { font-size: .82rem; font-weight: 650; color: var(--accent); text-decoration: none; }
+.wb-fix:hover { text-decoration: underline; }
+
+/* 单题 */
+.wb-item {
+  padding: 16px 18px; background: var(--surface);
+  border: 1px solid var(--border); border-top: 0;
+}
+.wb-item:last-child { border-radius: 0 0 var(--r-sm) var(--r-sm); }
+.wb-stem { font-size: .94rem; line-height: 1.8; font-weight: 550; }
+.wb-fig { margin: 10px 0; display: flex; justify-content: center; }
+.wb-fig .fig { max-width: 320px; margin: 0; }
+.wb-opts { margin: 11px 0; display: grid; gap: 6px; }
+.wb-opt {
+  display: flex; gap: 9px; align-items: flex-start;
+  padding: 8px 12px; border-radius: 8px; font-size: .88rem; line-height: 1.7;
+  background: var(--surface-2); color: var(--text-2);
+}
+.wb-opt.right { background: var(--ok-soft); color: var(--ok); font-weight: 600; }
+.wb-key {
+  flex: none; width: 20px; height: 20px; display: grid; place-items: center;
+  border-radius: 6px; background: var(--bg-3); color: var(--text-3);
+  font-size: .72rem; font-weight: 800;
+}
+.wb-opt.right .wb-key { background: var(--ok); color: #fff; }
+.wb-sol {
+  margin: 10px 0; background: var(--surface-2); border-radius: 8px;
+  border: 1px solid var(--border); overflow: hidden;
+}
+.wb-sol > summary {
+  padding: 9px 13px; cursor: pointer; font-size: .84rem; font-weight: 650;
+  color: var(--accent); list-style: none;
+}
+.wb-sol > summary::-webkit-details-marker { display: none; }
+.wb-sol > summary::before { content: '▸ '; }
+.wb-sol[open] > summary::before { content: '▾ '; }
+.wb-sol > div { padding: 0 13px 13px; font-size: .88rem; line-height: 1.9; color: var(--text-2); }
+
+.wb-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-top: 12px; padding-top: 11px;
+  border-top: 1px dashed var(--border); flex-wrap: wrap;
+}
+.wb-meta { font-size: .76rem; color: var(--text-3); }
+.wb-act { display: flex; gap: 8px; }
+
+@media (max-width: 640px) {
+  .wb-group-head { flex-direction: column; }
+  .wb-group-act { width: 100%; justify-content: space-between; }
+  .wb-foot { flex-direction: column; align-items: stretch; }
+  .wb-act { justify-content: flex-end; }
+}
+
+/* ---------- 行内公式高度按复杂度自适应 ----------
+   height:1.15em 对纯文字公式合适，但含分式/根式/上下标时会把内容压扁。
+   用 viewBox 的宽高比判断：高宽比 > 0.5 说明是纵向结构（分式、根式、矩阵），
+   需要更高的显示高度。纯 CSS 无法读 viewBox，所以用 min-height + 让 svg 自然撑开。 */
+.math svg { height: auto; min-height: 1.15em; max-height: 3.2em; }
+.math-inline > svg { vertical-align: -0.28em; }
+/* 含分式的公式（MathJax 会输出更高的 viewBox）自然获得更大高度 */
+.math-block svg { height: auto; max-height: 8em; }

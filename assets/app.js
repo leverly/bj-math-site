@@ -237,6 +237,28 @@
     document.dispatchEvent(new CustomEvent('bj:qlog'));
   };
 
+  /** 按错因批量移除（错题本的「清空这一类」） */
+  Z.qClearWrongByType = function (type) {
+    var n = 0;
+    Object.keys(qlog.wrong).forEach(function (id) {
+      var w = qlog.wrong[id];
+      var t = ERR_TYPES.indexOf(w.errorType) >= 0 ? w.errorType : 'method';
+      if (t === type) { delete qlog.wrong[id]; n++; }
+    });
+    store(QLOG_KEY, qlog);
+    document.dispatchEvent(new CustomEvent('bj:qlog'));
+    return n;
+  };
+
+  /** 清空整个错题本（保留统计） */
+  Z.qClearAllWrong = function () {
+    var n = Object.keys(qlog.wrong).length;
+    qlog.wrong = {};
+    store(QLOG_KEY, qlog);
+    document.dispatchEvent(new CustomEvent('bj:qlog'));
+    return n;
+  };
+
   /** 按错因分栏 */
   Z.wrongByType = function () {
     var out = {};

@@ -1741,73 +1741,98 @@ function buildWrong() {
 
   const body = `
 <div class="page-head">
-  <div class="crumb"><a href="index.html">首页</a> / 错因诊断</div>
-  <h1>错因诊断</h1>
-  <p class="lede">这里不列错题，给<b>下一步练什么</b>。错题按「可训练单元」（方法卡 / 章节）聚合，每个单元告诉你正确率、最常错的类型、最常卡在第几步，然后一键进专项训练。</p>
+  <div class="crumb"><a href="index.html">首页</a> / 错题本与诊断</div>
+  <h1>错题本与诊断</h1>
+  <p class="lede">答错的题自动收进<b>错题本</b>，可以随时重做、逐题移出；<b>诊断</b>则把错题聚合成可训练单元，告诉你下一步练什么。两件事分开看。</p>
 </div>
 
 <section class="section" style="margin-top:20px">
   <div class="kv">
     <div class="k"><b id="kTotal">0</b><span>累计作答</span></div>
     <div class="k"><b id="kRate" style="color:var(--accent)">—</b><span>综合正确率</span></div>
-    <div class="k"><b id="kWrong" style="color:var(--rose)">0</b><span>待清错题</span></div>
+    <div class="k"><b id="kWrong" style="color:var(--rose)">0</b><span>错题本</span></div>
     <div class="k"><b id="kWeak" style="color:var(--gold)">0</b><span>薄弱单元</span></div>
   </div>
 </section>
 
-<section class="section" style="margin-top:26px" id="actionsSec">
-  <div class="section-head">
-    <div class="section-head-left">
-      <span class="kicker">下一步练什么</span>
-      <h2>按优先级排序的薄弱单元</h2>
-      <span class="sub">正确率越低、错题越多越靠前。点「专项训练」直接进该单元的题</span>
-    </div>
+<section class="section" style="margin-top:22px">
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-tab="book">错题本 <span id="tabN">0</span></button>
+    <button class="tab" data-tab="diag">弱点诊断</button>
   </div>
-  <div id="actions"></div>
 </section>
 
-<section class="section" style="margin-top:26px">
-  <div class="section-head">
-    <div class="section-head-left">
-      <span class="kicker">错因分布</span>
-      <h2>你主要错在哪一层</h2>
-      <span class="sub">五类错因的补救动作完全不同，先看清主因再决定练什么</span>
+<!-- ============ Tab 1：错题本 ============ -->
+<div id="pane-book">
+  <section class="section" style="margin-top:18px">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="kicker">错题本</span>
+        <h2>按错因分组，可逐题重做</h2>
+        <span class="sub">点「重做这题」立即重练；答对后自动移出，也可以手动移除</span>
+      </div>
+      <button class="btn ghost sm" id="clearAll">清空错题本</button>
     </div>
-  </div>
-  <div id="errBars" class="traps"></div>
-</section>
+    <div id="bookList"></div>
+  </section>
+  <section class="section" id="redoSection" style="display:none;margin-top:24px">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="kicker">重做</span>
+        <h2>立即重练这一题</h2>
+        <span class="sub">答对会自动移出错题本</span>
+      </div>
+      <button class="btn ghost sm" id="redoClose">收起</button>
+    </div>
+    <div id="redoMount"></div>
+  </section>
+</div>
 
-<section class="section" style="margin-top:26px">
-  <div class="section-head">
-    <div class="section-head-left">
-      <span class="kicker">卡点分布</span>
-      <h2>你最常卡在第几步</h2>
-      <span class="sub">第 1 步就卡 → 多半是概念或读题；第 3 步以后卡 → 多半是计算或收尾</span>
+<!-- ============ Tab 2：弱点诊断 ============ -->
+<div id="pane-diag" style="display:none">
+  <section class="section" style="margin-top:18px">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="kicker">下一步练什么</span>
+        <h2>按优先级排序的薄弱单元</h2>
+        <span class="sub">正确率越低、错题越多越靠前。点「专项训练」直接进该单元的题</span>
+      </div>
     </div>
-  </div>
-  <div id="stuckBars" class="card" style="padding:18px 20px"></div>
-</section>
+    <div id="actions"></div>
+  </section>
 
-<section class="section" style="margin-top:26px">
-  <div class="section-head">
-    <div class="section-head-left">
-      <span class="kicker">错题明细</span>
-      <h2>按错因分组</h2>
-      <span class="sub">每题显示卡在第几步。想看具体题目再展开</span>
+  <section class="section" style="margin-top:26px">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="kicker">错因分布</span>
+        <h2>你主要错在哪一层</h2>
+        <span class="sub">五类错因的补救动作完全不同，先看清主因再决定练什么</span>
+      </div>
     </div>
-    <button class="btn ghost sm" id="resetBtn">清空记录</button>
-  </div>
-  <div id="wrongList"></div>
-</section>
+    <div id="errBars" class="traps"></div>
+  </section>
+
+  <section class="section" style="margin-top:26px">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="kicker">卡点分布</span>
+        <h2>你最常卡在第几步</h2>
+        <span class="sub">第 1 步就卡 → 多半是概念或读题；第 3 步以后卡 → 多半是计算或收尾</span>
+      </div>
+    </div>
+    <div id="stuckBars" class="card" style="padding:18px 20px"></div>
+  </section>
+</div>
 `;
 
   const script = `
 (function(){
   var ERR_META = ${JSON.stringify(ERR.reduce((a, [k, n, d, fix, href]) => (a[k] = { n, d, fix, href }, a), {}))};
   var ERR_NAME = BJM.ERR_NAME;
-  var CH = function(){ return window.BJM.CH || {}; };
   var META = window.BJM.META || { chapters: [], methods: [] };
   var loadedAll = false;
+
+  function CH(){ return window.BJM.CH || {}; }
 
   function loadAll(){
     if (loadedAll) return Promise.resolve();
@@ -1850,10 +1875,161 @@ function buildWrong() {
     var c = (META.chapters || []).find(function(x){ return x.id === id; });
     return c ? (c.no + '. ' + c.name) : id;
   }
-
   function pct(r){ return Math.round(r * 100) + '%'; }
   function rateClass(r){ return r >= 0.85 ? 'ok' : r >= 0.6 ? 'warn' : 'bad'; }
 
+  /* ============ Tab 切换 ============ */
+  var tab = 'book';
+  [].forEach.call(document.querySelectorAll('#tabs .tab'), function(b){
+    b.addEventListener('click', function(){
+      [].forEach.call(document.querySelectorAll('#tabs .tab'), function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      tab = b.getAttribute('data-tab');
+      document.getElementById('pane-book').style.display = tab === 'book' ? '' : 'none';
+      document.getElementById('pane-diag').style.display = tab === 'diag' ? '' : 'none';
+    });
+  });
+
+  /* ============ 错题本 ============ */
+  function renderBook(){
+    var byType = BJM.wrongByType();
+    var qm = qmap();
+    var host = document.getElementById('bookList');
+    var any = false, html = '';
+
+    BJM.ERR_TYPES.forEach(function(t){
+      var items = byType[t] || [];
+      if (!items.length) return;
+      any = true;
+      var meta = ERR_META[t] || { n: t, d: '', fix: '', href: 'drill.html' };
+      html += '<div class="wb-group">' +
+        '<div class="wb-group-head">' +
+          '<div>' +
+            '<b>' + meta.n + '</b>' +
+            '<span class="wb-count">' + items.length + ' 题</span>' +
+            '<span class="wb-hint">' + meta.d + '</span>' +
+          '</div>' +
+          '<div class="wb-group-act">' +
+            '<a class="wb-fix" href="' + meta.href + '">' + meta.fix + ' →</a>' +
+            '<button class="btn ghost xs" data-clear-type="' + t + '">清空这类</button>' +
+          '</div>' +
+        '</div>';
+
+      items.forEach(function(w){
+        var q = qm[w.id];
+        if (!q) {
+          html += '<div class="wb-item"><div class="wb-stem">' + w.id + '（题目数据未找到）</div></div>';
+          return;
+        }
+        var stepTxt = w.stuckStep >= 0 ? ('卡在第 ' + (w.stuckStep + 1) + ' 步') : '';
+        var metaLine = [cname(w.chapter), w.method ? mname(w.method) : '', stepTxt, '错 ' + w.n + ' 次']
+          .filter(Boolean).join(' · ');
+
+        // 选项：优先构建期渲染的 optionsHtml
+        var firstStep = (q.steps || [])[0];
+        var opts = q.options || (firstStep && firstStep.options);
+        var optsHtml = q.optionsHtml || (firstStep && firstStep.optionsHtml);
+        var optsBlock = '';
+        if (opts && opts.length) {
+          var key = (q.answer != null) ? q.answer : (firstStep && firstStep.key);
+          optsBlock = '<div class="wb-opts">' + opts.map(function(o, k){
+            var cls = (k === key) ? ' right' : '';
+            var txt = (optsHtml && optsHtml[k] != null) ? optsHtml[k] : BJM.esc(o);
+            return '<div class="wb-opt' + cls + '"><span class="wb-key">' + 'ABCD'[k] + '</span><span>' + txt + '</span></div>';
+          }).join('') + '</div>';
+        }
+
+        html += '<div class="wb-item" data-id="' + w.id + '">' +
+          '<div class="wb-stem">' + (q.stemHtml || BJM.esc(q.stem || '')) + '</div>' +
+          (q.figHtml ? '<div class="wb-fig">' + q.figHtml + '</div>' : '') +
+          optsBlock +
+          (q.solutionHtml ? '<details class="wb-sol"><summary>看完整解答</summary><div>' + q.solutionHtml + '</div></details>' : '') +
+          '<div class="wb-foot">' +
+            '<span class="wb-meta">' + metaLine + '</span>' +
+            '<span class="wb-act">' +
+              '<button class="btn primary xs" data-redo="' + w.id + '">重做这题</button>' +
+              '<button class="btn ghost xs" data-drop="' + w.id + '">移出</button>' +
+            '</span>' +
+          '</div>' +
+        '</div>';
+      });
+      html += '</div>';
+    });
+
+    host.innerHTML = any ? html :
+      '<div class="empty"><b>错题本是空的</b>去 <a href="drill.html">分步刷题</a> 练一组，答错的题会自动收进来。</div>';
+
+    // 重做
+    [].forEach.call(host.querySelectorAll('[data-redo]'), function(b){
+      b.addEventListener('click', function(){ redo(b.getAttribute('data-redo')); });
+    });
+    // 逐题移出
+    [].forEach.call(host.querySelectorAll('[data-drop]'), function(b){
+      b.addEventListener('click', function(){
+        BJM.qClearWrong(b.getAttribute('data-drop'));
+        BJM.toast('已移出错题本');
+        refresh();
+      });
+    });
+    // 清空某类
+    [].forEach.call(host.querySelectorAll('[data-clear-type]'), function(b){
+      b.addEventListener('click', function(){
+        var t = b.getAttribute('data-clear-type');
+        var n = (BJM.wrongByType()[t] || []).length;
+        if (!n) return;
+        if (!confirm('确定清空「' + (ERR_META[t] || {}).n + '」的 ' + n + ' 道错题？')) return;
+        BJM.qClearWrongByType(t);
+        BJM.toast('已清空 ' + n + ' 道');
+        refresh();
+      });
+    });
+  }
+
+  /* ============ 重做 ============ */
+  function redo(id){
+    var qm = qmap();
+    var q = qm[id];
+    if (!q) { BJM.toast('题目数据未找到'); return; }
+    var sec = document.getElementById('redoSection');
+    sec.style.display = '';
+    BJM.step({
+      mount: '#redoMount',
+      questions: [q],
+      mode: 'guided',
+      shuffle: false,
+      backHref: 'wrong.html',
+      backLabel: '返回错题本',
+      onAnswer: function(qq, ok, rec){
+        BJM.qRecord({
+          id: qq.id, chapter: qq.chapter, method: qq.method, tier: qq.tier,
+          result: rec.result, stuckStep: rec.stuckStep,
+          errorType: ok ? null : (rec.stuckStep === 0 ? 'concept' : 'method'),
+          timeMs: rec.timeMs, src: 'redo',
+        });
+        BJM.bumpDay('questions', 1);
+        if (ok) BJM.toast('答对了，已移出错题本');
+      },
+      onFinish: function(){
+        setTimeout(function(){ refresh(); }, 400);
+      },
+    });
+    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.getElementById('redoClose').addEventListener('click', function(){
+    document.getElementById('redoSection').style.display = 'none';
+  });
+
+  document.getElementById('clearAll').addEventListener('click', function(){
+    var n = BJM.wrongIds().length;
+    if (!n) { BJM.toast('错题本已经是空的'); return; }
+    if (!confirm('确定清空全部 ' + n + ' 道错题？（作答统计会保留）')) return;
+    BJM.qClearAllWrong();
+    BJM.toast('已清空错题本');
+    refresh();
+  });
+
+  /* ============ 弱点诊断 ============ */
   function renderActions(){
     var acts = BJM.nextActions(6);
     var el = document.getElementById('actions');
@@ -1883,8 +2059,6 @@ function buildWrong() {
 
   function renderErrBars(){
     var stats = BJM.errStats();
-    /* 展示「该错因占总作答的比例」而不是正确率——正确率 0% 时条长为 0，
-       看不出哪类错得多。占比才有区分度。 */
     var total = stats.reduce(function(a, s){ return a + s.n; }, 0);
     var maxN = Math.max.apply(null, stats.map(function(s){ return s.n; }).concat([1]));
     var sorted = stats.slice().sort(function(a, b){ return b.n - a.n; });
@@ -1935,65 +2109,33 @@ function buildWrong() {
       '第 1 步卡得多 → 优先回概念卡；中后段卡得多 → 进计算专项。</p>';
   }
 
-  function renderList(){
-    var byType = BJM.wrongByType();
-    var qm = qmap();
-    var list = document.getElementById('wrongList');
-    var any = false, html = '';
-    BJM.ERR_TYPES.forEach(function(t){
-      var items = byType[t] || [];
-      if (!items.length) return;
-      any = true;
-      var meta = ERR_META[t] || { n: t };
-      html += '<details class="card" style="margin-bottom:12px;padding:14px 18px">' +
-        '<summary style="cursor:pointer;font-weight:700;font-size:.95rem">' + meta.n +
-          ' <span style="color:var(--text-3);font-weight:400;font-size:.82rem">' + items.length + ' 题</span></summary>';
-      items.forEach(function(w){
-        var q = qm[w.id];
-        var stepTxt = w.stuckStep >= 0 ? ('卡在第 ' + (w.stuckStep + 1) + ' 步') : '未记录卡点';
-        var mTag = w.method ? (' · ' + mname(w.method)) : '';
-        html += '<div class="wrong-item">' +
-          '<div class="wrong-stem">' + (q ? q.stemHtml : w.id) + '</div>' +
-          '<div class="wrong-meta">' + stepTxt + ' · 错 ' + w.n + ' 次' + mTag + '</div>' +
-        '</div>';
-      });
-      html += '</details>';
-    });
-    list.innerHTML = any ? html : '<div class="empty">还没有错题。先去 <a href="drill.html">分步刷题</a> 练一组。</div>';
-  }
-
   function refresh(){
     var t = BJM.totalAnswered();
-    /* getElementById 不接受 '#' 前缀，这里统一用 querySelector */
     var set = function(sel, v){ var e = document.querySelector(sel); if (e) e.textContent = v; };
     set('#kTotal', t.n);
     set('#kRate', t.n ? Math.round(t.rate * 100) + '%' : '—');
     set('#kWrong', BJM.wrongIds().length);
     set('#kWeak', BJM.nextActions(99).length);
+    set('#tabN', BJM.wrongIds().length);
+    renderBook();
     renderActions();
     renderErrBars();
     renderStuck();
-    renderList();
   }
 
   BJM.ready(function(){
     refresh();
     loadAll().then(refresh);
   });
-  /* 数据变化时直接重绘——分片已经加载过，不必再走 loadAll */
   document.addEventListener('bj:qlog', refresh);
   document.addEventListener('bj:day', refresh);
-
-  document.getElementById('resetBtn').addEventListener('click', function(){
-    if (confirm('确定清空全部作答记录与错题？')) { BJM.qReset(); refresh(); BJM.toast('已清空'); }
-  });
 })();
 `;
 
   const html = page({
-    active: 'wrong.html', title: '错因诊断',
-    desc: '按可训练单元聚合的错因诊断：告诉你下一步练什么。',
-    body, script, data: ['meta'],
+    active: 'wrong.html', title: '错题本与诊断',
+    desc: '错题自动收纳、可逐题重做；弱点按可训练单元聚合，给下一步练什么。',
+    body, script, useStep: true, data: ['meta'],
   });
   return html.replace('<body data-base="">', `<body data-base="">\n${R.math.defs()}`);
 }
