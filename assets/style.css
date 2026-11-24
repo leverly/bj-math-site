@@ -2524,3 +2524,52 @@ details[open] > summary::before { content: '▾ '; }
 .wb-verdict b { font-size: .95rem; }
 .wb-verdict b.ok { color: var(--ok); }
 .wb-verdict b.bad { color: var(--rose); }
+
+/* ==========================================================
+   公式库：分类 Tab + 搜索 + 分页
+   ========================================================== */
+#fgTabs {
+  display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 4px;
+}
+#fgTabs .chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 13px; font-size: .84rem;
+}
+#fgTabs .chip span {
+  font-size: .7rem; font-weight: 800; padding: 0 6px; border-radius: var(--r-pill);
+  background: var(--bg-3); color: var(--text-3); min-width: 17px; text-align: center;
+}
+#fgTabs .chip.on span { background: rgba(255,255,255,.28); color: #fff; }
+
+/* 表格列宽固定，避免分页后列跳动 */
+.fg-table { table-layout: fixed; }
+.fg-table th.fg-name, .fg-table td.fg-name { width: 20%; }
+.fg-table th.fg-tex, .fg-table td.fg-tex { width: 22%; text-align: center; }
+.fg-table th.fg-cond, .fg-table td.fg-cond { width: 28%; }
+.fg-table th.fg-misuse, .fg-table td.fg-misuse { width: 30%; }
+
+.fg-table td.fg-name { font-weight: 650; }
+.fg-table td.fg-cond { font-size: .86rem; color: var(--text-2); }
+.fg-table td.fg-misuse { font-size: .86rem; color: var(--rose); }
+.fg-table td.fg-tex { text-align: center; }
+
+/* 移动端：表格转卡片式（避免四列挤压） */
+@media (max-width: 760px) {
+  .fg-table { table-layout: auto; }
+  .fg-table thead { display: none; }
+  .fg-table tr {
+    display: block; padding: 12px 14px; margin-bottom: 10px;
+    border: 1px solid var(--border); border-radius: var(--r-sm);
+    background: var(--surface);
+  }
+  .fg-table td {
+    display: block; width: auto !important; padding: 3px 0;
+    border: 0 !important; text-align: left !important;
+  }
+  .fg-table td.fg-name { font-size: .96rem; margin-bottom: 4px; }
+  .fg-table td.fg-tex { padding: 8px 0; background: var(--surface-2); border-radius: 8px; text-align: center !important; margin: 6px 0; }
+  .fg-table td.fg-cond::before { content: '条件　'; font-weight: 700; color: var(--text-3); font-size: .78rem; }
+  .fg-table td.fg-misuse::before { content: '误用　'; font-weight: 700; color: var(--rose); font-size: .78rem; }
+  .fg-table td.fg-cond, .fg-table td.fg-misuse { font-size: .84rem; line-height: 1.7; }
+  .tbl-wrap { border: 0; background: none; }
+}

@@ -2427,51 +2427,209 @@ function buildWrong() {
    ========================================================== */
 function buildGraph() {
   const R = newRenderers();
-  /* 公式数据来自 src/data-formulas.js（94 条，含适用条件与常见误用） */
+  const PAGE_SIZE = 15;
 
-
-  const byBlock = new Map();
-  FORMULAS.forEach((f) => {
-    const blk = (CH_BY_ID.get(f.chapter) || {}).block || '其他';
-    if (!byBlock.has(blk)) byBlock.set(blk, []);
-    byBlock.get(blk).push(f);
+  /* 扁平化 + 每条的检索文本（名称 + 公式原文 + 条件 + 误用 + 章名） */
+  const all = FORMULAS.map((f, i) => {
+    const ch = CH_BY_ID.get(f.chapter) || {};
+    return {
+      idx: i,
+      name: f.name,
+      chapter: f.chapter,
+      chapterName: ch.name || '',
+      chapterNo: ch.no || 99,
+      block: ch.block || '其他',
+      texHtml: R.math.render(f.tex),
+      condHtml: R.math.render(f.cond),
+      misuseHtml: R.math.render(f.misuse),
+      search: (f.name + ' ' + f.tex + ' ' + f.cond + ' ' + f.misuse + ' ' + (ch.name || '')).replace(/\s+/g, '').toLowerCase(),
+    };
   });
-  const rows = [...byBlock.entries()].map(([blk, list]) => {
-    const head = `<tr class="fgrp"><td colspan="4">${esc(blk)} · ${list.length} 条</td></tr>`;
-    const body = list.map((f) => `<tr>
-      <td style="font-weight:650">${esc(f.name)}</td>
-      <td style="text-align:center">${R.math.render(f.tex)}</td>
-      <td style="font-size:.86rem;color:var(--text-2)">${R.math.render(f.cond)}</td>
-      <td style="font-size:.86rem;color:var(--rose)">${R.math.render(f.misuse)}</td>
-    </tr>`).join('');
-    return head + body;
-  }).join('');
+
+  /* Tab：全部 + 有公式的章（按章号排序） */
+  const chapterSet = [...new Set(all.map((f) => f.chapter))];
+  const chapters = chapterSet
+    .map((id) => {
+      const c = CH_BY_ID.get(id) || {};
+      return { id, name: c.name || id, no: c.no || 99, block: c.block || '其他', n: all.filter((f) => f.chapter === id).length };
+    })
+    .sort((a, b) => a.no - b.no);
+
+  const tabs = [{ id: 'all', name: '全部', n: all.length }].concat(chapters.map((c) => ({ id: c.id, name: c.name, n: c.n })));
+
+  const tabsHtml = tabs.map((t, i) =>
+    `<button class="chip${i === 0 ? ' on' : ''}" data-tab="${t.id}">${esc(t.name)} <span>${t.n}</span></button>`
+  ).join('');
+
+  /* data-search 在构建期生成：含名称 + 原始 LaTeX + 条件 + 误用 + 章名。
+     不能用 DOM 的 textContent 当检索文本——公式是 SVG，没有文本节点。 */
+  const rowHtml = (f) => `<tr data-idx="${f.idx}" data-search="${esc(f.search)}">
+    <td class="fg-name">${esc(f.name)}</td>
+    <td class="fg-tex">${f.texHtml}</td>
+    <td class="fg-cond">${f.condHtml}</td>
+    <td class="fg-misuse">${f.misuseHtml}</td>
+  </tr>`;
 
   const body = `
 <div class="page-head">
   <div class="crumb"><a href="index.html">首页</a> / 公式库</div>
   <h1>公式定理库</h1>
-  <p class="lede">${FORMULAS.length} 条公式定理，按知识块分组。与英语站词库最大的差别是第三、四列：<b>适用条件</b>和<b>常见误用</b>——理科的失分多数不是记不住公式，而是<b>条件不满足还硬套</b>。</p>
+  <p class="lede">${FORMULAS.length} 条公式定理，按章节分类。重点不在「记住公式」，而在第三、四列的<b>适用条件</b>与<b>常见误用</b>——理科的失分多数是<b>条件不满足还硬套</b>。</p>
 </div>
 
 <section class="section" style="margin-top:20px">
+  <div class="chips" id="fgTabs">${tabsHtml}</div>
+  <div class="toolbar" style="margin-top:16px">
+    <input class="field" id="fgSearch" type="search" placeholder="搜索公式名、适用条件或误用，如：判别式 / a≠0 / 垂直" autocomplete="off">
+    <select class="field" id="fgSize" style="max-width:130px">
+      <option value="15">每页 15 条</option>
+      <option value="30">每页 30 条</option>
+      <option value="50">每页 50 条</option>
+    </select>
+  </div>
+  <div class="note" id="fgHint" style="margin-bottom:14px">共 <b>${FORMULAS.length}</b> 条</div>
+
   <div class="tbl-wrap">
-    <table class="gtable">
+    <table class="gtable fg-table">
       <thead><tr>
-        <th style="width:20%">名称</th>
-        <th style="width:22%;text-align:center">公式</th>
-        <th style="width:28%">适用条件</th>
-        <th style="width:30%">常见误用</th>
+        <th class="fg-name">名称</th>
+        <th class="fg-tex">公式</th>
+        <th class="fg-cond">适用条件</th>
+        <th class="fg-misuse">常见误用</th>
       </tr></thead>
-      <tbody>${rows}</tbody>
+      <tbody id="fgBody">${all.map(rowHtml).join('')}</tbody>
     </table>
   </div>
-  <p class="setup-hint" style="margin-top:12px">共 ${FORMULAS.length} 条，按知识块分组。P2 目标 220 条。</p>
+
+  <div class="pager" id="fgPager"></div>
+  <div class="empty" id="fgEmpty" style="display:none">
+    <b>没有匹配的公式</b>
+    <span>换个关键词，或切回「全部」分类</span>
+  </div>
 </section>
 `;
 
-  const html = page({ active: 'graph.html', title: '公式定理库', desc: '含适用条件与常见误用的中考数学公式库。', body });
-  return html.replace('<body data-base="">', `<body data-base="">\n${R.math.defs()}`);
+  const script = `
+(function(){
+  var PAGE_SIZE = 15;
+  var PSIZE_KEY = 'bj-fg-psize';
+  var saved = parseInt(localStorage.getItem(PSIZE_KEY) || '15', 10);
+  if ([15, 30, 50].indexOf(saved) >= 0) PAGE_SIZE = saved;
+
+  var rows = [].slice.call(document.querySelectorAll('#fgBody tr'));
+  var tabs = [].slice.call(document.querySelectorAll('#fgTabs .chip'));
+  var search = document.getElementById('fgSearch');
+  var sizeSel = document.getElementById('fgSize');
+  var hint = document.getElementById('fgHint');
+  var pager = document.getElementById('fgPager');
+  var empty = document.getElementById('fgEmpty');
+  var table = document.querySelector('.fg-table');
+
+  var tab = 'all';
+  var query = '';
+  var page = 0;
+
+  /* 每行记录所属章，供分类筛选 */
+  rows.forEach(function(r){
+    var idx = parseInt(r.getAttribute('data-idx'), 10);
+    r.__chapter = window.BJM.FG_CHAPTERS ? window.BJM.FG_CHAPTERS[idx] : '';
+    r.__search = r.getAttribute('data-search') || '';
+  });
+
+  function filtered(){
+    return rows.filter(function(r){
+      var okTab = tab === 'all' || r.__chapter === tab;
+      var okQ = !query || r.__search.indexOf(query) >= 0;
+      return okTab && okQ;
+    });
+  }
+
+  function draw(){
+    var list = filtered();
+    var total = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+    if (page >= total) page = total - 1;
+    if (page < 0) page = 0;
+    var slice = list.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+    rows.forEach(function(r){ r.style.display = 'none'; });
+    slice.forEach(function(r){ r.style.display = ''; });
+
+    if (!list.length) {
+      table.style.display = 'none';
+      pager.innerHTML = '';
+      empty.style.display = '';
+      hint.innerHTML = query
+        ? '共 <b>0</b> 条匹配'
+        : '本分类暂无公式';
+      return;
+    }
+    table.style.display = '';
+    empty.style.display = 'none';
+
+    hint.innerHTML = '共 <b>' + list.length + '</b> 条' +
+      (query ? '（已筛选）' : '') +
+      ' · 第 ' + (page + 1) + ' / ' + total + ' 页';
+
+    var html = '<button data-pg="' + (page - 1) + '"' + (page === 0 ? ' disabled' : '') + '>‹</button>';
+    for (var i = 0; i < total; i++) {
+      if (total > 9 && i > 1 && i < total - 2 && Math.abs(i - page) > 1) {
+        if (i === 2 || i === total - 3) html += '<span class="pg-dots">…</span>';
+        continue;
+      }
+      html += '<button data-pg="' + i + '"' + (i === page ? ' class="on"' : '') + '>' + (i + 1) + '</button>';
+    }
+    html += '<button data-pg="' + (page + 1) + '"' + (page === total - 1 ? ' disabled' : '') + '>›</button>';
+    pager.innerHTML = html;
+    [].forEach.call(pager.querySelectorAll('[data-pg]'), function(b){
+      b.addEventListener('click', function(){
+        var p = parseInt(b.getAttribute('data-pg'), 10);
+        if (!isNaN(p)) {
+          page = p;
+          draw();
+          document.getElementById('fgTabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  }
+
+  [].forEach.call(tabs, function(t){
+    t.addEventListener('click', function(){
+      [].forEach.call(tabs, function(x){ x.classList.remove('on'); });
+      t.classList.add('on');
+      tab = t.getAttribute('data-tab');
+      page = 0;
+      draw();
+    });
+  });
+
+  search.addEventListener('input', function(e){
+    query = e.target.value.trim().replace(/\\s+/g, '').toLowerCase();
+    page = 0;
+    draw();
+  });
+
+  sizeSel.value = String(PAGE_SIZE);
+  sizeSel.addEventListener('change', function(){
+    PAGE_SIZE = parseInt(sizeSel.value, 10);
+    try { localStorage.setItem(PSIZE_KEY, String(PAGE_SIZE)); } catch (e) {}
+    page = 0;
+    draw();
+  });
+
+  draw();
+})();
+`;
+
+  /* 把每行所属章以数组形式注入，供脚本筛选（避免在 HTML 里塞 data 属性太长） */
+  const fgChapters = JSON.stringify(all.map((f) => f.chapter));
+  const html = page({
+    active: 'graph.html', title: '公式定理库',
+    desc: '含适用条件与常见误用的中考数学公式库，按章节分类。',
+    body, script,
+  });
+  /* FG_CHAPTERS 必须在页面脚本执行前就存在，所以插在 body 开头（紧跟 defs） */
+  return html.replace('<body data-base="">',
+    `<body data-base="">\n${R.math.defs()}\n<script>window.BJM=window.BJM||{};window.BJM.FG_CHAPTERS=${fgChapters};</script>`);
 }
 
 /* ==========================================================
