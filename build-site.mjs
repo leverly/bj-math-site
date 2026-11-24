@@ -271,30 +271,17 @@ function emitShards() {
    ========================================================== */
 function buildHome() {
   const R = newRenderers();
-  const totalQ = STATS.questions;
-  const totalM = STATS.methods;
-  const totalC = STATS.chapters;
-  const totalConcept = STATS.concepts;
 
-  /* ---------- 教研体量：从真实数据算，不写死 ---------- */
+  /* ---------- 首屏四个数字：只留这四个，别处不再重复统计 ---------- */
   const VOL = {
     chapters: STATS.chapters,
     methods: STATS.methods,
-    methodSteps: METHODS.reduce((a, m) => a + (m.steps || []).length, 0),
-    pitfalls: METHODS.reduce((a, m) => a + (m.pitfalls || []).length, 0),
     questions: STATS.questions,
-    qSteps: QUESTIONS.reduce((a, q) => a + (q.steps || []).length, 0),
-    mother: QUESTIONS.filter((q) => !q.variantOf).length,
-    variants: QUESTIONS.filter((q) => q.variantOf).length,
-    concepts: STATS.concepts,
-    conceptTests: STATS.conceptTests,
-    formulas: FORMULAS.length,
-    figures: QUESTIONS.filter((q) => q.fig).length,
   };
-  /* 每个方法卡平均几步、平均几条误用 —— 体现「写得多细」 */
-  const avgSteps = (VOL.methodSteps / VOL.methods).toFixed(1);
-  const avgPitfalls = (VOL.pitfalls / VOL.methods).toFixed(1);
-  const avgQSteps = (VOL.qSteps / VOL.questions).toFixed(1);
+  /* 卷面题位覆盖数（examRefs 反查） */
+  const POS_CH = new Set();
+  CHAPTERS.forEach((c) => (c.examRefs || []).forEach((n) => POS_CH.add(n)));
+  VOL.covered = POS_CH.size;
 
   /* 原创文字量：只数汉字，LaTeX 命令与符号不计 */
   const cnChars = (s) => (String(s).replace(/\\[a-zA-Z]+/g, '').match(/[\u4e00-\u9fa5]/g) || []).length;
@@ -310,110 +297,19 @@ function buildHome() {
     + cnOf(CONCEPTS)
     + cnOf(FORMULAS.map((f) => [f.name, f.cond, f.misuse]));
 
-  /* 卷面题位 → 覆盖章节（examRefs 反查），以及每个题位的层级 */
-  const POS_CH = new Map();
-  CHAPTERS.forEach((c) => (c.examRefs || []).forEach((n) => {
-    if (!POS_CH.has(n)) POS_CH.set(n, []);
-    POS_CH.get(n).push(c);
-  }));
-  const posTier = (n) => (n <= 7 || (n >= 9 && n <= 15) || (n >= 17 && n <= 22) ? 'send'
-    : (n >= 23 && n <= 26) ? 'mid' : 'dist');
-  VOL.covered = [...POS_CH.keys()].length;
-
-  const volCards = [
-    { n: VOL.chapters, unit: '章', label: '知识章节', sub: '按 2022 课标知识块划分，含前置依赖', href: 'map.html' },
-    { n: `${VOL.covered}`, unit: '/28', label: '卷面题位覆盖', sub: '从选 1 到第 28 题，逐个题位有落点', href: 'map.html' },
-    { n: VOL.methods, unit: '张', label: '方法卡', sub: `平均 ${avgSteps} 步 / ${avgPitfalls} 条常见误用`, href: 'method.html' },
-    { n: VOL.questions, unit: '道', label: '题目', sub: `${VOL.mother} 母题 + ${VOL.variants} 变式，平均 ${avgQSteps} 步`, href: 'drill.html' },
-    { n: VOL.qSteps, unit: '个', label: '解题步骤', sub: '每步单独判定，答错记卡在第几步', href: 'drill.html' },
-    { n: VOL.pitfalls, unit: '条', label: '常见误用', sub: '✕ 错法 / ✓ 正解 / 一句错因', href: 'method.html' },
-    { n: VOL.conceptTests, unit: '个', label: '概念判断', sub: `来自 ${VOL.concepts} 张概念卡，只考条件不考背诵`, href: 'concept.html' },
-    { n: VOL.formulas, unit: '条', label: '公式定理', sub: '每条带适用条件与常见误用', href: 'graph.html' },
-  ];
-  const volHtml = volCards.map((c) => `<a class="vol-card" href="${c.href}">
-    <div class="vol-num">${c.n}<span>${c.unit}</span></div>
-    <div class="vol-label">${c.label}</div>
-    <div class="vol-sub">${c.sub}</div>
-  </a>`).join('');
-
-  /* ---------- 卷面覆盖图：28 个题位按题型分组 ---------- */
-  const posRows = EXAM_STRUCTURE.parts.map((part) => {
-    const cells = [];
-    for (let n = part.from; n <= part.to; n++) {
-      const chs = POS_CH.get(n) || [];
-      const primary = chs[0];
-      const t = posTier(n);
-      const extra = chs.length > 1 ? `<i>+${chs.length - 1}</i>` : '';
-      const title = chs.length ? chs.map((c) => c.name).join(' / ') : '待补';
-      cells.push(`<a class="pos-cell ${t}" href="${primary ? `map/${primary.id}.html` : 'map.html'}" title="第 ${n} 题 · ${esc(title)}">
-        <b>${n}</b><span>${primary ? esc(primary.name) : '待补'}</span>${extra}
-      </a>`);
-    }
-    return `<div class="pos-row">
-      <div class="pos-row-head">
-        <b>${esc(part.name)}</b>
-        <span>${part.count} 题 · ${part.sum} 分</span>
-      </div>
-      <div class="pos-cells" style="--pos-cols:${part.count}">${cells.join('')}</div>
-    </div>`;
-  }).join('');
-
-  /* ---------- 章节密度：每章题 / 卡 / 概念 / 公式 / 步骤 ---------- */
-  const densOf = (c) => {
-    const qs = QUESTIONS.filter((q) => q.chapter === c.id);
-    const ms = METHODS.filter((m) => m.chapter === c.id);
-    const cs = CONCEPTS.filter((x) => x.chapter === c.id);
-    const fs = FORMULAS.filter((f) => f.chapter === c.id);
-    const st = qs.reduce((a, q) => a + (q.steps || []).length, 0);
-    return { q: qs.length, m: ms.length, c: cs.length, f: fs.length, st };
-  };
-  const densityRows = CHAPTERS.map((c) => {
-    const d = densOf(c);
-    const maxQ = 40;
-    return `<tr>
-      <td class="dens-ch"><a href="map/${c.id}.html"><i>${String(c.no).padStart(2, '0')}</i>${esc(c.name)}</a></td>
-      <td class="dens-block">${esc(c.block)}</td>
-      <td class="dens-num"><b>${d.q}</b><span class="dens-bar"><i style="width:${Math.round(d.q / maxQ * 100)}%"></i></span></td>
-      <td class="dens-num">${d.m}</td>
-      <td class="dens-num">${d.c}</td>
-      <td class="dens-num">${d.f}</td>
-      <td class="dens-num">${d.st}</td>
-    </tr>`;
-  }).join('');
-  /* 窄屏：表格换成一条一行的紧凑卡，避免横向滚动 */
-  const densityCards = CHAPTERS.map((c) => {
-    const d = densOf(c);
-    return `<a class="dens-card" href="map/${c.id}.html">
-      <span class="dc-top"><i>${String(c.no).padStart(2, '0')}</i><b>${esc(c.name)}</b></span>
-      <span class="dc-nums">${d.q} 题 · ${d.m} 卡 · ${d.c} 概念 · ${d.f} 公式 · ${d.st} 步</span>
-    </a>`;
-  }).join('');
-
-  /* 分层数据 */
-  const tierStat = ['send', 'mid', 'dist'].map((t) => ({
-    t,
-    q: QUESTIONS.filter((q) => q.tier === t).length,
-    m: METHODS.filter((m) => m.tier === t).length,
-  }));
-
-  /* ---------- 提分路径：三层分区（紧凑三列） ---------- */
+  /* ---------- 提分路径：三层分区（只讲分值与目标，不重复统计题量） ---------- */
   const TIER_GOAL = { send: '目标 100%', mid: '目标 90%', dist: '目标 50–70%' };
   const TIER_DESC = {
     send: '选 1–7 / 填 9–15 / 17–22',
     mid: '23 圆 / 24 二次 / 25 统计 / 26 含参二次',
     dist: '8 / 16 / 27 / 28 四道题',
   };
-  const tierRows = ['send', 'mid', 'dist'].map((t) => {
-    const qs = QUESTIONS.filter((q) => q.tier === t);
-    const methods = METHODS.filter((m) => m.tier === t);
-    return `<div class="tier-mini ${t}">
+  const tierRows = ['send', 'mid', 'dist'].map((t) => `<div class="tier-mini ${t}">
       <div class="tier-mini-score">${t === 'send' ? '58' : t === 'mid' ? '24' : '18'}<span>分</span></div>
       <div class="tier-mini-name">${TIER_NAME[t]}</div>
       <div class="tier-mini-desc">${TIER_DESC[t]}</div>
       <div class="tier-mini-goal">${TIER_GOAL[t]}</div>
-      <div class="tier-mini-count">${qs.length} 题 · ${methods.length} 张卡</div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 
   /* ---------- 方法卡示例（4 张，覆盖三层） ---------- */
   /* 三层各取代表：送分（因式分解，最基础）+ 中档（反比例 k 的几何意义）+ 区分（区间最值、中点）
@@ -582,61 +478,6 @@ function buildHome() {
   </div>
 </section>
 
-<section class="section reveal" id="volume">
-  <div class="section-head">
-    <div class="section-head-left">
-      <span class="kicker">教研体量</span>
-      <h2>卷面 ${VOL.covered} 个题位全覆盖，${(VOL.text / 10000).toFixed(1)} 万字原创教研</h2>
-      <span class="sub">${VOL.chapters} 章 · ${VOL.methods} 张方法卡 · ${VOL.questions} 道题，逐条写出来的，不是题库搬运。每张卡有识别信号、标准步骤、常见误用、母题与三个变式；每道题有分步骨架与完整解答</span>
-    </div>
-  </div>
-  <div class="vol-grid">${volHtml}</div>
-
-  <div class="cov-block">
-    <div class="cov-head">
-      <b>卷面 28 个题位，逐个有落点</b>
-      <span>北京卷 100 分 / 28 题，按题型分五段。每格是该题位对应的章节，<i>+n</i> 表示还有 n 章备选</span>
-    </div>
-    <div class="pos-table">${posRows}</div>
-    <div class="cov-legend">
-      <span class="lg send">送分区 58 分</span>
-      <span class="lg mid">中档区 24 分</span>
-      <span class="lg dist">区分区 18 分</span>
-    </div>
-  </div>
-
-  <div class="dens-block">
-    <div class="cov-head">
-      <b>每章的内容密度</b>
-      <span>题量、方法卡、概念卡、公式、分步步骤逐章列出——点章节名进单章页</span>
-    </div>
-    <div class="tbl-wrap dens-table-wrap">
-      <table class="gtable dens-table">
-        <thead><tr>
-          <th style="width:26%">章节</th>
-          <th style="width:16%">知识块</th>
-          <th style="width:22%">题量</th>
-          <th>方法卡</th><th>概念卡</th><th>公式</th><th>步骤</th>
-        </tr></thead>
-        <tbody>${densityRows}</tbody>
-      </table>
-    </div>
-    <div class="dens-cards">${densityCards}</div>
-  </div>
-
-  <div class="vol-tiers">
-    ${tierStat.map((x) => `<div class="vol-tier">
-      <span class="vt-name">${TIER_NAME[x.t]}</span>
-      <span class="vt-num">${x.q} 题</span>
-      <span class="vt-num">${x.m} 卡</span>
-    </div>`).join('')}
-  </div>
-  <p class="vol-note">
-    全站共 <b>${VOL.qSteps}</b> 个解题步骤、<b>${VOL.pitfalls}</b> 条常见误用、<b>${VOL.conceptTests}</b> 个概念判断、<b>${VOL.formulas}</b> 条公式定理，
-    另有 <b>${VOL.figures}</b> 张几何图（构建期生成 SVG）。
-  </p>
-</section>
-
 <section class="section reveal" id="why">
   <div class="section-head">
     <div class="section-head-left">
@@ -668,7 +509,7 @@ function buildHome() {
     <div class="section-head-left">
       <span class="kicker">提分路径</span>
       <h2>100 分不是均匀分布的</h2>
-      <span class="sub">三层目标不同，练法也不同。站内 <b>${totalQ}</b> 题 / <b>${totalM}</b> 张方法卡 / <b>${totalC}</b> 章 / <b>${totalConcept}</b> 条概念卡 / <b>${FORMULAS.length}</b> 条公式</span>
+      <span class="sub">三层目标不同，练法也不同：送分区求稳，中档区求熟，区分区求敢</span>
     </div>
   </div>
   <div class="tier-minis">${tierRows}</div>
