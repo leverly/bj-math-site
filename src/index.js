@@ -4,29 +4,37 @@
    ========================================================== */
 import { CHAPTERS, EXAM_STRUCTURE, TIERS } from './data-chapters.js';
 import { METHODS } from './data-methods.js';
+import { METHODS_2 } from './data-methods2.js';
 import { CONCEPTS, CONCEPTS_2 } from './data-concepts.js';
 import { QUESTIONS, QUESTIONS_2, QUESTIONS_3, QUESTIONS_4 } from './data-questions.js';
 import { SEND_QUESTIONS } from './data-send.js';
 import { SEND_QUESTIONS_2 } from './data-send2.js';
+import { QUESTIONS_5, QUESTIONS_6 } from './data-questions2.js';
 import { QUESTIONS as P0_QUESTIONS } from './data-sample.js';
 
 /* 方法卡配套题：P1 三批 + P0 样张里 3 张卡的题 */
+export const ALL_METHODS = [...METHODS, ...METHODS_2];
+
 export const ALL_QUESTIONS = [
   ...QUESTIONS,
   ...QUESTIONS_2,
   ...QUESTIONS_3,
   ...QUESTIONS_4,
+  ...QUESTIONS_5,
+  ...QUESTIONS_6,
   ...SEND_QUESTIONS,
   ...SEND_QUESTIONS_2,
   ...P0_QUESTIONS,
 ];
 
 export const ALL_CONCEPTS = [...CONCEPTS, ...CONCEPTS_2];
-export { CHAPTERS, METHODS, EXAM_STRUCTURE, TIERS };
+export { CHAPTERS, EXAM_STRUCTURE, TIERS };
+/* 兼容旧引用：METHODS 现在是合并后的全量 */
+export { ALL_METHODS as METHODS };
 
 /* ---------------- 派生索引 ---------------- */
 export const CH_BY_ID = new Map(CHAPTERS.map((c) => [c.id, c]));
-export const M_BY_ID = new Map(METHODS.map((m) => [m.id, m]));
+export const M_BY_ID = new Map(ALL_METHODS.map((m) => [m.id, m]));
 export const Q_BY_ID = new Map(ALL_QUESTIONS.map((q) => [q.id, q]));
 
 export const Q_BY_METHOD = new Map();
@@ -48,7 +56,7 @@ ALL_CONCEPTS.forEach((c) => {
 /* ---------------- 统计 ---------------- */
 export const STATS = {
   chapters: CHAPTERS.length,
-  methods: METHODS.length,
+  methods: ALL_METHODS.length,
   questions: ALL_QUESTIONS.length,
   concepts: ALL_CONCEPTS.length,
   conceptTests: ALL_CONCEPTS.reduce((a, c) => a + c.tests.length, 0),
@@ -59,8 +67,8 @@ export const STATS = {
     dist: ALL_QUESTIONS.filter((q) => q.tier === 'dist').length,
   },
   byTierMethods: {
-    send: METHODS.filter((m) => m.tier === 'send').length,
-    mid: METHODS.filter((m) => m.tier === 'mid').length,
-    dist: METHODS.filter((m) => m.tier === 'dist').length,
+    send: ALL_METHODS.filter((m) => m.tier === 'send').length,
+    mid: ALL_METHODS.filter((m) => m.tier === 'mid').length,
+    dist: ALL_METHODS.filter((m) => m.tier === 'dist').length,
   },
 };

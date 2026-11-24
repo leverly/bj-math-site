@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>中点坐标与坐标系几何 · 方法卡 · 北京中考数学领航</title>
+<meta name="description" content="中点坐标与坐标系几何：识别信号、4 步标准流程、常见误用、母题与三个变式。">
+<meta property="og:title" content="中点坐标与坐标系几何 · 方法卡 · 北京中考数学领航">
+<meta property="og:description" content="中点坐标与坐标系几何：识别信号、4 步标准流程、常见误用、母题与三个变式。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232563eb'/%3E%3Cstop offset='1' stop-color='%234f46e5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-family='system-ui,sans-serif' font-size='14' font-weight='800' fill='%23fff' text-anchor='middle'%3E%E6%95%B0%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/style.css?v=bf57ab3a">
+<script>try{var m=JSON.parse(localStorage.getItem('bj-theme-manual')||'null');var h=new Date().getHours();var t=(m==='light'||m==='dark')?m:((h>=19||h<6)?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){var h2=new Date().getHours();document.documentElement.setAttribute('data-theme',(h2>=19||h2<6)?'dark':'light');}</script>
+</head>
+<body data-base="../">
+<svg class="math-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs><path id="MJX-TEX-I-1D440" d="M289 629Q289 635 232 637Q208 637 201 638T194 648Q194 649 196 659Q197 662 198 666T199 671T201 676T203 679T207 681T212 683T220 683T232 684Q238 684 262 684T307 683Q386 683 398 683T414 678Q415 674 451 396L487 117L510 154Q534 190 574 254T662 394Q837 673 839 675Q840 676 842 678T846 681L852 683H948Q965 683 988 683T1017 684Q1051 684 1051 673Q1051 668 1048 656T1045 643Q1041 637 1008 637Q968 636 957 634T939 623Q936 618 867 340T797 59Q797 55 798 54T805 50T822 48T855 46H886Q892 37 892 35Q892 19 885 5Q880 0 869 0Q864 0 828 1T736 2Q675 2 644 2T609 1Q592 1 592 11Q592 13 594 25Q598 41 602 43T625 46Q652 46 685 49Q699 52 704 61Q706 65 742 207T813 490T848 631L654 322Q458 10 453 5Q451 4 449 3Q444 0 433 0Q418 0 415 7Q413 11 374 317L335 624L267 354Q200 88 200 79Q206 46 272 46H282Q288 41 289 37T286 19Q282 3 278 1Q274 0 267 0Q265 0 255 0T221 1T157 2Q127 2 95 1T58 0Q43 0 39 2T35 11Q35 13 38 25T43 40Q45 46 65 46Q135 46 154 86Q158 92 223 354T289 629Z"></path><path id="MJX-TEX-N-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path><path id="MJX-TEX-S3-28" d="M701 -940Q701 -943 695 -949H664Q662 -947 636 -922T591 -879T537 -818T475 -737T412 -636T350 -511T295 -362T250 -186T221 17T209 251Q209 962 573 1361Q596 1386 616 1405T649 1437T664 1450H695Q701 1444 701 1441Q701 1436 681 1415T629 1356T557 1261T476 1118T400 927T340 675T308 359Q306 321 306 250Q306 -139 400 -430T690 -924Q701 -936 701 -940Z"></path><path id="MJX-TEX-I-1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path><path id="MJX-TEX-N-31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path><path id="MJX-TEX-N-2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"></path><path id="MJX-TEX-N-32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path><path id="MJX-TEX-N-2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path><path id="MJX-TEX-N-22EF" d="M78 250Q78 274 95 292T138 310Q162 310 180 294T199 251Q199 226 182 208T139 190T96 207T78 250ZM525 250Q525 274 542 292T585 310Q609 310 627 294T646 251Q646 226 629 208T586 190T543 207T525 250ZM972 250Q972 274 989 292T1032 310Q1056 310 1074 294T1093 251Q1093 226 1076 208T1033 190T990 207T972 250Z"></path><path id="MJX-TEX-S3-29" d="M34 1438Q34 1446 37 1448T50 1450H56H71Q73 1448 99 1423T144 1380T198 1319T260 1238T323 1137T385 1013T440 864T485 688T514 485T526 251Q526 134 519 53Q472 -519 162 -860Q139 -885 119 -904T86 -936T71 -949H56Q43 -949 39 -947T34 -937Q88 -883 140 -813Q428 -430 428 251Q428 453 402 628T338 922T245 1146T145 1309T46 1425Q44 1427 42 1429T39 1433T36 1436L34 1438Z"></path><path id="MJX-TEX-I-1D466" d="M21 287Q21 301 36 335T84 406T158 442Q199 442 224 419T250 355Q248 336 247 334Q247 331 231 288T198 191T182 105Q182 62 196 45T238 27Q261 27 281 38T312 61T339 94Q339 95 344 114T358 173T377 247Q415 397 419 404Q432 431 462 431Q475 431 483 424T494 412T496 403Q496 390 447 193T391 -23Q363 -106 294 -155T156 -205Q111 -205 77 -183T43 -117Q43 -95 50 -80T69 -58T89 -48T106 -45Q150 -45 150 -87Q150 -107 138 -122T115 -142T102 -147L99 -148Q101 -153 118 -160T152 -167H160Q177 -167 186 -165Q219 -156 247 -127T290 -65T313 -9T321 21L315 17Q309 13 296 6T270 -6Q250 -11 231 -11Q185 -11 150 11T104 82Q103 89 103 113Q103 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Z"></path><path id="MJX-TEX-I-1D437" d="M287 628Q287 635 230 637Q207 637 200 638T193 647Q193 655 197 667T204 682Q206 683 403 683Q570 682 590 682T630 676Q702 659 752 597T803 431Q803 275 696 151T444 3L430 1L236 0H125H72Q48 0 41 2T33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM703 469Q703 507 692 537T666 584T629 613T590 629T555 636Q553 636 541 636T512 636T479 637H436Q392 637 386 627Q384 623 313 339T242 52Q242 48 253 48T330 47Q335 47 349 47T373 46Q499 46 581 128Q617 164 640 212T683 339T703 469Z"></path><path id="MJX-TEX-I-1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path><path id="MJX-TEX-I-1D435" d="M231 637Q204 637 199 638T194 649Q194 676 205 682Q206 683 335 683Q594 683 608 681Q671 671 713 636T756 544Q756 480 698 429T565 360L555 357Q619 348 660 311T702 219Q702 146 630 78T453 1Q446 0 242 0Q42 0 39 2Q35 5 35 10Q35 17 37 24Q42 43 47 45Q51 46 62 46H68Q95 46 128 49Q142 52 147 61Q150 65 219 339T288 628Q288 635 231 637ZM649 544Q649 574 634 600T585 634Q578 636 493 637Q473 637 451 637T416 636H403Q388 635 384 626Q382 622 352 506Q352 503 351 500L320 374H401Q482 374 494 376Q554 386 601 434T649 544ZM595 229Q595 273 572 302T512 336Q506 337 429 337Q311 337 310 336Q310 334 293 263T258 122L240 52Q240 48 252 48T333 46Q422 46 429 47Q491 54 543 105T595 229Z"></path><path id="MJX-TEX-I-1D436" d="M50 252Q50 367 117 473T286 641T490 704Q580 704 633 653Q642 643 648 636T656 626L657 623Q660 623 684 649Q691 655 699 663T715 679T725 690L740 705H746Q760 705 760 698Q760 694 728 561Q692 422 692 421Q690 416 687 415T669 413H653Q647 419 647 422Q647 423 648 429T650 449T651 481Q651 552 619 605T510 659Q484 659 454 652T382 628T299 572T226 479Q194 422 175 346T156 222Q156 108 232 58Q280 24 350 24Q441 24 512 92T606 240Q610 253 612 255T628 257Q648 257 648 248Q648 243 647 239Q618 132 523 55T319 -22Q206 -22 128 53T50 252Z"></path><path id="MJX-TEX-N-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path id="MJX-TEX-N-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path><path id="MJX-TEX-N-35" d="M164 157Q164 133 148 117T109 101H102Q148 22 224 22Q294 22 326 82Q345 115 345 210Q345 313 318 349Q292 382 260 382H254Q176 382 136 314Q132 307 129 306T114 304Q97 304 95 310Q93 314 93 485V614Q93 664 98 664Q100 666 102 666Q103 666 123 658T178 642T253 634Q324 634 389 662Q397 666 402 666Q410 666 410 648V635Q328 538 205 538Q174 538 149 544L139 546V374Q158 388 169 396T205 412T256 420Q337 420 393 355T449 201Q449 109 385 44T229 -22Q148 -22 99 32T50 154Q50 178 61 192T84 210T107 214Q132 214 148 197T164 157Z"></path><path id="MJX-TEX-N-36" d="M42 313Q42 476 123 571T303 666Q372 666 402 630T432 550Q432 525 418 510T379 495Q356 495 341 509T326 548Q326 592 373 601Q351 623 311 626Q240 626 194 566Q147 500 147 364L148 360Q153 366 156 373Q197 433 263 433H267Q313 433 348 414Q372 400 396 374T435 317Q456 268 456 210V192Q456 169 451 149Q440 90 387 34T253 -22Q225 -22 199 -14T143 16T92 75T56 172T42 313ZM257 397Q227 397 205 380T171 335T154 278T148 216Q148 133 160 97T198 39Q222 21 251 21Q302 21 329 59Q342 77 347 104T352 209Q352 289 347 316T329 361Q302 397 257 397Z"></path><path id="MJX-TEX-N-33" d="M127 463Q100 463 85 480T69 524Q69 579 117 622T233 665Q268 665 277 664Q351 652 390 611T430 522Q430 470 396 421T302 350L299 348Q299 347 308 345T337 336T375 315Q457 262 457 175Q457 96 395 37T238 -22Q158 -22 100 21T42 130Q42 158 60 175T105 193Q133 193 151 175T169 130Q169 119 166 110T159 94T148 82T136 74T126 70T118 67L114 66Q165 21 238 21Q293 21 321 74Q338 107 338 175V195Q338 290 274 322Q259 328 213 329L171 330L168 332Q166 335 166 348Q166 366 174 366Q202 366 232 371Q266 376 294 413T322 525V533Q322 590 287 612Q265 626 240 626Q208 626 181 615T143 592T132 580H135Q138 579 143 578T153 573T165 566T175 555T183 540T186 520Q186 498 172 481T127 463Z"></path><path id="MJX-TEX-N-34" d="M462 0Q444 3 333 3Q217 3 199 0H190V46H221Q241 46 248 46T265 48T279 53T286 61Q287 63 287 115V165H28V211L179 442Q332 674 334 675Q336 677 355 677H373L379 671V211H471V165H379V114Q379 73 379 66T385 54Q393 47 442 46H471V0H462ZM293 211V545L74 212L183 211H293Z"></path><path id="MJX-TEX-N-A0" d=""></path><path id="MJX-TEX-N-2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path><path id="MJX-TEX-N-2F" d="M423 750Q432 750 438 744T444 730Q444 725 271 248T92 -240Q85 -250 75 -250Q68 -250 62 -245T56 -231Q56 -221 230 257T407 740Q411 750 423 750Z"></path><path id="MJX-TEX-N-2E" d="M78 60Q78 84 95 102T138 120Q162 120 180 104T199 61Q199 36 182 18T139 0T96 17T78 60Z"></path><path id="MJX-TEX-N-38" d="M70 417T70 494T124 618T248 666Q319 666 374 624T429 515Q429 485 418 459T392 417T361 389T335 371T324 363L338 354Q352 344 366 334T382 323Q457 264 457 174Q457 95 399 37T249 -22Q159 -22 101 29T43 155Q43 263 172 335L154 348Q133 361 127 368Q70 417 70 494ZM286 386L292 390Q298 394 301 396T311 403T323 413T334 425T345 438T355 454T364 471T369 491T371 513Q371 556 342 586T275 624Q268 625 242 625Q201 625 165 599T128 534Q128 511 141 492T167 463T217 431Q224 426 228 424L286 386ZM250 21Q308 21 350 55T392 137Q392 154 387 169T375 194T353 216T330 234T301 253T274 270Q260 279 244 289T218 306L210 311Q204 311 181 294T133 239T107 157Q107 98 150 60T250 21Z"></path><path id="MJX-TEX-N-30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path></defs></svg>
+<div class="scroll-progress"></div>
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="logo" href="../index.html">
+      <span class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20 L9 8 L13 14 L16 9 L21 20 Z"/><path d="M3 20 L21 20"/></svg></span>
+      <span>北京中考数学领航</span>
+      <span class="logo-badge">数学</span>
+    </a>
+    <nav class="hdr-nav"><a href="../index.html">首页</a><a href="../concept.html">概念自测</a><a href="../drill.html">分步刷题</a><a href="../method.html" class="on">方法卡</a><a href="../map.html">知识图谱</a><a href="../graph.html">公式库</a><a href="../wrong.html">错因诊断</a></nav>
+    <div class="hdr-tools">
+      <button class="theme-btn" aria-label="切换主题">☾</button>
+      <button class="menu-btn" aria-label="菜单" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+<main class="main">
+<div class="wrap">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="../method.html">方法卡</a> / 中点坐标与坐标系几何</div>
+  <h1>中点坐标与坐标系几何</h1>
+  <p class="lede">一次函数与反比例函数 · 中档区 · 4 步 · 4 题</p>
+</div>
+
+<section class="section" style="margin-top:18px">
+  <div class="card" style="padding:20px 22px;border-left:4px solid var(--accent)">
+    <div class="kicker" style="margin-bottom:8px">① 识别信号 · 看到这些就该想到它</div>
+    <p style="margin:0;font-size:1.02rem;line-height:1.85">题面在平面直角坐标系中给出两点或线段中点，要求「求中点坐标」「求对称点」「求第三点使构成平行四边形」。</p>
+  </div>
+</section>
+
+<section class="section" style="margin-top:20px">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">② 标准步骤</span>
+      <h2>4 步，每步一个给分点</h2>
+      <span class="sub">步骤只写「做什么」，不写「答案是什么」——这样自查时才知道自己卡在哪一步</span>
+    </div>
+  </div>
+  <ol class="step-flow"><li class="flow-item">
+    <span class="flow-no">1</span>
+    <div class="flow-body">
+      <h4>写中点公式</h4>
+      <p>中点坐标公式是什么？</p>
+    </div>
+    <span class="flow-score">1 分</span>
+  </li><li class="flow-item">
+    <span class="flow-no">2</span>
+    <div class="flow-body">
+      <h4>套用或反解</h4>
+      <p>已知中点求端点怎么算？</p>
+    </div>
+    <span class="flow-score">2 分</span>
+  </li><li class="flow-item">
+    <span class="flow-no">3</span>
+    <div class="flow-body">
+      <h4>用平行四边形对角线性质</h4>
+      <p>构成平行四边形怎么列式？</p>
+    </div>
+    <span class="flow-score">2 分</span>
+  </li><li class="flow-item">
+    <span class="flow-no">4</span>
+    <div class="flow-body">
+      <h4>检验多解</h4>
+      <p>最后注意什么？</p>
+    </div>
+    <span class="flow-score">2 分</span>
+  </li></ol>
+</section>
+
+<section class="section" style="margin-top:24px">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">③ 常见误用</span>
+      <h2>2 个高频错误</h2>
+    </div>
+  </div>
+  <div class="traps"><div class="trap">
+    <div class="trap-t">中点公式漏除 2</div>
+    <div class="trap-row bad"><span class="mark">✕</span><span><span class="math math-inline"><svg style="vertical-align: -2.148ex;" xmlns="http://www.w3.org/2000/svg" width="20.708ex" height="5.428ex" role="img" focusable="false" viewBox="0 -1449.5 9152.8 2399" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D440" xlink:href="#MJX-TEX-I-1D440"></use></g><g data-mml-node="mo" transform="translate(1328.8,0)"><use data-c="3D" xlink:href="#MJX-TEX-N-3D"></use></g><g data-mml-node="mrow" transform="translate(2384.6,0)"><g data-mml-node="mo" transform="translate(0 -0.5)"><use data-c="28" xlink:href="#MJX-TEX-S3-28"></use></g><g data-mml-node="mstyle" transform="translate(736,0)"><g data-mml-node="mfrac"><g data-mml-node="mrow" transform="translate(220,676)"><g data-mml-node="msub"><g data-mml-node="mi"><use data-c="1D465" xlink:href="#MJX-TEX-I-1D465"></use></g><g data-mml-node="mn" transform="translate(605,-150) scale(0.707)"><use data-c="31" xlink:href="#MJX-TEX-N-31"></use></g></g><g data-mml-node="mo" transform="translate(1230.8,0)"><use data-c="2B" xlink:href="#MJX-TEX-N-2B"></use></g><g data-mml-node="msub" transform="translate(2231,0)"><g data-mml-node="mi"><use data-c="1D465" xlink:href="#MJX-TEX-I-1D465"></use></g><g data-mml-node="mn" transform="translate(605,-150) scale(0.707)"><use data-c="32" xlink:href="#MJX-TEX-N-32"></use></g></g></g><g data-mml-node="mn" transform="translate(1589.8,-686)"><use data-c="31" xlink:href="#MJX-TEX-N-31"></use></g><rect width="3439.6" height="60" x="120" y="220"></rect></g></g><g data-mml-node="mo" transform="translate(4415.6,0)"><use data-c="2C" xlink:href="#MJX-TEX-N-2C"></use></g><g data-mml-node="mo" transform="translate(4860.2,0)"><use data-c="22EF" xlink:href="#MJX-TEX-N-22EF"></use></g><g data-mml-node="mo" transform="translate(6032.2,0) translate(0 -0.5)"><use data-c="29" xlink:href="#MJX-TEX-S3-29"></use></g></g></g></g></svg></span></span></div>
+    <div class="trap-row good"><span class="mark">✓</span><span><span class="math math-inline"><svg style="vertical-align: -2.148ex;" xmlns="http://www.w3.org/2000/svg" width="26.01ex" height="5.428ex" role="img" focusable="false" viewBox="0 -1449.5 11496.3 2399" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D440" xlink:href="#MJX-TEX-I-1D440"></use></g><g data-mml-node="mo" transform="translate(1328.8,0)"><use data-c="3D" xlink:href="#MJX-TEX-N-3D"></use></g><g data-mml-node="mrow" transform="translate(2384.6,0)"><g data-mml-node="mo" transform="translate(0 -0.5)"><use data-c="28" xlink:href="#MJX-TEX-S3-28"></use></g><g data-mml-node="mstyle" transform="translate(736,0)"><g data-mml-node="mfrac"><g data-mml-node="mrow" transform="translate(220,676)"><g data-mml-node="msub"><g data-mml-node="mi"><use data-c="1D465" xlink:href="#MJX-TEX-I-1D465"></use></g><g data-mml-node="mn" transform="translate(605,-150) scale(0.707)"><use data-c="31" xlink:href="#MJX-TEX-N-31"></use></g></g><g data-mml-node="mo" transform="translate(1230.8,0)"><use data-c="2B" xlink:href="#MJX-TEX-N-2B"></use></g><g data-mml-node="msub" transform="translate(2231,0)"><g data-mml-node="mi"><use data-c="1D465" xlink:href="#MJX-TEX-I-1D465"></use></g><g data-mml-node="mn" transform="translate(605,-150) scale(0.707)"><use data-c="32" xlink:href="#MJX-TEX-N-32"></use></g></g></g><g data-mml-node="mn" transform="translate(1589.8,-686)"><use data-c="32" xlink:href="#MJX-TEX-N-32"></use></g><rect width="3439.6" height="60" x="120" y="220"></rect></g></g><g data-mml-node="mo" transform="translate(4415.6,0)"><use data-c="2C" xlink:href="#MJX-TEX-N-2C"></use></g><g data-mml-node="mstyle" transform="translate(4860.2,0)"><g data-mml-node="mfrac"><g data-mml-node="mrow" transform="translate(220,676)"><g data-mml-node="msub"><g data-mml-node="mi"><use data-c="1D466" xlink:href="#MJX-TEX-I-1D466"></use></g><g data-mml-node="mn" transform="translate(523,-150) scale(0.707)"><use data-c="31" xlink:href="#MJX-TEX-N-31"></use></g></g><g data-mml-node="mo" transform="translate(1148.8,0)"><use data-c="2B" xlink:href="#MJX-TEX-N-2B"></use></g><g data-mml-node="msub" transform="translate(2149,0)"><g data-mml-node="mi"><use data-c="1D466" xlink:href="#MJX-TEX-I-1D466"></use></g><g data-mml-node="mn" transform="translate(523,-150) scale(0.707)"><use data-c="32" xlink:href="#MJX-TEX-N-32"></use></g></g></g><g data-mml-node="mn" transform="translate(1507.8,-686)"><use data-c="32" xlink:href="#MJX-TEX-N-32"></use></g><rect width="3275.6" height="60" x="120" y="220"></rect></g></g><g data-mml-node="mo" transform="translate(8375.8,0) translate(0 -0.5)"><use data-c="29" xlink:href="#MJX-TEX-S3-29"></use></g></g></g></g></svg></span></span></div>
+    <div class="trap-why">中点是平均，必须除以 2。</div>
+  </div><div class="trap">
+    <div class="trap-t">平行四边形第三点只算一个</div>
+    <div class="trap-row bad"><span class="mark">✕</span><span>只算出一个 <span class="math math-inline"><svg style="vertical-align: 0;" xmlns="http://www.w3.org/2000/svg" width="1.873ex" height="1.545ex" role="img" focusable="false" viewBox="0 -683 828 683" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D437" xlink:href="#MJX-TEX-I-1D437"></use></g></g></g></svg></span></span></div>
+    <div class="trap-row good"><span class="mark">✓</span><span>三个已知点可作三条对角线，<span class="math math-inline"><svg style="vertical-align: 0;" xmlns="http://www.w3.org/2000/svg" width="1.873ex" height="1.545ex" role="img" focusable="false" viewBox="0 -683 828 683" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D437" xlink:href="#MJX-TEX-I-1D437"></use></g></g></g></svg></span> 有三个解</span></div>
+    <div class="trap-why">题目说「以 <span class="math math-inline"><svg style="vertical-align: 0;" xmlns="http://www.w3.org/2000/svg" width="1.697ex" height="1.62ex" role="img" focusable="false" viewBox="0 -716 750 716" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D434" xlink:href="#MJX-TEX-I-1D434"></use></g></g></g></svg></span>、<span class="math math-inline"><svg style="vertical-align: 0;" xmlns="http://www.w3.org/2000/svg" width="1.717ex" height="1.545ex" role="img" focusable="false" viewBox="0 -683 759 683" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D435" xlink:href="#MJX-TEX-I-1D435"></use></g></g></g></svg></span>、<span class="math math-inline"><svg style="vertical-align: -0.05ex;" xmlns="http://www.w3.org/2000/svg" width="1.719ex" height="1.645ex" role="img" focusable="false" viewBox="0 -705 760 727" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D436" xlink:href="#MJX-TEX-I-1D436"></use></g></g></g></svg></span> 为顶点」时，<span class="math math-inline"><svg style="vertical-align: 0;" xmlns="http://www.w3.org/2000/svg" width="1.873ex" height="1.545ex" role="img" focusable="false" viewBox="0 -683 828 683" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D437" xlink:href="#MJX-TEX-I-1D437"></use></g></g></g></svg></span> 有三种可能，漏解是高频失分点。</div>
+  </div></div>
+</section>
+
+<section class="section" style="margin-top:8px">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">④ 母题精讲</span>
+      <h2>这道题完整走一遍</h2>
+      <span class="sub">默认折叠：先自己在纸上做，做不出来再展开</span>
+    </div>
+  </div>
+  
+  <details class="gcard" style="margin-top:16px">
+    <summary>
+      <span class="gcard-name">母题精讲</span>
+      <span class="lv lv-b2">中档区 · 21 题</span>
+      <span class="gcard-meta">6 分</span>
+    </summary>
+    <div class="gcard-body">
+      <div class="gsec"><div class="gsec-t">题目</div><div class="se-stem">已知 <span class='math math-inline'><svg style='vertical-align: -0.566ex;' xmlns='http://www.w3.org/2000/svg' width='6.725ex' height='2.262ex' viewBox='0 -750 2972.7 1000'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D434' href='#MJX-TEX-I-1D434'></use></g><g transform='translate(750,0)'><use data-c='28' href='#MJX-TEX-N-28'></use></g><g transform='translate(1139,0)'><use data-c='31' href='#MJX-TEX-N-31'></use></g><g transform='translate(1639,0)'><use data-c='2C' href='#MJX-TEX-N-2C'></use></g><g transform='translate(2083.7,0)'><use data-c='32' href='#MJX-TEX-N-32'></use></g><g transform='translate(2583.7,0)'><use data-c='29' href='#MJX-TEX-N-29'></use></g></g></g></svg></span>，<span class='math math-inline'><svg style='vertical-align: -0.566ex;' xmlns='http://www.w3.org/2000/svg' width='6.746ex' height='2.262ex' viewBox='0 -750 2981.7 1000'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D435' href='#MJX-TEX-I-1D435'></use></g><g transform='translate(759,0)'><use data-c='28' href='#MJX-TEX-N-28'></use></g><g transform='translate(1148,0)'><use data-c='35' href='#MJX-TEX-N-35'></use></g><g transform='translate(1648,0)'><use data-c='2C' href='#MJX-TEX-N-2C'></use></g><g transform='translate(2092.7,0)'><use data-c='36' href='#MJX-TEX-N-36'></use></g><g transform='translate(2592.7,0)'><use data-c='29' href='#MJX-TEX-N-29'></use></g></g></g></svg></span>，求线段 <span class='math math-inline'><svg style='vertical-align: 0;' xmlns='http://www.w3.org/2000/svg' width='3.414ex' height='1.62ex' viewBox='0 -716 1509 716'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D434' href='#MJX-TEX-I-1D434'></use></g><g transform='translate(750,0)'><use data-c='1D435' href='#MJX-TEX-I-1D435'></use></g></g></g></svg></span> 的中点 <span class='math math-inline'><svg style='vertical-align: 0;' xmlns='http://www.w3.org/2000/svg' width='2.378ex' height='1.545ex' viewBox='0 -683 1051 683'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D440' href='#MJX-TEX-I-1D440'></use></g></g></g></svg></span> 的坐标。</div>
+        </div>
+      <div class="gsec"><div class="gsec-t">完整解答</div><div style="font-size:.92rem;line-height:1.9;white-space:pre-wrap"><span class='math math-inline'><svg style='vertical-align: -2.148ex;' xmlns='http://www.w3.org/2000/svg' width='27.184ex' height='5.428ex' viewBox='0 -1449.5 12015.4 2399'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D440' href='#MJX-TEX-I-1D440'></use></g><g transform='translate(1217.7,0)'><g transform='translate(0 -0.5)'><use data-c='28' href='#MJX-TEX-S3-28'></use></g><g transform='translate(736,0)'><g><g transform='translate(220,676)'><g><use data-c='31' href='#MJX-TEX-N-31'></use></g><g transform='translate(722.2,0)'><use data-c='2B' href='#MJX-TEX-N-2B'></use></g><g transform='translate(1722.4,0)'><use data-c='35' href='#MJX-TEX-N-35'></use></g></g><g transform='translate(1081.2,-686)'><use data-c='32' href='#MJX-TEX-N-32'></use></g><rect width='2422.4' height='60' x='120' y='220'></rect></g></g><g transform='translate(3398.4,0)'><use data-c='2C' href='#MJX-TEX-N-2C'></use></g><g transform='translate(3843.1,0)'><g><g transform='translate(220,676)'><g><use data-c='32' href='#MJX-TEX-N-32'></use></g><g transform='translate(722.2,0)'><use data-c='2B' href='#MJX-TEX-N-2B'></use></g><g transform='translate(1722.4,0)'><use data-c='36' href='#MJX-TEX-N-36'></use></g></g><g transform='translate(1081.2,-686)'><use data-c='32' href='#MJX-TEX-N-32'></use></g><rect width='2422.4' height='60' x='120' y='220'></rect></g></g><g transform='translate(6505.6,0) translate(0 -0.5)'><use data-c='29' href='#MJX-TEX-S3-29'></use></g></g><g transform='translate(8737,0)'><use data-c='3D' href='#MJX-TEX-N-3D'></use></g><g transform='translate(9792.8,0)'><use data-c='28' href='#MJX-TEX-N-28'></use></g><g transform='translate(10181.8,0)'><use data-c='33' href='#MJX-TEX-N-33'></use></g><g transform='translate(10681.8,0)'><use data-c='2C' href='#MJX-TEX-N-2C'></use></g><g transform='translate(11126.4,0)'><use data-c='34' href='#MJX-TEX-N-34'></use></g><g transform='translate(11626.4,0)'><use data-c='29' href='#MJX-TEX-N-29'></use></g></g></g></svg></span>。</div></div>
+      <a class="btn primary sm" href="../drill.html?method=m-midpoint-coord&mode=guided">按步骤做这道题 →</a>
+    </div>
+  </details>
+</section>
+
+
+<section class="section" style="margin-top:24px">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">变式链</span>
+      <h2>同一套步骤，三种改法</h2>
+      <span class="sub">改数字练熟练、改条件练敏感、逆向问练迁移——三个都做对，这张卡才算过关</span>
+    </div>
+  </div>
+  <div class="grid c3">
+    <div class="card">
+      <div class="card-ico blue">#</div>
+      <h3>改数字</h3>
+      <p class="desc" style="margin-top:8px;font-size:.88rem"><span class='math math-inline'><svg style='vertical-align: -0.566ex;' xmlns='http://www.w3.org/2000/svg' width='8.486ex' height='2.262ex' viewBox='0 -750 3750.7 1000'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D434' href='#MJX-TEX-I-1D434'></use></g><g transform='translate(750,0)'><use data-c='28' href='#MJX-TEX-N-28'></use></g><g transform='translate(1139,0)'><use data-c='2212' href='#MJX-TEX-N-2212'></use></g><g transform='translate(1917,0)'><use data-c='32' href='#MJX-TEX-N-32'></use></g><g transform='translate(2417,0)'><use data-c='2C' href='#MJX-TEX-N-2C'></use></g><g transform='translate(2861.7,0)'><use data-c='33' href='#MJX-TEX-N-33'></use></g><g transform='translate(3361.7,0)'><use data-c='29' href='#MJX-TEX-N-29'></use></g></g></g></svg></span>，<span class='math math-inline'><svg style='vertical-align: -0.566ex;' xmlns='http://www.w3.org/2000/svg' width='8.506ex' height='2.262ex' viewBox='0 -750 3759.7 1000'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D435' href='#MJX-TEX-I-1D435'></use></g><g transform='translate(759,0)'><use data-c='28' href='#MJX-TEX-N-28'></use></g><g transform='translate(1148,0)'><use data-c='34' href='#MJX-TEX-N-34'></use></g><g transform='translate(1648,0)'><use data-c='2C' href='#MJX-TEX-N-2C'></use></g><g transform='translate(2092.7,0)'><use data-c='2212' href='#MJX-TEX-N-2212'></use></g><g transform='translate(2870.7,0)'><use data-c='31' href='#MJX-TEX-N-31'></use></g><g transform='translate(3370.7,0)'><use data-c='29' href='#MJX-TEX-N-29'></use></g></g></g></svg></span>，求 <span class='math math-inline'><svg style='vertical-align: 0;' xmlns='http://www.w3.org/2000/svg' width='3.414ex' height='1.62ex' viewBox='0 -716 1509 716'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D434' href='#MJX-TEX-I-1D434'></use></g><g transform='translate(750,0)'><use data-c='1D435' href='#MJX-TEX-I-1D435'></use></g></g></g></svg></span> 中点。</p>
+      <div class="meta" style="margin-top:10px">6 分 · 3 步</div>
+    </div><div class="card">
+      <div class="card-ico purple">⇄</div>
+      <h3>改条件</h3>
+      <p class="desc" style="margin-top:8px;font-size:.88rem"><span class='math math-inline'><svg style='vertical-align: -0.566ex;' xmlns='http://www.w3.org/2000/svg' width='6.725ex' height='2.262ex' viewBox='0 -750 2972.7 1000'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D434' href='#MJX-TEX-I-1D434'></use></g><g transform='translate(750,0)'><use data-c='28' href='#MJX-TEX-N-28'></use></g><g transform='translate(1139,0)'><use data-c='31' href='#MJX-TEX-N-31'></use></g><g transform='translate(1639,0)'><use data-c='2C' href='#MJX-TEX-N-2C'></use></g><g transform='translate(2083.7,0)'><use data-c='31' href='#MJX-TEX-N-31'></use></g><g transform='translate(2583.7,0)'><use data-c='29' href='#MJX-TEX-N-29'></use></g></g></g></svg></span>，<span class='math math-inline'><svg style='vertical-align: -0.566ex;' xmlns='http://www.w3.org/2000/svg' width='6.746ex' height='2.262ex' viewBox='0 -750 2981.7 1000'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D435' href='#MJX-TEX-I-1D435'></use></g><g transform='translate(759,0)'><use data-c='28' href='#MJX-TEX-N-28'></use></g><g transform='translate(1148,0)'><use data-c='35' href='#MJX-TEX-N-35'></use></g><g transform='translate(1648,0)'><use data-c='2C' href='#MJX-TEX-N-2C'></use></g><g transform='translate(2092.7,0)'><use data-c='33' href='#MJX-TEX-N-33'></use></g><g transform='translate(2592.7,0)'><use data-c='29' href='#MJX-TEX-N-29'></use></g></g></g></svg></span>，<span class='math math-inline'><svg style='vertical-align: -0.566ex;' xmlns='http://www.w3.org/2000/svg' width='6.748ex' height='2.262ex' viewBox='0 -750 2982.7 1000'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D436' href='#MJX-TEX-I-1D436'></use></g><g transform='translate(760,0)'><use data-c='28' href='#MJX-TEX-N-28'></use></g><g transform='translate(1149,0)'><use data-c='32' href='#MJX-TEX-N-32'></use></g><g transform='translate(1649,0)'><use data-c='2C' href='#MJX-TEX-N-2C'></use></g><g transform='translate(2093.7,0)'><use data-c='36' href='#MJX-TEX-N-36'></use></g><g transform='translate(2593.7,0)'><use data-c='29' href='#MJX-TEX-N-29'></use></g></g></g></svg></span>。以这三点为顶点作平行四边形，求第四个顶点 <span class='math math-inline'><svg style='vertical-align: 0;' xmlns='http://www.w3.org/2000/svg' width='1.873ex' height='1.545ex' viewBox='0 -683 828 683'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D437' href='#MJX-TEX-I-1D437'></use></g></g></g></svg></span> 的所有可能坐标。</p>
+      <div class="meta" style="margin-top:10px">6 分 · 4 步</div>
+    </div><div class="card">
+      <div class="card-ico rose">↺</div>
+      <h3>逆向问</h3>
+      <p class="desc" style="margin-top:8px;font-size:.88rem"><span class='math math-inline'><svg style='vertical-align: -0.566ex;' xmlns='http://www.w3.org/2000/svg' width='6.725ex' height='2.262ex' viewBox='0 -750 2972.7 1000'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D434' href='#MJX-TEX-I-1D434'></use></g><g transform='translate(750,0)'><use data-c='28' href='#MJX-TEX-N-28'></use></g><g transform='translate(1139,0)'><use data-c='32' href='#MJX-TEX-N-32'></use></g><g transform='translate(1639,0)'><use data-c='2C' href='#MJX-TEX-N-2C'></use></g><g transform='translate(2083.7,0)'><use data-c='33' href='#MJX-TEX-N-33'></use></g><g transform='translate(2583.7,0)'><use data-c='29' href='#MJX-TEX-N-29'></use></g></g></g></svg></span> 与 <span class='math math-inline'><svg style='vertical-align: -0.566ex;' xmlns='http://www.w3.org/2000/svg' width='6.886ex' height='2.262ex' viewBox='0 -750 3043.7 1000'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D435' href='#MJX-TEX-I-1D435'></use></g><g transform='translate(759,0)'><use data-c='28' href='#MJX-TEX-N-28'></use></g><g transform='translate(1148,0)'><use data-c='1D465' href='#MJX-TEX-I-1D465'></use></g><g transform='translate(1720,0)'><use data-c='2C' href='#MJX-TEX-N-2C'></use></g><g transform='translate(2164.7,0)'><use data-c='1D466' href='#MJX-TEX-I-1D466'></use></g><g transform='translate(2654.7,0)'><use data-c='29' href='#MJX-TEX-N-29'></use></g></g></g></svg></span> 的中点是 <span class='math math-inline'><svg style='vertical-align: -0.566ex;' xmlns='http://www.w3.org/2000/svg' width='7.406ex' height='2.262ex' viewBox='0 -750 3273.7 1000'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D440' href='#MJX-TEX-I-1D440'></use></g><g transform='translate(1051,0)'><use data-c='28' href='#MJX-TEX-N-28'></use></g><g transform='translate(1440,0)'><use data-c='35' href='#MJX-TEX-N-35'></use></g><g transform='translate(1940,0)'><use data-c='2C' href='#MJX-TEX-N-2C'></use></g><g transform='translate(2384.7,0)'><use data-c='31' href='#MJX-TEX-N-31'></use></g><g transform='translate(2884.7,0)'><use data-c='29' href='#MJX-TEX-N-29'></use></g></g></g></svg></span>，求 <span class='math math-inline'><svg style='vertical-align: 0;' xmlns='http://www.w3.org/2000/svg' width='1.717ex' height='1.545ex' viewBox='0 -683 759 683'><g stroke='currentColor' fill='currentColor' stroke-width='0' transform='scale(1,-1)'><g><g><use data-c='1D435' href='#MJX-TEX-I-1D435'></use></g></g></g></svg></span> 的坐标。</p>
+      <div class="meta" style="margin-top:10px">6 分 · 3 步</div>
+    </div>
+  </div>
+  <div style="margin-top:16px;text-align:center">
+    <a class="btn primary" href="../drill.html?method=m-midpoint-coord&mode=guided">连做母题 + 3 变式 →</a>
+  </div>
+</section>
+
+<section class="section" style="margin-top:28px">
+  <div class="grid c2">
+    <a class="card tool-card" href="../drill.html?method=m-midpoint-coord&mode=guided">
+      <div class="card-ico blue">📝</div>
+      <h3>引导模式：逐步作答</h3>
+      <p class="desc">每一步问一次，答错立刻给提示。适合刚看完方法卡、还不熟的时候。</p>
+      <div class="meta" style="margin-top:10px">答错会记下卡在第几步</div>
+    </a>
+    <a class="card tool-card" href="../drill.html?method=m-midpoint-coord&mode=selfcheck">
+      <div class="card-ico purple">✓</div>
+      <h3>自查模式：先做后对</h3>
+      <p class="desc">只给步骤骨架，你在纸上做完再逐步勾选。适合已经会、只缺熟练度的时候。</p>
+      <div class="meta" style="margin-top:10px">勾「卡住」给分层提示</div>
+    </a>
+  </div>
+</section>
+
+</div>
+</main>
+<footer class="foot">
+  <div class="foot-in">
+    <div class="col">
+      <div class="logo" style="margin-bottom:10px">
+        <span class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20 L9 8 L13 14 L16 9 L21 20 Z"/><path d="M3 20 L21 20"/></svg></span>
+        <span>北京中考数学领航</span>
+        <span class="logo-badge">数学</span>
+      </div>
+      <p style="line-height:1.7;margin:0;color:var(--text-2)">面向北京中考数学的分步备考站：方法卡按「识别信号」组织，刷题按步骤判定，错题按错因归类。</p>
+    </div>
+    <div class="col">
+      <h4>学习</h4>
+      <a href="../drill.html">分步刷题</a>
+      <a href="../method.html">方法卡</a>
+      <a href="../map.html">知识图谱</a>
+      <a href="../graph.html">公式库</a>
+    </div>
+    <div class="col">
+      <h4>复盘</h4>
+      <a href="../wrong.html">错因诊断</a>
+      <a href="../index.html#tiers">三层分区</a>
+    </div>
+    <div class="col">
+      <h4>说明</h4>
+      <a href="../content.html">内容与口径</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>北京中考数学领航 · 对齐北京卷题型结构</span>
+    <span>例题为原创 · 非真题 · 解答题不自动判分</span>
+  </div>
+</footer>
+<script src="../assets/app.js?v=b829dfd4"></script>
+
+
+
+</body>
+</html>

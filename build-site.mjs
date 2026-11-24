@@ -572,7 +572,7 @@ function buildHome() {
 })();
 `;
 
-  const html = page({ active: 'index.html', title: '北京中考数学分步备考系统', desc: '按方法卡组织、步骤级判定、弱点诊断的北京中考数学备考站。300 题、29 张方法卡、18 章。', body, script });
+  const html = page({ active: 'index.html', title: '北京中考数学分步备考系统', desc: '按方法卡组织、步骤级判定、弱点诊断的北京中考数学备考站。' + STATS.questions + ' 题、' + STATS.methods + ' 张方法卡、' + STATS.chapters + ' 章。', body, script });
   return html.replace('<body data-base="">', `<body data-base="">\n${R.math.defs()}`);
 }
 
