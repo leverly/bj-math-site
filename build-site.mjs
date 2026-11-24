@@ -58,7 +58,8 @@ const NAV = [
   ['method.html', '方法卡'],
   ['map.html', '知识图谱'],
   ['graph.html', '公式库'],
-  ['wrong.html', '错因诊断'],
+  ['wrong.html', '错题本'],
+  ['diag.html', '学情诊断'],
 ];
 
 function header(base, active) {
@@ -102,7 +103,8 @@ function footer(base) {
     </div>
     <div class="col">
       <h4>复盘</h4>
-      <a href="${base}wrong.html">错因诊断</a>
+      <a href="${base}wrong.html">错题本</a>
+      <a href="${base}diag.html">学情诊断</a>
       <a href="${base}index.html#tiers">三层分区</a>
     </div>
     <div class="col">
@@ -274,6 +276,126 @@ function buildHome() {
   const totalC = STATS.chapters;
   const totalConcept = STATS.concepts;
 
+  /* ---------- 教研体量：从真实数据算，不写死 ---------- */
+  const VOL = {
+    chapters: STATS.chapters,
+    methods: STATS.methods,
+    methodSteps: METHODS.reduce((a, m) => a + (m.steps || []).length, 0),
+    pitfalls: METHODS.reduce((a, m) => a + (m.pitfalls || []).length, 0),
+    questions: STATS.questions,
+    qSteps: QUESTIONS.reduce((a, q) => a + (q.steps || []).length, 0),
+    mother: QUESTIONS.filter((q) => !q.variantOf).length,
+    variants: QUESTIONS.filter((q) => q.variantOf).length,
+    concepts: STATS.concepts,
+    conceptTests: STATS.conceptTests,
+    formulas: FORMULAS.length,
+    figures: QUESTIONS.filter((q) => q.fig).length,
+  };
+  /* 每个方法卡平均几步、平均几条误用 —— 体现「写得多细」 */
+  const avgSteps = (VOL.methodSteps / VOL.methods).toFixed(1);
+  const avgPitfalls = (VOL.pitfalls / VOL.methods).toFixed(1);
+  const avgQSteps = (VOL.qSteps / VOL.questions).toFixed(1);
+
+  /* 原创文字量：只数汉字，LaTeX 命令与符号不计 */
+  const cnChars = (s) => (String(s).replace(/\\[a-zA-Z]+/g, '').match(/[\u4e00-\u9fa5]/g) || []).length;
+  const cnOf = (o) => {
+    if (o == null) return 0;
+    if (typeof o === 'string') return cnChars(o);
+    if (Array.isArray(o)) return o.reduce((a, x) => a + cnOf(x), 0);
+    if (typeof o === 'object') return Object.values(o).reduce((a, x) => a + cnOf(x), 0);
+    return 0;
+  };
+  VOL.text = cnOf(METHODS.map((m) => [m.signal, m.steps, m.pitfalls]))
+    + cnOf(QUESTIONS.map((q) => [q.stem, q.steps]))
+    + cnOf(CONCEPTS)
+    + cnOf(FORMULAS.map((f) => [f.name, f.cond, f.misuse]));
+
+  /* 卷面题位 → 覆盖章节（examRefs 反查），以及每个题位的层级 */
+  const POS_CH = new Map();
+  CHAPTERS.forEach((c) => (c.examRefs || []).forEach((n) => {
+    if (!POS_CH.has(n)) POS_CH.set(n, []);
+    POS_CH.get(n).push(c);
+  }));
+  const posTier = (n) => (n <= 7 || (n >= 9 && n <= 15) || (n >= 17 && n <= 22) ? 'send'
+    : (n >= 23 && n <= 26) ? 'mid' : 'dist');
+  VOL.covered = [...POS_CH.keys()].length;
+
+  const volCards = [
+    { n: VOL.chapters, unit: '章', label: '知识章节', sub: '按 2022 课标知识块划分，含前置依赖', href: 'map.html' },
+    { n: `${VOL.covered}`, unit: '/28', label: '卷面题位覆盖', sub: '从选 1 到第 28 题，逐个题位有落点', href: 'map.html' },
+    { n: VOL.methods, unit: '张', label: '方法卡', sub: `平均 ${avgSteps} 步 / ${avgPitfalls} 条常见误用`, href: 'method.html' },
+    { n: VOL.questions, unit: '道', label: '题目', sub: `${VOL.mother} 母题 + ${VOL.variants} 变式，平均 ${avgQSteps} 步`, href: 'drill.html' },
+    { n: VOL.qSteps, unit: '个', label: '解题步骤', sub: '每步单独判定，答错记卡在第几步', href: 'drill.html' },
+    { n: VOL.pitfalls, unit: '条', label: '常见误用', sub: '✕ 错法 / ✓ 正解 / 一句错因', href: 'method.html' },
+    { n: VOL.conceptTests, unit: '个', label: '概念判断', sub: `来自 ${VOL.concepts} 张概念卡，只考条件不考背诵`, href: 'concept.html' },
+    { n: VOL.formulas, unit: '条', label: '公式定理', sub: '每条带适用条件与常见误用', href: 'graph.html' },
+  ];
+  const volHtml = volCards.map((c) => `<a class="vol-card" href="${c.href}">
+    <div class="vol-num">${c.n}<span>${c.unit}</span></div>
+    <div class="vol-label">${c.label}</div>
+    <div class="vol-sub">${c.sub}</div>
+  </a>`).join('');
+
+  /* ---------- 卷面覆盖图：28 个题位按题型分组 ---------- */
+  const posRows = EXAM_STRUCTURE.parts.map((part) => {
+    const cells = [];
+    for (let n = part.from; n <= part.to; n++) {
+      const chs = POS_CH.get(n) || [];
+      const primary = chs[0];
+      const t = posTier(n);
+      const extra = chs.length > 1 ? `<i>+${chs.length - 1}</i>` : '';
+      const title = chs.length ? chs.map((c) => c.name).join(' / ') : '待补';
+      cells.push(`<a class="pos-cell ${t}" href="${primary ? `map/${primary.id}.html` : 'map.html'}" title="第 ${n} 题 · ${esc(title)}">
+        <b>${n}</b><span>${primary ? esc(primary.name) : '待补'}</span>${extra}
+      </a>`);
+    }
+    return `<div class="pos-row">
+      <div class="pos-row-head">
+        <b>${esc(part.name)}</b>
+        <span>${part.count} 题 · ${part.sum} 分</span>
+      </div>
+      <div class="pos-cells" style="--pos-cols:${part.count}">${cells.join('')}</div>
+    </div>`;
+  }).join('');
+
+  /* ---------- 章节密度：每章题 / 卡 / 概念 / 公式 / 步骤 ---------- */
+  const densOf = (c) => {
+    const qs = QUESTIONS.filter((q) => q.chapter === c.id);
+    const ms = METHODS.filter((m) => m.chapter === c.id);
+    const cs = CONCEPTS.filter((x) => x.chapter === c.id);
+    const fs = FORMULAS.filter((f) => f.chapter === c.id);
+    const st = qs.reduce((a, q) => a + (q.steps || []).length, 0);
+    return { q: qs.length, m: ms.length, c: cs.length, f: fs.length, st };
+  };
+  const densityRows = CHAPTERS.map((c) => {
+    const d = densOf(c);
+    const maxQ = 40;
+    return `<tr>
+      <td class="dens-ch"><a href="map/${c.id}.html"><i>${String(c.no).padStart(2, '0')}</i>${esc(c.name)}</a></td>
+      <td class="dens-block">${esc(c.block)}</td>
+      <td class="dens-num"><b>${d.q}</b><span class="dens-bar"><i style="width:${Math.round(d.q / maxQ * 100)}%"></i></span></td>
+      <td class="dens-num">${d.m}</td>
+      <td class="dens-num">${d.c}</td>
+      <td class="dens-num">${d.f}</td>
+      <td class="dens-num">${d.st}</td>
+    </tr>`;
+  }).join('');
+  /* 窄屏：表格换成一条一行的紧凑卡，避免横向滚动 */
+  const densityCards = CHAPTERS.map((c) => {
+    const d = densOf(c);
+    return `<a class="dens-card" href="map/${c.id}.html">
+      <span class="dc-top"><i>${String(c.no).padStart(2, '0')}</i><b>${esc(c.name)}</b></span>
+      <span class="dc-nums">${d.q} 题 · ${d.m} 卡 · ${d.c} 概念 · ${d.f} 公式 · ${d.st} 步</span>
+    </a>`;
+  }).join('');
+
+  /* 分层数据 */
+  const tierStat = ['send', 'mid', 'dist'].map((t) => ({
+    t,
+    q: QUESTIONS.filter((q) => q.tier === t).length,
+    m: METHODS.filter((m) => m.tier === t).length,
+  }));
+
   /* ---------- 提分路径：三层分区（紧凑三列） ---------- */
   const TIER_GOAL = { send: '目标 100%', mid: '目标 90%', dist: '目标 50–70%' };
   const TIER_DESC = {
@@ -336,10 +458,10 @@ function buildHome() {
       no: '03',
       pain: '错题记了一堆，不知道从哪补',
       painSub: '「计算差」这种结论没法执行',
-      tag: '弱点诊断',
-      fix: '错题按<b>可训练单元</b>聚合，直接告诉你：<b>二次函数区间最值 · 正确率 0% · 主因概念不清 · 常卡第 1 步</b>，然后一键进该单元的题。不是给结论，是给下一步动作。',
+      tag: '错题本 + 学情诊断',
+      fix: '错题自动进<b>错题本</b>，按错因分类、可整页重做、可打印成 A4 错题纸；再往后的<b>学情诊断</b>把错题按<b>可训练单元</b>聚合，直接告诉你：<b>二次函数区间最值 · 正确率 0% · 主因概念不清 · 常卡第 1 步</b>，然后一键进该单元的题。不是给结论，是给下一步动作。',
       href: 'wrong.html',
-      link: '看诊断长什么样',
+      link: '看错题本长什么样',
     },
   ];
 
@@ -373,8 +495,9 @@ function buildHome() {
   /* ---------- 三步上手 ---------- */
   const steps = [
     { n: '1', t: '先做一组题', d: '10 道送分区题，或直接看一章的题。不用注册，答完就有记录。', href: 'drill.html', cta: '开始做题' },
-    { n: '2', t: '看诊断说补什么', d: '弱点清单会告诉你最该补的方法卡、主因错因、常卡第几步。', href: 'wrong.html', cta: '看错因诊断' },
-    { n: '3', t: '进专项练', d: '点「专项训练」直接出那个单元的题。练完回来看正确率有没有上去。', href: 'drill.html?scope=weak', cta: '专攻最弱' },
+    { n: '2', t: '错题进错题本', d: '做错的题自动收录，按错因分组，可以整页重做、打印成纸质错题纸。', href: 'wrong.html', cta: '看错题本' },
+    { n: '3', t: '看学情诊断说补什么', d: '弱点清单会告诉你最该补的方法卡、主因错因、常卡第几步。', href: 'diag.html', cta: '看学情诊断' },
+    { n: '4', t: '进专项练', d: '点「专项训练」直接出那个单元的题。练完回来看正确率有没有上去。', href: 'drill.html?scope=weak', cta: '专攻最弱' },
   ];
   const stepsHtml = steps.map((s) => `<div class="step-mini">
     <span class="step-mini-no">${s.n}</span>
@@ -394,17 +517,23 @@ function buildHome() {
       <p class="lede">
  问题通常不在题量，而在<b>看到题不知道用哪个方法</b>。
  本站按<b>方法</b>组织，不按知识点罗列：每张方法卡第一行写清「题面出现什么时该想到它」；
- 刷题按<b>步骤</b>判定，记下你卡在第几步；错题自动聚合成<b>可训练单元</b>，直接告诉你下一步练什么。
+ 刷题按<b>步骤</b>判定，记下你卡在第几步；错题自动进<b>错题本</b>，再按<b>可训练单元</b>聚合成学情诊断，直接告诉你下一步练什么。
  </p>
       <div class="hero-cta">
         <a class="btn primary" href="drill.html">免费开始做题 <span aria-hidden="true">→</span></a>
-        <a class="btn" href="wrong.html">先看诊断示例</a>
+        <a class="btn" href="diag.html">先看学情诊断示例</a>
       </div>
       <div class="hero-trust">
         <span><b>✓</b> 无需注册</span>
         <span><b>✓</b> 离线可用</span>
         <span><b>✓</b> 记录只存本地</span>
         <span><b>✓</b> 无广告</span>
+      </div>
+      <div class="hero-stats">
+        <div><b>28<span class="hs-of">/28</span></b><span>卷面题位覆盖</span></div>
+        <div><b>${VOL.methods}</b><span>张方法卡</span></div>
+        <div><b>${VOL.questions}</b><span>道题</span></div>
+        <div><b>${(VOL.text / 10000).toFixed(1)}<span class="hs-of">万字</span></b><span>原创正文与解析</span></div>
       </div>
     </div>
 
@@ -423,7 +552,7 @@ function buildHome() {
           <div class="bar"><i id="tBar" style="width:0%"></i></div>
           <div class="cockpit-sub">
             <span id="cTarget">目标：95 分以上</span>
-            <a href="wrong.html" style="font-weight:600">看错因诊断 →</a>
+            <a href="diag.html" style="font-weight:600">看学情诊断 →</a>
           </div>
         </div>
       </div>
@@ -439,13 +568,73 @@ function buildHome() {
           <span class="mi-go">去看 →</span>
         </a>
         <a class="mission-item" href="wrong.html">
+          <span class="mi-ico rose">📕</span>
+          <span class="mi-main"><b>错题本</b><small>做错自动收录，按错因分类，可重做可打印</small></span>
+          <span class="mi-go">查看 →</span>
+        </a>
+        <a class="mission-item" href="diag.html">
           <span class="mi-ico rose">🎯</span>
-          <span class="mi-main"><b>错因诊断</b><small>聚合到可训练单元，给下一步动作</small></span>
+          <span class="mi-main"><b>学情诊断</b><small>聚合到可训练单元，给下一步动作</small></span>
           <span class="mi-go">查看 →</span>
         </a>
       </div>
     </div>
   </div>
+</section>
+
+<section class="section reveal" id="volume">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">教研体量</span>
+      <h2>卷面 ${VOL.covered} 个题位全覆盖，${(VOL.text / 10000).toFixed(1)} 万字原创教研</h2>
+      <span class="sub">${VOL.chapters} 章 · ${VOL.methods} 张方法卡 · ${VOL.questions} 道题，逐条写出来的，不是题库搬运。每张卡有识别信号、标准步骤、常见误用、母题与三个变式；每道题有分步骨架与完整解答</span>
+    </div>
+  </div>
+  <div class="vol-grid">${volHtml}</div>
+
+  <div class="cov-block">
+    <div class="cov-head">
+      <b>卷面 28 个题位，逐个有落点</b>
+      <span>北京卷 100 分 / 28 题，按题型分五段。每格是该题位对应的章节，<i>+n</i> 表示还有 n 章备选</span>
+    </div>
+    <div class="pos-table">${posRows}</div>
+    <div class="cov-legend">
+      <span class="lg send">送分区 58 分</span>
+      <span class="lg mid">中档区 24 分</span>
+      <span class="lg dist">区分区 18 分</span>
+    </div>
+  </div>
+
+  <div class="dens-block">
+    <div class="cov-head">
+      <b>每章的内容密度</b>
+      <span>题量、方法卡、概念卡、公式、分步步骤逐章列出——点章节名进单章页</span>
+    </div>
+    <div class="tbl-wrap dens-table-wrap">
+      <table class="gtable dens-table">
+        <thead><tr>
+          <th style="width:26%">章节</th>
+          <th style="width:16%">知识块</th>
+          <th style="width:22%">题量</th>
+          <th>方法卡</th><th>概念卡</th><th>公式</th><th>步骤</th>
+        </tr></thead>
+        <tbody>${densityRows}</tbody>
+      </table>
+    </div>
+    <div class="dens-cards">${densityCards}</div>
+  </div>
+
+  <div class="vol-tiers">
+    ${tierStat.map((x) => `<div class="vol-tier">
+      <span class="vt-name">${TIER_NAME[x.t]}</span>
+      <span class="vt-num">${x.q} 题</span>
+      <span class="vt-num">${x.m} 卡</span>
+    </div>`).join('')}
+  </div>
+  <p class="vol-note">
+    全站共 <b>${VOL.qSteps}</b> 个解题步骤、<b>${VOL.pitfalls}</b> 条常见误用、<b>${VOL.conceptTests}</b> 个概念判断、<b>${VOL.formulas}</b> 条公式定理，
+    另有 <b>${VOL.figures}</b> 张几何图（构建期生成 SVG）。
+  </p>
 </section>
 
 <section class="section reveal" id="why">
@@ -1111,7 +1300,7 @@ function buildDrill() {
 <div class="page-head">
   <div class="crumb"><a href="index.html">首页</a> / 分步刷题</div>
   <h1>分步刷题</h1>
-  <p class="lede">判定的单位是<b>步骤</b>，不是整题。答错时系统记下你卡在第几步，这是错因诊断的依据。</p>
+  <p class="lede">判定的单位是<b>步骤</b>，不是整题。答错时系统记下你卡在第几步，这是错题本分类与学情诊断的依据。</p>
 </div>
 
 <section class="section" style="margin-top:20px" id="setup">
@@ -1157,6 +1346,17 @@ function buildDrill() {
           <option value="">不限章节（全部）</option>
           ${chapterOpts}
         </select>
+      </div>
+
+      <div class="setup-group">
+        <div class="kicker">卷面分层</div>
+        <div class="chips" id="tierChips">
+          <button class="chip on" data-t="all">不限</button>
+          <button class="chip" data-t="send">送分区</button>
+          <button class="chip" data-t="mid">中档区</button>
+          <button class="chip" data-t="dist">区分区</button>
+        </div>
+        <p class="setup-hint">按北京卷 58 / 24 / 18 分三段筛选</p>
       </div>
 
       <div class="setup-group">
@@ -1218,10 +1418,14 @@ function buildDrill() {
   var urlScope = params.get('scope');
   var scope = (urlScope === 'weak' || urlScope === 'wrong') ? urlScope : 'all';
   var len = parseInt(params.get('n'), 10) || 8;
+  var tier = 'all';
 
   // URL 预填（方法卡页跳过来时带 ?method=&mode=）
   var preMethod = params.get('method') || '';
   var preChapter = params.get('chapter') || '';
+  var preTier = params.get('tier') || '';
+  if (['send', 'mid', 'dist'].indexOf(preTier) < 0) preTier = 'all';
+  tier = preTier;
   if (preMethod) {
     var sel = document.getElementById('methodSel');
     if (sel) sel.value = preMethod;
@@ -1236,6 +1440,9 @@ function buildDrill() {
   [].forEach.call(document.querySelectorAll('#scopeChips .chip'), function(c){
     c.classList.toggle('on', c.getAttribute('data-s') === scope);
   });
+  [].forEach.call(document.querySelectorAll('#tierChips .chip'), function(c){
+    c.classList.toggle('on', c.getAttribute('data-t') === preTier);
+  });
 
   function pick(sel, attr, cb){
     [].forEach.call(document.querySelectorAll(sel + ' .chip'), function(c){
@@ -1247,6 +1454,7 @@ function buildDrill() {
   }
   pick('#modeChips', 'data-m', function(v){ mode = v; });
   pick('#scopeChips', 'data-s', function(v){ scope = v; });
+  pick('#tierChips', 'data-t', function(v){ tier = v; refreshHint(); });
   pick('#lenChips', 'data-l', function(v){ len = parseInt(v, 10); });
 
   function refreshHint(){
@@ -1271,6 +1479,7 @@ function buildDrill() {
     var cid = document.getElementById('chapterSel').value;
     if (mid) out = out.filter(function(q){ return q.method === mid; });
     if (cid) out = out.filter(function(q){ return q.chapter === cid; });
+    if (tier !== 'all') out = out.filter(function(q){ return q.tier === tier; });
     if (scope === 'wrong') {
       var w = BJM.wrongMap();
       out = out.filter(function(q){ return !!w[q.id]; });
@@ -1513,7 +1722,7 @@ function buildMap() {
     }
     html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">' +
       '<a class="btn primary sm" href="drill.html?chapter=' + worst.key + '&scope=weak">补这一章 →</a>' +
-      '<a class="btn soft sm" href="wrong.html">看完整错因诊断</a></div>';
+      '<a class="btn soft sm" href="diag.html">看完整学情诊断</a></div>';
     diag.innerHTML = html;
   }
 
@@ -1692,7 +1901,7 @@ ${prereqs.length ? `<section class="section" style="margin-top:16px">
     html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">' +
       (cw.rate < 0.85 ? '<a class="btn primary sm" href="../drill.html?chapter=' + CH_ID + '&scope=weak">专攻本章最弱 →</a>' : '') +
       '<a class="btn soft sm" href="../drill.html?chapter=' + CH_ID + '&mode=guided">再练一组</a>' +
-      '<a class="btn ghost sm" href="../wrong.html">看全局错因</a></div>';
+      '<a class="btn ghost sm" href="../diag.html">看全局学情诊断</a></div>';
     diag.innerHTML = html;
 
     // 前置章也弱时提示
@@ -1752,8 +1961,19 @@ function buildWrong() {
     <div class="k"><b id="kTotal">0</b><span>累计作答</span></div>
     <div class="k"><b id="kRate" style="color:var(--accent)">—</b><span>综合正确率</span></div>
     <div class="k"><b id="kWrong" style="color:var(--rose)">0</b><span>错题本</span></div>
-    <div class="k"><b id="kWeak" style="color:var(--gold)">0</b><span>薄弱单元</span></div>
+    <div class="k"><b id="kTimes" style="color:var(--gold)">0</b><span>累计错次</span></div>
   </div>
+</section>
+
+<section class="section" style="margin-top:20px">
+  <a class="card diag-cta" href="diag.html">
+    <span class="card-ico rose">🎯</span>
+    <span class="diag-cta-main">
+      <b>想先知道该补什么？去「学情诊断」</b>
+      <span>错题按可训练单元聚合：最该补的方法卡、主因错因、常卡第几步，一键进专项训练</span>
+    </span>
+    <span class="diag-cta-go">看学情诊断 →</span>
+  </a>
 </section>
 
 <section class="section" style="margin-top:22px">
@@ -1764,7 +1984,6 @@ function buildWrong() {
     <button class="chip" data-tab="construct">构造不出 <span id="nConstruct">0</span></button>
     <button class="chip" data-tab="calc">计算失误 <span id="nCalc">0</span></button>
     <button class="chip" data-tab="express">表达不规范 <span id="nExpress">0</span></button>
-    <button class="chip" data-tab="diag">弱点诊断</button>
   </div>
   <div class="toolbar" id="wbToolbar" style="margin-top:16px">
     <input class="field" id="wq" type="search" placeholder="在错题本里搜索题干、章节、方法卡…" autocomplete="off">
@@ -1798,40 +2017,6 @@ function buildWrong() {
   <div id="redoHost"></div>
 </section>
 
-<div id="pane-diag" style="display:none">
-  <section class="section" style="margin-top:18px">
-    <div class="section-head">
-      <div class="section-head-left">
-        <span class="kicker">下一步练什么</span>
-        <h2>按优先级排序的薄弱单元</h2>
-        <span class="sub">正确率越低、错题越多越靠前。点「专项训练」直接进该单元的题</span>
-      </div>
-    </div>
-    <div id="actions"></div>
-  </section>
-
-  <section class="section" style="margin-top:26px">
-    <div class="section-head">
-      <div class="section-head-left">
-        <span class="kicker">错因分布</span>
-        <h2>你主要错在哪一层</h2>
-      </div>
-    </div>
-    <div id="errBars" class="traps"></div>
-  </section>
-
-  <section class="section" style="margin-top:26px">
-    <div class="section-head">
-      <div class="section-head-left">
-        <span class="kicker">卡点分布</span>
-        <h2>你最常卡在第几步</h2>
-        <span class="sub">第 1 步就卡 → 多半是概念或读题；第 3 步以后卡 → 多半是计算或收尾</span>
-      </div>
-    </div>
-    <div id="stuckBars" class="card" style="padding:18px 20px"></div>
-  </section>
-</div>
-
 <!-- 打印专用区：全量条目，不受分页与搜索影响之外的分页限制 -->
 <section class="section" id="printZone">
   <div id="printList" class="print-list"></div>
@@ -1852,7 +2037,7 @@ function buildWrong() {
   if ([10, 20, 50].indexOf(PAGE_SIZE) < 0) PAGE_SIZE = 10;
 
   /* ?tab=concept 等深链，便于从别的页面跳进指定错因 */
-  var TAB_IDS = ['all','concept','method','construct','calc','express','diag'];
+  var TAB_IDS = ['all','concept','method','construct','calc','express'];
   var tabParam = new URLSearchParams(location.search).get('tab');
   var tab = TAB_IDS.indexOf(tabParam) >= 0 ? tabParam : 'all';
 
@@ -1943,7 +2128,7 @@ function buildWrong() {
   /* ============ 数据 ============ */
   function baseItems(){
     var list = BJM.wrongList();
-    if (tab !== 'all' && tab !== 'diag') {
+    if (tab !== 'all') {
       list = list.filter(function(w){ return w.errorType === tab; });
     }
     list.sort(function(a, b){ return b.times - a.times; });
@@ -2077,7 +2262,7 @@ function buildWrong() {
       host.innerHTML = '<div class="empty"><b>当前标签页没有错题</b>没有可打印的内容</div>';
       return;
     }
-    var tabName = tab === 'all' ? '全部错题' : (tab === 'diag' ? '错题' : (ERR_META[tab] || {}).n);
+    var tabName = tab === 'all' ? '全部错题' : (ERR_META[tab] || {}).n;
     var today = new Date().toLocaleDateString('zh-CN');
     host.innerHTML = '<div class="print-head"><b>北京中考数学领航 · 智能错题本</b>' +
       '<span>' + tabName + ' · 共 ' + items.length + ' 条 · ' + today + '</span></div>' +
@@ -2170,15 +2355,7 @@ function buildWrong() {
     tab = t;
     page = 0;
     document.getElementById('redoZone').style.display = 'none';
-    var isDiag = tab === 'diag';
-    document.getElementById('wbToolbar').style.display = isDiag ? 'none' : '';
-    document.getElementById('wbHint').style.display = isDiag ? 'none' : '';
-    document.getElementById('wbList').style.display = isDiag ? 'none' : '';
-    document.getElementById('wbPager').style.display = isDiag ? 'none' : '';
-    document.getElementById('wbEmpty').style.display = isDiag ? 'none' : '';
-    document.getElementById('printZone').style.display = isDiag ? 'none' : '';
-    document.getElementById('pane-diag').style.display = isDiag ? '' : 'none';
-    if (!isDiag) draw();
+    draw();
   }
 
   [].forEach.call(document.querySelectorAll('#tabs .chip'), function(c){
@@ -2311,7 +2488,234 @@ function buildWrong() {
     document.getElementById('redoZone').style.display = 'none';
   });
 
-  /* ============ 弱点诊断 ============ */
+  function refreshStats(){
+    var t = BJM.totalAnswered();
+    var set = function(sel, v){ var e = document.querySelector(sel); if (e) e.textContent = v; };
+    set('#kTotal', t.n);
+    set('#kRate', t.n ? Math.round(t.rate * 100) + '%' : '—');
+    set('#kWrong', BJM.wrongIds().length);
+    set('#kTimes', BJM.wrongList().reduce(function(a, w){ return a + (w.times || 0); }, 0));
+  }
+
+  function refresh(){
+    pruneUnresolvable();
+    refreshStats();
+    draw();
+  }
+
+  BJM.ready(function(){
+    refresh();
+    applyTab(tab);          // 深链进入时同步显示状态
+    loadAll().then(refresh);
+  });
+  document.addEventListener('bj:qlog', refresh);
+  document.addEventListener('bj:day', refreshStats);
+})();
+`;
+
+  const html = page({
+    active: 'wrong.html', title: '智能错题本',
+    desc: '做错的题自动收录，按错因分类；搜索、分页、整页重做、打印 A4 错题纸。',
+    body, script, useStep: true, data: ['meta'],
+  });
+  return html.replace('<body data-base="">', `<body data-base="">\n${R.math.defs()}`);
+}
+
+/* ==========================================================
+   页面 8：学情诊断
+   ----------------------------------------------------------
+   错题本是「收」，学情诊断是「判」：把作答记录聚合成
+   可训练单元、分层达标度、错因结构、卡点位置、学习节奏，
+   最后给一份可执行的诊断清单。
+   ========================================================== */
+function buildDiag() {
+  const ERR = [
+    ['concept', '概念不清', '定义、定理的适用条件没弄清', '去做条件判断题', 'concept.html'],
+    ['method', '方法未掌握', '没思路，或选错了工具', '看识别信号 + 母题', 'method.html'],
+    ['construct', '构造不出', '几何题看不出辅助线', '看构造模型', 'method.html'],
+    ['calc', '计算失误', '会做但算错', '进计算专项（连对 3 次出册）', 'drill.html?scope=wrong'],
+    ['express', '表达不规范', '审题漏条件、步骤跳步', '做找错练习', 'drill.html?scope=wrong'],
+  ];
+
+  const TIER_META = {
+    send: TIERS.send, mid: TIERS.mid, dist: TIERS.dist,
+  };
+
+  const body = `
+<div class="page-head">
+  <div class="crumb"><a href="index.html">首页</a> / 学情诊断</div>
+  <h1>学情诊断</h1>
+  <p class="lede">这里不做题，只做判断。把 <a href="wrong.html">错题本</a> 和全部作答记录聚合起来，回答三个问题：<b>现在处在什么水平</b>、<b>最该补哪里</b>、<b>下一步具体做什么</b>。<br>
+  <span style="color:var(--text-3);font-size:.92em">数据全部来自本机作答记录，不需要手动填表。</span></p>
+</div>
+
+<section class="section" style="margin-top:20px">
+  <div class="report-banner" id="verdict">
+    <div>
+      <h2 id="vTitle">还没有足够数据</h2>
+      <p id="vSub">先做两组题，诊断才有依据。</p>
+    </div>
+    <div class="report-actions">
+      <a class="btn solid" href="drill.html">去刷一组题</a>
+      <a class="btn" href="wrong.html">回错题本</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="margin-top:22px">
+  <div class="kv">
+    <div class="k"><b id="kTotal">0</b><span>累计作答</span></div>
+    <div class="k"><b id="kRate" style="color:var(--accent)">—</b><span>综合正确率</span></div>
+    <div class="k"><b id="kUnit" style="color:var(--rose)">0</b><span>薄弱单元</span></div>
+    <div class="k"><b id="kMethod" style="color:var(--accent-2)">0</b><span>练过方法卡</span></div>
+    <div class="k"><b id="kStreak" style="color:var(--gold)">0</b><span>天连学</span></div>
+    <div class="k"><b id="kGoal" style="color:var(--ok)">—</b><span>今日目标</span></div>
+  </div>
+</section>
+
+<section class="section" style="margin-top:26px">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">下一步练什么</span>
+      <h2>按优先级排序的薄弱单元</h2>
+      <span class="sub">正确率越低、错题越多越靠前。点「专项训练」直接进该单元的题</span>
+    </div>
+  </div>
+  <div id="actions"></div>
+</section>
+
+<section class="section" style="margin-top:26px">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">分层达标度</span>
+      <h2>三层分区，各自离目标还差多少</h2>
+      <span class="sub">送分区要稳到 100%，中档区 90%，区分区 60% 就够。竖线是目标线</span>
+    </div>
+  </div>
+  <div id="tierGrid" class="tier-grid"></div>
+</section>
+
+<section class="section" style="margin-top:26px">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">错因分布</span>
+      <h2>你主要错在哪一层</h2>
+      <span class="sub">发生次数看结构，补救率看这类错现在还会不会犯：补回 = 同题后来做对了</span>
+    </div>
+  </div>
+  <div id="errBars" class="traps"></div>
+</section>
+
+<section class="section" style="margin-top:26px">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">卡点分布</span>
+      <h2>你最常卡在第几步</h2>
+      <span class="sub">第 1 步就卡 → 多半是概念或读题；第 3 步以后卡 → 多半是计算或收尾</span>
+    </div>
+  </div>
+  <div id="stuckBars" class="card" style="padding:18px 20px"></div>
+</section>
+
+<section class="section" style="margin-top:26px">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">章节掌握度</span>
+      <h2>18 章逐章看正确率</h2>
+      <span class="sub">只统计练过的章；点章名进单章页看方法卡掌握度</span>
+    </div>
+  </div>
+  <div id="chHeat" class="card" style="padding:18px 20px"></div>
+</section>
+
+<section class="section" style="margin-top:26px">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">学习节奏</span>
+      <h2>近 7 天题量与连续性</h2>
+      <span class="sub">诊断不只看对错，也看练得稳不稳</span>
+    </div>
+  </div>
+  <div class="card" style="padding:18px 20px">
+    <div id="rhythmChart"></div>
+    <p class="setup-hint" id="rhythmHint" style="margin-top:10px"></p>
+  </div>
+</section>
+
+<section class="section" style="margin-top:26px">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">诊断清单</span>
+      <h2>按当前数据，这几件事最该做</h2>
+      <span class="sub">每条都对应一个可以立刻点进去的动作</span>
+    </div>
+  </div>
+  <div id="checklist"></div>
+</section>
+`;
+
+  const script = `
+(function(){
+  var ERR_META = ${JSON.stringify(ERR.reduce((a, [k, n, d, fix, href]) => (a[k] = { n, d, fix, href }, a), {}))};
+  var TIER_META = ${JSON.stringify(TIER_META)};
+  var ERR_NAME = BJM.ERR_NAME;
+  var META = window.BJM.META || { chapters: [], methods: [] };
+
+  function CH(){ return window.BJM.CH || {}; }
+  function mname(id){
+    var m = (META.methods || []).find(function(x){ return x.id === id; });
+    return m ? m.name : id;
+  }
+  function cname(id){
+    var c = (META.chapters || []).find(function(x){ return x.id === id; });
+    return c ? (c.no + '. ' + c.name) : id;
+  }
+  function chOf(id){
+    return (META.chapters || []).find(function(x){ return x.id === id; }) || null;
+  }
+
+  /* ============ 结论横幅 ============ */
+  function renderVerdict(){
+    var t = BJM.totalAnswered();
+    var title = document.getElementById('vTitle');
+    var sub = document.getElementById('vSub');
+    var acts = BJM.nextActions(3);
+
+    if (!t.n) {
+      title.textContent = '还没有足够数据';
+      sub.textContent = '先做两组题，诊断才有依据。';
+      return;
+    }
+    if (!acts.length) {
+      title.textContent = '目前没有明显薄弱单元';
+      sub.textContent = '已练 ' + t.n + ' 题，综合正确率 ' + Math.round(t.rate * 100) + '%。继续按章节推进，或去区分区试水。';
+      return;
+    }
+    var top = acts[0];
+    var isM = top.kind === 'method';
+    var rateP = Math.round(top.rate * 100);
+    var errName = top.topErr ? (ERR_NAME[top.topErr] || top.topErr) : '暂无明显主因';
+    var stuck = top.topStuck >= 0 ? ('第 ' + (top.topStuck + 1) + ' 步') : '未记录';
+    title.textContent = '当前最该补：' + (isM ? mname(top.key) : cname(top.key));
+    sub.textContent = '综合正确率 ' + Math.round(t.rate * 100) + '% · 该单元练过 ' + top.answered +
+      ' 题、正确率 ' + rateP + '% · 主因 ' + errName + ' · 常卡 ' + stuck +
+      '。建议先把它练到 80% 以上，再推进下一块。';
+  }
+
+  /* ============ 顶部指标 ============ */
+  function renderStats(){
+    var t = BJM.totalAnswered();
+    var set = function(id, v){ var e = document.getElementById(id); if (e) e.textContent = v; };
+    set('kTotal', t.n);
+    set('kRate', t.n ? Math.round(t.rate * 100) + '%' : '—');
+    set('kUnit', BJM.nextActions(99).length);
+    set('kMethod', BJM.methodRates().length);
+    set('kStreak', BJM.streak());
+    var goalN = BJM.goal(), todayN = BJM.todayQuestions();
+    set('kGoal', todayN + '/' + goalN);
+  }
+
+  /* ============ 薄弱单元 ============ */
   function renderActions(){
     var acts = BJM.nextActions(6);
     var el = document.getElementById('actions');
@@ -2338,6 +2742,41 @@ function buildWrong() {
     }).join('');
   }
 
+  /* ============ 分层达标度 ============ */
+  function renderTiers(){
+    var rates = {};
+    BJM.tierRates().forEach(function(r){ rates[r.key] = r; });
+    var order = ['send', 'mid', 'dist'];
+    document.getElementById('tierGrid').innerHTML = order.map(function(k){
+      var meta = TIER_META[k];
+      var r = rates[k];
+      var rateP = r ? Math.round(r.rate * 100) : 0;
+      var targetP = Math.round(meta.target * 100);
+      var gap = targetP - rateP;
+      var color = !r ? 'var(--text-3)' : rateP >= targetP ? 'var(--ok)' : rateP >= targetP - 20 ? 'var(--gold)' : 'var(--rose)';
+      var status = !r ? '未练' : (gap <= 0 ? '已达标' : '差 ' + gap + ' 个点');
+      var href = 'drill.html?tier=' + k + '&scope=weak';
+      return '<a class="tier-card" href="' + href + '">' +
+        '<div class="tier-card-top">' +
+          '<b>' + meta.name + '</b>' +
+          '<span class="tier-card-score">' + meta.score + ' 分</span>' +
+        '</div>' +
+        '<div class="tier-card-rate" style="color:' + color + '">' + (r ? rateP + '%' : '—') +
+          '<span style="color:var(--text-3)"> / 目标 ' + targetP + '%</span></div>' +
+        '<div class="tier-track">' +
+          '<i style="width:' + rateP + '%;background:' + color + '"></i>' +
+          '<span class="tier-target" style="left:' + targetP + '%"></span>' +
+        '</div>' +
+        '<div class="tier-card-foot">' +
+          '<span>' + (r ? ('练过 ' + r.n + ' 题 · 对 ' + r.ok) : '还没练过这一层') + '</span>' +
+          '<span style="color:' + color + ';font-weight:700">' + status + '</span>' +
+        '</div>' +
+        '<div class="tier-card-note">' + meta.note + '</div>' +
+      '</a>';
+    }).join('');
+  }
+
+  /* ============ 错因分布 ============ */
   function renderErrBars(){
     var stats = BJM.errStats();
     var total = stats.reduce(function(a, s){ return a + s.n; }, 0);
@@ -2351,13 +2790,14 @@ function buildWrong() {
           '<div class="trap-why">' + meta.d + '</div></div>';
       }
       var share = total ? Math.round(s.n / total * 100) : 0;
-      var rateP = Math.round(s.rate * 100);
+      var fixP = Math.round(s.rate * 100);
       var barW = Math.max(3, Math.round(s.n / maxN * 100));
-      var color = rateP >= 75 ? 'var(--ok)' : rateP >= 50 ? 'var(--gold)' : 'var(--rose)';
+      var color = fixP >= 75 ? 'var(--ok)' : fixP >= 50 ? 'var(--gold)' : 'var(--rose)';
       return '<div class="trap" style="border-left-color:' + color + '">' +
         '<div class="trap-t">' + meta.n +
           ' <span style="font-weight:400;color:var(--text-3);font-size:.8rem">' +
-          s.n + ' 次 · 占 ' + share + '% · 正确率 ' + rateP + '%</span></div>' +
+          '发生 ' + s.n + ' 次 · 占 ' + share + '% · 补救率 ' + fixP + '%' +
+          (s.ok ? '（补回 ' + s.ok + ' 次）' : '') + '</span></div>' +
         '<div class="err-bar"><i style="width:' + barW + '%;background:' + color + '"></i></div>' +
         '<div class="trap-why">' + meta.d + '</div>' +
         '<div style="margin-top:8px;font-size:.84rem"><b style="color:var(--accent)">补救：</b><a href="' + meta.href + '">' + meta.fix + '</a></div>' +
@@ -2365,6 +2805,7 @@ function buildWrong() {
     }).join('');
   }
 
+  /* ============ 卡点分布 ============ */
   function renderStuck(){
     var dist = BJM.stuckDistribution();
     var keys = Object.keys(dist).map(Number).filter(function(k){ return k >= 0; }).sort(function(a,b){ return a-b; });
@@ -2386,44 +2827,173 @@ function buildWrong() {
     '<p class="setup-hint" style="margin-top:10px">柱越高说明这一步越常卡。第 1 步卡得多 → 优先回概念卡；中后段卡得多 → 进计算专项。</p>';
   }
 
-  function refreshStats(){
+  /* ============ 章节掌握度 ============ */
+  function renderChapterHeat(){
+    var rates = {};
+    BJM.chapterRates().forEach(function(r){ rates[r.key] = r; });
+    var rows = (META.chapters || []).slice().sort(function(a, b){ return a.no - b.no; });
+    var el = document.getElementById('chHeat');
+    var practiced = rows.filter(function(c){ return rates[c.id]; });
+    if (!practiced.length) {
+      el.innerHTML = '<div class="empty" style="padding:6px 0">还没有练过任何章节。<a href="drill.html">去刷题</a></div>';
+      return;
+    }
+    el.innerHTML = rows.map(function(c){
+      var r = rates[c.id];
+      var rateP = r ? Math.round(r.rate * 100) : 0;
+      var color = !r ? 'var(--bg-3)' : rateP >= 85 ? 'var(--ok)' : rateP >= 60 ? 'var(--gold)' : 'var(--rose)';
+      return '<div class="ch-heat-row">' +
+        '<a class="ch-heat-name" href="map/' + c.id + '.html">' + c.no + '. ' + c.name + '</a>' +
+        '<div class="ch-heat-track"><i style="width:' + (r ? rateP : 0) + '%;background:' + color + '"></i></div>' +
+        '<span class="ch-heat-num" style="color:' + (r ? color : 'var(--text-3)') + '">' + (r ? rateP + '%' : '未练') + '</span>' +
+        '<span class="ch-heat-n">' + (r ? r.n + ' 题' : '') + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  /* ============ 学习节奏 ============ */
+  function renderRhythm(){
+    var days = BJM.recentDays(7);
+    var max = Math.max.apply(null, days.map(function(d){ return d.rec.questions || 0; }).concat([1]));
+    var total = days.reduce(function(a, d){ return a + (d.rec.questions || 0); }, 0);
+    document.getElementById('rhythmChart').innerHTML = '<div class="chart-bars">' + days.map(function(d){
+      var n = d.rec.questions || 0;
+      var h = n ? Math.max(6, Math.round(n / max * 100)) : 0;
+      return '<div class="chart-col">' +
+        '<span class="chart-val">' + n + '</span>' +
+        '<div class="chart-bar-wrap">' + (n ? '<i class="chart-bar" style="height:' + h + '%"></i>' : '') + '</div>' +
+        '<span class="chart-day">' + d.label + '</span>' +
+      '</div>';
+    }).join('') + '</div>';
+    var streak = BJM.streak();
+    var avg = Math.round(total / 7);
+    var hint = '近 7 天共 ' + total + ' 题，日均 ' + avg + ' 题；当前连学 ' + streak + ' 天。';
+    if (!total) hint += '还没有练习记录，先做一组送分区题启动。';
+    else if (avg < 10) hint += '日均不到 10 题，节奏偏松——诊断会一直停在「样本不足」。';
+    else if (streak < 3) hint += '连续性偏弱，建议每天固定 15 分钟，比周末突击更有效。';
+    else hint += '节奏稳定，保持即可。';
+    document.getElementById('rhythmHint').textContent = hint;
+  }
+
+  /* ============ 诊断清单 ============ */
+  function renderChecklist(){
     var t = BJM.totalAnswered();
-    var set = function(sel, v){ var e = document.querySelector(sel); if (e) e.textContent = v; };
-    set('#kTotal', t.n);
-    set('#kRate', t.n ? Math.round(t.rate * 100) + '%' : '—');
-    set('#kWrong', BJM.wrongIds().length);
-    set('#kWeak', BJM.nextActions(99).length);
+    var items = [];
+
+    if (!t.n) {
+      items.push({ level: 'info', text: '还没有作答记录，诊断无法开始。', href: 'drill.html', cta: '做第一组题' });
+      document.getElementById('checklist').innerHTML = items.map(itemHtml).join('');
+      return;
+    }
+
+    /* 1) 分层达标 */
+    var tierRates = {};
+    BJM.tierRates().forEach(function(r){ tierRates[r.key] = r; });
+    ['send', 'mid', 'dist'].forEach(function(k){
+      var meta = TIER_META[k], r = tierRates[k];
+      if (!r) return;
+      var rateP = Math.round(r.rate * 100), targetP = Math.round(meta.target * 100);
+      if (rateP < targetP) {
+        items.push({
+          level: rateP < targetP - 20 ? 'bad' : 'warn',
+          text: meta.name + '正确率 ' + rateP + '%，低于 ' + targetP + '% 目标（练过 ' + r.n + ' 题）。',
+          href: 'drill.html?tier=' + k + '&scope=weak', cta: '补这一层',
+        });
+      }
+    });
+
+    /* 2) 主因错因 */
+    var errs = BJM.errStats().filter(function(s){ return s.n > 0; }).sort(function(a, b){ return b.n - a.n; });
+    if (errs.length) {
+      var top = errs[0];
+      var totalErr = errs.reduce(function(a, s){ return a + s.n; }, 0);
+      var share = Math.round(top.n / totalErr * 100);
+      var meta2 = ERR_META[top.type] || {};
+      var fixP = Math.round(top.rate * 100);
+      items.push({
+        level: fixP < 40 ? 'bad' : 'warn',
+        text: '最常犯的是「' + top.name + '」，占 ' + share + '%（' + top.n + ' 次），补救率仅 ' + fixP + '%。' + (meta2.d || ''),
+        href: meta2.href || 'drill.html', cta: meta2.fix || '去补',
+      });
+    }
+
+    /* 3) 卡点位置 */
+    var dist = BJM.stuckDistribution();
+    var keys = Object.keys(dist).map(Number).filter(function(k){ return k >= 0; });
+    if (keys.length) {
+      var maxK = keys.sort(function(a, b){ return dist[b] - dist[a]; })[0];
+      if (maxK === 0) {
+        items.push({ level: 'bad', text: '最常卡在第 1 步（' + dist[0] + ' 次）——读题与概念理解是主要瓶颈，不是计算。', href: 'concept.html', cta: '回概念自测' });
+      } else {
+        items.push({ level: 'warn', text: '最常卡在第 ' + (maxK + 1) + ' 步（' + dist[maxK] + ' 次）——说明思路能起，收尾不稳。', href: 'drill.html?scope=wrong', cta: '进计算专项' });
+      }
+    }
+
+    /* 4) 错题本积压 */
+    var wrongN = BJM.wrongIds().length;
+    if (wrongN >= 5) {
+      items.push({ level: 'warn', text: '错题本积压 ' + wrongN + ' 条未消化。先整页重做一遍，比继续刷新题有效。', href: 'wrong.html', cta: '回错题本重做' });
+    } else if (wrongN > 0) {
+      items.push({ level: 'info', text: '错题本还有 ' + wrongN + ' 条待消化。', href: 'wrong.html', cta: '去错题本' });
+    }
+
+    /* 5) 节奏 */
+    var days = BJM.recentDays(7);
+    var week = days.reduce(function(a, d){ return a + (d.rec.questions || 0); }, 0);
+    if (week < 35) {
+      items.push({ level: 'info', text: '近 7 天只做了 ' + week + ' 题，样本偏少，诊断结论的置信度有限。', href: 'drill.html', cta: '多做几组' });
+    }
+
+    /* 6) 方法卡覆盖 */
+    var practicedM = BJM.methodRates().length;
+    var totalM = (META.methods || []).length;
+    if (totalM && practicedM / totalM < 0.5) {
+      items.push({
+        level: 'info',
+        text: '44 张方法卡里只练过 ' + practicedM + ' 张，还有 ' + (totalM - practicedM) + ' 张没接触——诊断看不到未练部分的弱点。',
+        href: 'method.html', cta: '浏览方法卡',
+      });
+    }
+
+    document.getElementById('checklist').innerHTML = items.map(itemHtml).join('');
+  }
+
+  function itemHtml(it){
+    var ico = it.level === 'bad' ? '✕' : it.level === 'warn' ? '!' : 'i';
+    return '<div class="diag-item ' + it.level + '">' +
+      '<span class="diag-ico">' + ico + '</span>' +
+      '<span class="diag-text">' + it.text + '</span>' +
+      (it.href ? '<a class="btn ghost sm" href="' + it.href + '">' + it.cta + ' →</a>' : '') +
+    '</div>';
   }
 
   function refresh(){
-    pruneUnresolvable();
-    refreshStats();
-    draw();
+    renderVerdict();
+    renderStats();
     renderActions();
+    renderTiers();
     renderErrBars();
     renderStuck();
+    renderChapterHeat();
+    renderRhythm();
+    renderChecklist();
   }
 
-  BJM.ready(function(){
-    refresh();
-    applyTab(tab);          // 深链进入时同步显示状态
-    loadAll().then(refresh);
-  });
+  BJM.ready(refresh);
   document.addEventListener('bj:qlog', refresh);
-  document.addEventListener('bj:day', refreshStats);
+  document.addEventListener('bj:day', refresh);
 })();
 `;
 
-  const html = page({
-    active: 'wrong.html', title: '智能错题本',
-    desc: '自动收录错题，按错因分组；搜索、分页、整页重做、打印 A4 错题纸。',
-    body, script, useStep: true, data: ['meta'],
+  return page({
+    active: 'diag.html', title: '学情诊断',
+    desc: '把作答记录与错题聚合成学情画像：分层达标度、薄弱单元、错因结构、卡点位置与下一步动作。',
+    body, script, data: ['meta'],
   });
-  return html.replace('<body data-base="">', `<body data-base="">\n${R.math.defs()}`);
 }
 
 /* ==========================================================
-   页面 8：公式库
+   页面 9：公式库
    ========================================================== */
 function buildGraph() {
   const R = newRenderers();
@@ -2646,7 +3216,7 @@ function buildContent() {
 <section class="section" style="margin-top:20px">
   <div class="card" style="padding:22px 24px">
     <h3>当前版本：P1 送分区版</h3>
-    <p class="desc">覆盖卷面<b>送分区 58 分</b>与中档区主要题型。内容按课标知识块组织，方法卡按「识别信号」编排，错题按五类错因归类。当前 ${STATS.chapters} 章、${STATS.methods} 张方法卡、${STATS.questions} 题、${STATS.concepts} 条概念卡、${FORMULAS.length} 条公式——<b>不是完整套卷</b>，用于按题型反复练方法与步骤。</p>
+    <p class="desc">覆盖卷面<b>送分区 58 分</b>与中档区主要题型。内容按课标知识块组织，方法卡按「识别信号」编排，做错的题自动进<b>错题本</b>并按五类错因归类；<b>学情诊断</b>再把作答记录聚合成薄弱单元、分层达标度与可执行清单。当前 ${STATS.chapters} 章、${STATS.methods} 张方法卡、${STATS.questions} 题、${STATS.concepts} 条概念卡、${FORMULAS.length} 条公式——<b>不是完整套卷</b>，用于按题型反复练方法与步骤。</p>
     <div class="grid c4" style="margin-top:16px">
       <div><b>${STATS.chapters}</b><br><span style="color:var(--text-2);font-size:.86rem">章节</span></div>
       <div><b>${STATS.methods}</b><br><span style="color:var(--text-2);font-size:.86rem">方法卡</span></div>
@@ -2737,6 +3307,7 @@ function main() {
       CHAPTERS.forEach((c) => emit(`map/${c.id}.html`, buildChapter(c)));
     }],
     ['wrong', () => emit('wrong.html', buildWrong())],
+    ['diag', () => emit('diag.html', buildDiag())],
     ['graph', () => emit('graph.html', buildGraph())],
     ['content', () => emit('content.html', buildContent())],
   ];

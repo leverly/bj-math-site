@@ -275,7 +275,7 @@ if (existsSync(ENGINE_PATH)) {
 
 /* ---------------- ④ 产物与链接 ---------------- */
 const PAGES = ['index.html', 'concept.html', 'drill.html', 'method.html', 'map.html',
-  'graph.html', 'wrong.html', 'content.html', 'dist/data/meta.js',
+  'graph.html', 'wrong.html', 'diag.html', 'content.html', 'dist/data/meta.js',
   'assets/style.css', 'assets/app.js', 'assets/step-engine.js'];
 CHAPTERS.forEach((c) => PAGES.push(`dist/data/ch/${c.id}.js`));
 PAGES.forEach((p) => { if (!existsSync(join(ROOT, p))) E(`产物缺失：${p}（先跑 node build-site.mjs）`); });

@@ -194,11 +194,16 @@
     bumpStat('byMethod', rec.method, ok);
     bumpStat('byTier', rec.tier, ok);
 
-    // 错因统计：只对判过的题计数
+    // 错因统计：错因只在答错时产生，所以 n 是「发生次数」，ok 记「事后补救成功次数」。
+    // 答对时如果这题此前带错因，就给那个错因记一次补救成功——这样诊断页的
+    // 「补救率」才是真指标（分母是这类错误发生过几次，分子是补回来的几次）。
     var et = rec.errorType;
+    var prevWrong = qlog.wrong[rec.id];
+    if (ok && prevWrong && ERR_TYPES.indexOf(prevWrong.errorType) >= 0) {
+      qlog.errStats[prevWrong.errorType].ok++;
+    }
     if (et && ERR_TYPES.indexOf(et) >= 0 && rec.result !== 'blank') {
-      var es = qlog.errStats[et];
-      es.n++; if (ok) es.ok++;
+      qlog.errStats[et].n++;
     }
 
     if (ok) {
@@ -338,6 +343,7 @@
   Z.errStats = function () {
     return ERR_TYPES.map(function (t) {
       var r = qlog.errStats[t] || { n: 0, ok: 0 };
+      // n 发生次数 / ok 事后补救成功次数 / rate 补救率（不是正确率）
       return { type: t, name: ERR_NAME[t], n: r.n, ok: r.ok, rate: r.n ? r.ok / r.n : 0 };
     });
   };

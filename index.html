@@ -9,7 +9,7 @@
 <meta property="og:title" content="北京中考数学分步备考系统 · 北京中考数学领航">
 <meta property="og:description" content="按方法卡组织、步骤级判定、弱点诊断的北京中考数学备考站。360 题、44 张方法卡、18 章。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232563eb'/%3E%3Cstop offset='1' stop-color='%234f46e5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-family='system-ui,sans-serif' font-size='14' font-weight='800' fill='%23fff' text-anchor='middle'%3E%E6%95%B0%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/style.css?v=c058d4a5">
+<link rel="stylesheet" href="assets/style.css?v=f2289884">
 <script>try{var m=JSON.parse(localStorage.getItem('bj-theme-manual')||'null');var h=new Date().getHours();var t=(m==='light'||m==='dark')?m:((h>=19||h<6)?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){var h2=new Date().getHours();document.documentElement.setAttribute('data-theme',(h2>=19||h2<6)?'dark':'light');}</script>
 </head>
 <body data-base="">
@@ -22,7 +22,7 @@
       <span>北京中考数学领航</span>
       <span class="logo-badge">数学</span>
     </a>
-    <nav class="hdr-nav"><a href="index.html" class="on">首页</a><a href="concept.html">概念自测</a><a href="drill.html">分步刷题</a><a href="method.html">方法卡</a><a href="map.html">知识图谱</a><a href="graph.html">公式库</a><a href="wrong.html">错因诊断</a></nav>
+    <nav class="hdr-nav"><a href="index.html" class="on">首页</a><a href="concept.html">概念自测</a><a href="drill.html">分步刷题</a><a href="method.html">方法卡</a><a href="map.html">知识图谱</a><a href="graph.html">公式库</a><a href="wrong.html">错题本</a><a href="diag.html">学情诊断</a></nav>
     <div class="hdr-tools">
       <button class="theme-btn" aria-label="切换主题">☾</button>
       <button class="menu-btn" aria-label="菜单" aria-expanded="false">☰</button>
@@ -40,17 +40,23 @@
       <p class="lede">
  问题通常不在题量，而在<b>看到题不知道用哪个方法</b>。
  本站按<b>方法</b>组织，不按知识点罗列：每张方法卡第一行写清「题面出现什么时该想到它」；
- 刷题按<b>步骤</b>判定，记下你卡在第几步；错题自动聚合成<b>可训练单元</b>，直接告诉你下一步练什么。
+ 刷题按<b>步骤</b>判定，记下你卡在第几步；错题自动进<b>错题本</b>，再按<b>可训练单元</b>聚合成学情诊断，直接告诉你下一步练什么。
  </p>
       <div class="hero-cta">
         <a class="btn primary" href="drill.html">免费开始做题 <span aria-hidden="true">→</span></a>
-        <a class="btn" href="wrong.html">先看诊断示例</a>
+        <a class="btn" href="diag.html">先看学情诊断示例</a>
       </div>
       <div class="hero-trust">
         <span><b>✓</b> 无需注册</span>
         <span><b>✓</b> 离线可用</span>
         <span><b>✓</b> 记录只存本地</span>
         <span><b>✓</b> 无广告</span>
+      </div>
+      <div class="hero-stats">
+        <div><b>28<span class="hs-of">/28</span></b><span>卷面题位覆盖</span></div>
+        <div><b>44</b><span>张方法卡</span></div>
+        <div><b>360</b><span>道题</span></div>
+        <div><b>4.6<span class="hs-of">万字</span></b><span>原创正文与解析</span></div>
       </div>
     </div>
 
@@ -69,7 +75,7 @@
           <div class="bar"><i id="tBar" style="width:0%"></i></div>
           <div class="cockpit-sub">
             <span id="cTarget">目标：95 分以上</span>
-            <a href="wrong.html" style="font-weight:600">看错因诊断 →</a>
+            <a href="diag.html" style="font-weight:600">看学情诊断 →</a>
           </div>
         </div>
       </div>
@@ -85,13 +91,397 @@
           <span class="mi-go">去看 →</span>
         </a>
         <a class="mission-item" href="wrong.html">
+          <span class="mi-ico rose">📕</span>
+          <span class="mi-main"><b>错题本</b><small>做错自动收录，按错因分类，可重做可打印</small></span>
+          <span class="mi-go">查看 →</span>
+        </a>
+        <a class="mission-item" href="diag.html">
           <span class="mi-ico rose">🎯</span>
-          <span class="mi-main"><b>错因诊断</b><small>聚合到可训练单元，给下一步动作</small></span>
+          <span class="mi-main"><b>学情诊断</b><small>聚合到可训练单元，给下一步动作</small></span>
           <span class="mi-go">查看 →</span>
         </a>
       </div>
     </div>
   </div>
+</section>
+
+<section class="section reveal" id="volume">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">教研体量</span>
+      <h2>卷面 28 个题位全覆盖，4.6 万字原创教研</h2>
+      <span class="sub">18 章 · 44 张方法卡 · 360 道题，逐条写出来的，不是题库搬运。每张卡有识别信号、标准步骤、常见误用、母题与三个变式；每道题有分步骨架与完整解答</span>
+    </div>
+  </div>
+  <div class="vol-grid"><a class="vol-card" href="map.html">
+    <div class="vol-num">18<span>章</span></div>
+    <div class="vol-label">知识章节</div>
+    <div class="vol-sub">按 2022 课标知识块划分，含前置依赖</div>
+  </a><a class="vol-card" href="map.html">
+    <div class="vol-num">28<span>/28</span></div>
+    <div class="vol-label">卷面题位覆盖</div>
+    <div class="vol-sub">从选 1 到第 28 题，逐个题位有落点</div>
+  </a><a class="vol-card" href="method.html">
+    <div class="vol-num">44<span>张</span></div>
+    <div class="vol-label">方法卡</div>
+    <div class="vol-sub">平均 4.0 步 / 2.3 条常见误用</div>
+  </a><a class="vol-card" href="drill.html">
+    <div class="vol-num">360<span>道</span></div>
+    <div class="vol-label">题目</div>
+    <div class="vol-sub">228 母题 + 132 变式，平均 2.2 步</div>
+  </a><a class="vol-card" href="drill.html">
+    <div class="vol-num">803<span>个</span></div>
+    <div class="vol-label">解题步骤</div>
+    <div class="vol-sub">每步单独判定，答错记卡在第几步</div>
+  </a><a class="vol-card" href="method.html">
+    <div class="vol-num">99<span>条</span></div>
+    <div class="vol-label">常见误用</div>
+    <div class="vol-sub">✕ 错法 / ✓ 正解 / 一句错因</div>
+  </a><a class="vol-card" href="concept.html">
+    <div class="vol-num">356<span>个</span></div>
+    <div class="vol-label">概念判断</div>
+    <div class="vol-sub">来自 170 张概念卡，只考条件不考背诵</div>
+  </a><a class="vol-card" href="graph.html">
+    <div class="vol-num">94<span>条</span></div>
+    <div class="vol-label">公式定理</div>
+    <div class="vol-sub">每条带适用条件与常见误用</div>
+  </a></div>
+
+  <div class="cov-block">
+    <div class="cov-head">
+      <b>卷面 28 个题位，逐个有落点</b>
+      <span>北京卷 100 分 / 28 题，按题型分五段。每格是该题位对应的章节，<i>+n</i> 表示还有 n 章备选</span>
+    </div>
+    <div class="pos-table"><div class="pos-row">
+      <div class="pos-row-head">
+        <b>选择题</b>
+        <span>8 题 · 16 分</span>
+      </div>
+      <div class="pos-cells" style="--pos-cols:8"><a class="pos-cell send" href="map/ch-real.html" title="第 1 题 · 实数与运算">
+        <b>1</b><span>实数与运算</span>
+      </a><a class="pos-cell send" href="map/ch-real.html" title="第 2 题 · 实数与运算">
+        <b>2</b><span>实数与运算</span>
+      </a><a class="pos-cell send" href="map/ch-poly.html" title="第 3 题 · 整式与因式分解">
+        <b>3</b><span>整式与因式分解</span>
+      </a><a class="pos-cell send" href="map/ch-eq.html" title="第 4 题 · 方程与方程组">
+        <b>4</b><span>方程与方程组</span>
+      </a><a class="pos-cell send" href="map/ch-ineq.html" title="第 5 题 · 不等式与不等式组">
+        <b>5</b><span>不等式与不等式组</span>
+      </a><a class="pos-cell send" href="map/ch-linear.html" title="第 6 题 · 一次函数与反比例函数">
+        <b>6</b><span>一次函数与反比例函数</span>
+      </a><a class="pos-cell send" href="map/ch-quad.html" title="第 7 题 · 二次函数">
+        <b>7</b><span>二次函数</span>
+      </a><a class="pos-cell dist" href="map/ch-triangle.html" title="第 8 题 · 三角形与全等">
+        <b>8</b><span>三角形与全等</span>
+      </a></div>
+    </div><div class="pos-row">
+      <div class="pos-row-head">
+        <b>填空题</b>
+        <span>8 题 · 16 分</span>
+      </div>
+      <div class="pos-cells" style="--pos-cols:8"><a class="pos-cell send" href="map/ch-real.html" title="第 9 题 · 实数与运算">
+        <b>9</b><span>实数与运算</span>
+      </a><a class="pos-cell send" href="map/ch-poly.html" title="第 10 题 · 整式与因式分解">
+        <b>10</b><span>整式与因式分解</span>
+      </a><a class="pos-cell send" href="map/ch-frac.html" title="第 11 题 · 分式与二次根式">
+        <b>11</b><span>分式与二次根式</span>
+      </a><a class="pos-cell send" href="map/ch-eq.html" title="第 12 题 · 方程与方程组">
+        <b>12</b><span>方程与方程组</span>
+      </a><a class="pos-cell send" href="map/ch-ineq.html" title="第 13 题 · 不等式与不等式组">
+        <b>13</b><span>不等式与不等式组</span>
+      </a><a class="pos-cell send" href="map/ch-linear.html" title="第 14 题 · 一次函数与反比例函数 / 概率">
+        <b>14</b><span>一次函数与反比例函数</span><i>+1</i>
+      </a><a class="pos-cell send" href="map/ch-quad.html" title="第 15 题 · 二次函数 / 统计">
+        <b>15</b><span>二次函数</span><i>+1</i>
+      </a><a class="pos-cell dist" href="map/ch-quadrilateral.html" title="第 16 题 · 四边形 / 图形变换 / 新定义与阅读理解">
+        <b>16</b><span>四边形</span><i>+2</i>
+      </a></div>
+    </div><div class="pos-row">
+      <div class="pos-row-head">
+        <b>解答题（17–22）</b>
+        <span>6 题 · 30 分</span>
+      </div>
+      <div class="pos-cells" style="--pos-cols:6"><a class="pos-cell send" href="map/ch-real.html" title="第 17 题 · 实数与运算">
+        <b>17</b><span>实数与运算</span>
+      </a><a class="pos-cell send" href="map/ch-poly.html" title="第 18 题 · 整式与因式分解 / 分式与二次根式">
+        <b>18</b><span>整式与因式分解</span><i>+1</i>
+      </a><a class="pos-cell send" href="map/ch-eq.html" title="第 19 题 · 方程与方程组 / 不等式与不等式组">
+        <b>19</b><span>方程与方程组</span><i>+1</i>
+      </a><a class="pos-cell send" href="map/ch-triangle.html" title="第 20 题 · 三角形与全等 / 四边形">
+        <b>20</b><span>三角形与全等</span><i>+1</i>
+      </a><a class="pos-cell send" href="map/ch-linear.html" title="第 21 题 · 一次函数与反比例函数 / 锐角三角函数与解直角三角形">
+        <b>21</b><span>一次函数与反比例函数</span><i>+1</i>
+      </a><a class="pos-cell send" href="map/ch-quad.html" title="第 22 题 · 二次函数 / 相似三角形 / 方案设计与跨学科">
+        <b>22</b><span>二次函数</span><i>+2</i>
+      </a></div>
+    </div><div class="pos-row">
+      <div class="pos-row-head">
+        <b>解答题（23–26）</b>
+        <span>4 题 · 24 分</span>
+      </div>
+      <div class="pos-cells" style="--pos-cols:4"><a class="pos-cell mid" href="map/ch-circle.html" title="第 23 题 · 圆">
+        <b>23</b><span>圆</span>
+      </a><a class="pos-cell mid" href="map/ch-quad.html" title="第 24 题 · 二次函数">
+        <b>24</b><span>二次函数</span>
+      </a><a class="pos-cell mid" href="map/ch-stat.html" title="第 25 题 · 统计">
+        <b>25</b><span>统计</span>
+      </a><a class="pos-cell mid" href="map/ch-quad.html" title="第 26 题 · 二次函数">
+        <b>26</b><span>二次函数</span>
+      </a></div>
+    </div><div class="pos-row">
+      <div class="pos-row-head">
+        <b>解答题（27–28）</b>
+        <span>2 题 · 14 分</span>
+      </div>
+      <div class="pos-cells" style="--pos-cols:2"><a class="pos-cell dist" href="map/ch-geo-aux.html" title="第 27 题 · 几何辅助线综合">
+        <b>27</b><span>几何辅助线综合</span>
+      </a><a class="pos-cell dist" href="map/ch-newdef.html" title="第 28 题 · 新定义与阅读理解">
+        <b>28</b><span>新定义与阅读理解</span>
+      </a></div>
+    </div></div>
+    <div class="cov-legend">
+      <span class="lg send">送分区 58 分</span>
+      <span class="lg mid">中档区 24 分</span>
+      <span class="lg dist">区分区 18 分</span>
+    </div>
+  </div>
+
+  <div class="dens-block">
+    <div class="cov-head">
+      <b>每章的内容密度</b>
+      <span>题量、方法卡、概念卡、公式、分步步骤逐章列出——点章节名进单章页</span>
+    </div>
+    <div class="tbl-wrap dens-table-wrap">
+      <table class="gtable dens-table">
+        <thead><tr>
+          <th style="width:26%">章节</th>
+          <th style="width:16%">知识块</th>
+          <th style="width:22%">题量</th>
+          <th>方法卡</th><th>概念卡</th><th>公式</th><th>步骤</th>
+        </tr></thead>
+        <tbody><tr>
+      <td class="dens-ch"><a href="map/ch-real.html"><i>01</i>实数与运算</a></td>
+      <td class="dens-block">数与代数</td>
+      <td class="dens-num"><b>20</b><span class="dens-bar"><i style="width:50%"></i></span></td>
+      <td class="dens-num">1</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">7</td>
+      <td class="dens-num">29</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-poly.html"><i>02</i>整式与因式分解</a></td>
+      <td class="dens-block">数与代数</td>
+      <td class="dens-num"><b>16</b><span class="dens-bar"><i style="width:40%"></i></span></td>
+      <td class="dens-num">1</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">8</td>
+      <td class="dens-num">26</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-frac.html"><i>03</i>分式与二次根式</a></td>
+      <td class="dens-block">数与代数</td>
+      <td class="dens-num"><b>16</b><span class="dens-bar"><i style="width:40%"></i></span></td>
+      <td class="dens-num">2</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">6</td>
+      <td class="dens-num">36</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-eq.html"><i>04</i>方程与方程组</a></td>
+      <td class="dens-block">数与代数</td>
+      <td class="dens-num"><b>20</b><span class="dens-bar"><i style="width:50%"></i></span></td>
+      <td class="dens-num">3</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">5</td>
+      <td class="dens-num">51</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-ineq.html"><i>05</i>不等式与不等式组</a></td>
+      <td class="dens-block">数与代数</td>
+      <td class="dens-num"><b>16</b><span class="dens-bar"><i style="width:40%"></i></span></td>
+      <td class="dens-num">1</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">4</td>
+      <td class="dens-num">26</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-linear.html"><i>06</i>一次函数与反比例函数</a></td>
+      <td class="dens-block">数与代数</td>
+      <td class="dens-num"><b>20</b><span class="dens-bar"><i style="width:50%"></i></span></td>
+      <td class="dens-num">3</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">5</td>
+      <td class="dens-num">50</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-quad.html"><i>07</i>二次函数</a></td>
+      <td class="dens-block">数与代数</td>
+      <td class="dens-num"><b>28</b><span class="dens-bar"><i style="width:70%"></i></span></td>
+      <td class="dens-num">5</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">8</td>
+      <td class="dens-num">82</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-triangle.html"><i>08</i>三角形与全等</a></td>
+      <td class="dens-block">图形与几何</td>
+      <td class="dens-num"><b>16</b><span class="dens-bar"><i style="width:40%"></i></span></td>
+      <td class="dens-num">2</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">38</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-quadrilateral.html"><i>09</i>四边形</a></td>
+      <td class="dens-block">图形与几何</td>
+      <td class="dens-num"><b>16</b><span class="dens-bar"><i style="width:40%"></i></span></td>
+      <td class="dens-num">1</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">8</td>
+      <td class="dens-num">28</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-similar.html"><i>10</i>相似三角形</a></td>
+      <td class="dens-block">图形与几何</td>
+      <td class="dens-num"><b>16</b><span class="dens-bar"><i style="width:40%"></i></span></td>
+      <td class="dens-num">1</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">7</td>
+      <td class="dens-num">26</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-circle.html"><i>11</i>圆</a></td>
+      <td class="dens-block">图形与几何</td>
+      <td class="dens-num"><b>20</b><span class="dens-bar"><i style="width:50%"></i></span></td>
+      <td class="dens-num">3</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">48</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-transform.html"><i>12</i>图形变换</a></td>
+      <td class="dens-block">图形与几何</td>
+      <td class="dens-num"><b>24</b><span class="dens-bar"><i style="width:60%"></i></span></td>
+      <td class="dens-num">2</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">0</td>
+      <td class="dens-num">44</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-trig.html"><i>13</i>锐角三角函数与解直角三角形</a></td>
+      <td class="dens-block">图形与几何</td>
+      <td class="dens-num"><b>16</b><span class="dens-bar"><i style="width:40%"></i></span></td>
+      <td class="dens-num">1</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">8</td>
+      <td class="dens-num">26</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-geo-aux.html"><i>14</i>几何辅助线综合</a></td>
+      <td class="dens-block">图形与几何</td>
+      <td class="dens-num"><b>40</b><span class="dens-bar"><i style="width:100%"></i></span></td>
+      <td class="dens-num">9</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">0</td>
+      <td class="dens-num">128</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-stat.html"><i>15</i>统计</a></td>
+      <td class="dens-block">统计与概率</td>
+      <td class="dens-num"><b>20</b><span class="dens-bar"><i style="width:50%"></i></span></td>
+      <td class="dens-num">3</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">5</td>
+      <td class="dens-num">44</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-prob.html"><i>16</i>概率</a></td>
+      <td class="dens-block">统计与概率</td>
+      <td class="dens-num"><b>16</b><span class="dens-bar"><i style="width:40%"></i></span></td>
+      <td class="dens-num">1</td>
+      <td class="dens-num">10</td>
+      <td class="dens-num">3</td>
+      <td class="dens-num">26</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-newdef.html"><i>17</i>新定义与阅读理解</a></td>
+      <td class="dens-block">综合与实践</td>
+      <td class="dens-num"><b>20</b><span class="dens-bar"><i style="width:50%"></i></span></td>
+      <td class="dens-num">3</td>
+      <td class="dens-num">5</td>
+      <td class="dens-num">0</td>
+      <td class="dens-num">51</td>
+    </tr><tr>
+      <td class="dens-ch"><a href="map/ch-design.html"><i>18</i>方案设计与跨学科</a></td>
+      <td class="dens-block">综合与实践</td>
+      <td class="dens-num"><b>20</b><span class="dens-bar"><i style="width:50%"></i></span></td>
+      <td class="dens-num">2</td>
+      <td class="dens-num">5</td>
+      <td class="dens-num">0</td>
+      <td class="dens-num">44</td>
+    </tr></tbody>
+      </table>
+    </div>
+    <div class="dens-cards"><a class="dens-card" href="map/ch-real.html">
+      <span class="dc-top"><i>01</i><b>实数与运算</b></span>
+      <span class="dc-nums">20 题 · 1 卡 · 10 概念 · 7 公式 · 29 步</span>
+    </a><a class="dens-card" href="map/ch-poly.html">
+      <span class="dc-top"><i>02</i><b>整式与因式分解</b></span>
+      <span class="dc-nums">16 题 · 1 卡 · 10 概念 · 8 公式 · 26 步</span>
+    </a><a class="dens-card" href="map/ch-frac.html">
+      <span class="dc-top"><i>03</i><b>分式与二次根式</b></span>
+      <span class="dc-nums">16 题 · 2 卡 · 10 概念 · 6 公式 · 36 步</span>
+    </a><a class="dens-card" href="map/ch-eq.html">
+      <span class="dc-top"><i>04</i><b>方程与方程组</b></span>
+      <span class="dc-nums">20 题 · 3 卡 · 10 概念 · 5 公式 · 51 步</span>
+    </a><a class="dens-card" href="map/ch-ineq.html">
+      <span class="dc-top"><i>05</i><b>不等式与不等式组</b></span>
+      <span class="dc-nums">16 题 · 1 卡 · 10 概念 · 4 公式 · 26 步</span>
+    </a><a class="dens-card" href="map/ch-linear.html">
+      <span class="dc-top"><i>06</i><b>一次函数与反比例函数</b></span>
+      <span class="dc-nums">20 题 · 3 卡 · 10 概念 · 5 公式 · 50 步</span>
+    </a><a class="dens-card" href="map/ch-quad.html">
+      <span class="dc-top"><i>07</i><b>二次函数</b></span>
+      <span class="dc-nums">28 题 · 5 卡 · 10 概念 · 8 公式 · 82 步</span>
+    </a><a class="dens-card" href="map/ch-triangle.html">
+      <span class="dc-top"><i>08</i><b>三角形与全等</b></span>
+      <span class="dc-nums">16 题 · 2 卡 · 10 概念 · 10 公式 · 38 步</span>
+    </a><a class="dens-card" href="map/ch-quadrilateral.html">
+      <span class="dc-top"><i>09</i><b>四边形</b></span>
+      <span class="dc-nums">16 题 · 1 卡 · 10 概念 · 8 公式 · 28 步</span>
+    </a><a class="dens-card" href="map/ch-similar.html">
+      <span class="dc-top"><i>10</i><b>相似三角形</b></span>
+      <span class="dc-nums">16 题 · 1 卡 · 10 概念 · 7 公式 · 26 步</span>
+    </a><a class="dens-card" href="map/ch-circle.html">
+      <span class="dc-top"><i>11</i><b>圆</b></span>
+      <span class="dc-nums">20 题 · 3 卡 · 10 概念 · 10 公式 · 48 步</span>
+    </a><a class="dens-card" href="map/ch-transform.html">
+      <span class="dc-top"><i>12</i><b>图形变换</b></span>
+      <span class="dc-nums">24 题 · 2 卡 · 10 概念 · 0 公式 · 44 步</span>
+    </a><a class="dens-card" href="map/ch-trig.html">
+      <span class="dc-top"><i>13</i><b>锐角三角函数与解直角三角形</b></span>
+      <span class="dc-nums">16 题 · 1 卡 · 10 概念 · 8 公式 · 26 步</span>
+    </a><a class="dens-card" href="map/ch-geo-aux.html">
+      <span class="dc-top"><i>14</i><b>几何辅助线综合</b></span>
+      <span class="dc-nums">40 题 · 9 卡 · 10 概念 · 0 公式 · 128 步</span>
+    </a><a class="dens-card" href="map/ch-stat.html">
+      <span class="dc-top"><i>15</i><b>统计</b></span>
+      <span class="dc-nums">20 题 · 3 卡 · 10 概念 · 5 公式 · 44 步</span>
+    </a><a class="dens-card" href="map/ch-prob.html">
+      <span class="dc-top"><i>16</i><b>概率</b></span>
+      <span class="dc-nums">16 题 · 1 卡 · 10 概念 · 3 公式 · 26 步</span>
+    </a><a class="dens-card" href="map/ch-newdef.html">
+      <span class="dc-top"><i>17</i><b>新定义与阅读理解</b></span>
+      <span class="dc-nums">20 题 · 3 卡 · 5 概念 · 0 公式 · 51 步</span>
+    </a><a class="dens-card" href="map/ch-design.html">
+      <span class="dc-top"><i>18</i><b>方案设计与跨学科</b></span>
+      <span class="dc-nums">20 题 · 2 卡 · 5 概念 · 0 公式 · 44 步</span>
+    </a></div>
+  </div>
+
+  <div class="vol-tiers">
+    <div class="vol-tier">
+      <span class="vt-name">送分区</span>
+      <span class="vt-num">240 题</span>
+      <span class="vt-num">14 卡</span>
+    </div><div class="vol-tier">
+      <span class="vt-name">中档区</span>
+      <span class="vt-num">44 题</span>
+      <span class="vt-num">11 卡</span>
+    </div><div class="vol-tier">
+      <span class="vt-name">区分区</span>
+      <span class="vt-num">76 题</span>
+      <span class="vt-num">19 卡</span>
+    </div>
+  </div>
+  <p class="vol-note">
+    全站共 <b>803</b> 个解题步骤、<b>99</b> 条常见误用、<b>356</b> 个概念判断、<b>94</b> 条公式定理，
+    另有 <b>13</b> 张几何图（构建期生成 SVG）。
+  </p>
 </section>
 
 <section class="section reveal" id="why">
@@ -131,9 +521,9 @@
       <span class="sell-pain-sub">「计算差」这种结论没法执行</span>
     </div>
     <div class="sell-fix">
-      <span class="sell-tag">弱点诊断</span>
-      <p>错题按<b>可训练单元</b>聚合，直接告诉你：<b>二次函数区间最值 · 正确率 0% · 主因概念不清 · 常卡第 1 步</b>，然后一键进该单元的题。不是给结论，是给下一步动作。</p>
-      <a class="sell-link" href="wrong.html">看诊断长什么样 →</a>
+      <span class="sell-tag">错题本 + 学情诊断</span>
+      <p>错题自动进<b>错题本</b>，按错因分类、可整页重做、可打印成 A4 错题纸；再往后的<b>学情诊断</b>把错题按<b>可训练单元</b>聚合，直接告诉你：<b>二次函数区间最值 · 正确率 0% · 主因概念不清 · 常卡第 1 步</b>，然后一键进该单元的题。不是给结论，是给下一步动作。</p>
+      <a class="sell-link" href="wrong.html">看错题本长什么样 →</a>
     </div>
   </div></div>
 </section>
@@ -264,12 +654,19 @@
   </div><div class="step-mini">
     <span class="step-mini-no">2</span>
     <div>
-      <b>看诊断说补什么</b>
-      <p>弱点清单会告诉你最该补的方法卡、主因错因、常卡第几步。</p>
-      <a class="sell-link" href="wrong.html">看错因诊断 →</a>
+      <b>错题进错题本</b>
+      <p>做错的题自动收录，按错因分组，可以整页重做、打印成纸质错题纸。</p>
+      <a class="sell-link" href="wrong.html">看错题本 →</a>
     </div>
   </div><div class="step-mini">
     <span class="step-mini-no">3</span>
+    <div>
+      <b>看学情诊断说补什么</b>
+      <p>弱点清单会告诉你最该补的方法卡、主因错因、常卡第几步。</p>
+      <a class="sell-link" href="diag.html">看学情诊断 →</a>
+    </div>
+  </div><div class="step-mini">
+    <span class="step-mini-no">4</span>
     <div>
       <b>进专项练</b>
       <p>点「专项训练」直接出那个单元的题。练完回来看正确率有没有上去。</p>
@@ -321,7 +718,8 @@
     </div>
     <div class="col">
       <h4>复盘</h4>
-      <a href="wrong.html">错因诊断</a>
+      <a href="wrong.html">错题本</a>
+      <a href="diag.html">学情诊断</a>
       <a href="index.html#tiers">三层分区</a>
     </div>
     <div class="col">
@@ -334,7 +732,7 @@
     <span>例题为原创 · 非真题 · 解答题不自动判分</span>
   </div>
 </footer>
-<script src="assets/app.js?v=b829dfd4"></script>
+<script src="assets/app.js?v=70e4157d"></script>
 
 
 <script>
