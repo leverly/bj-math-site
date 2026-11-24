@@ -9,7 +9,7 @@
 <meta property="og:title" content="智能错题本 · 北京中考数学领航">
 <meta property="og:description" content="自动收录错题，按错因分组；搜索、分页、整页重做、打印 A4 错题纸。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232563eb'/%3E%3Cstop offset='1' stop-color='%234f46e5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-family='system-ui,sans-serif' font-size='14' font-weight='800' fill='%23fff' text-anchor='middle'%3E%E6%95%B0%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/style.css?v=b7e8f592">
+<link rel="stylesheet" href="assets/style.css?v=bf57ab3a">
 <script>try{var m=JSON.parse(localStorage.getItem('bj-theme-manual')||'null');var h=new Date().getHours();var t=(m==='light'||m==='dark')?m:((h>=19||h<6)?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){var h2=new Date().getHours();document.documentElement.setAttribute('data-theme',(h2>=19||h2<6)?'dark':'light');}</script>
 </head>
 <body data-base="">
@@ -163,9 +163,9 @@
     <span>例题为原创 · 非真题 · 解答题不自动判分</span>
   </div>
 </footer>
-<script src="assets/app.js?v=55567570"></script>
+<script src="assets/app.js?v=b829dfd4"></script>
 <script src="assets/step-engine.js?v=bcd6b56a"></script>
-<script src="dist/data/meta.js?v=55567570"></script>
+<script src="dist/data/meta.js?v=b829dfd4"></script>
 <script>
 (function(){
   var ERR_META = {"concept":{"n":"概念不清","d":"定义、定理的适用条件没弄清","fix":"去做条件判断题","href":"concept.html"},"method":{"n":"方法未掌握","d":"没思路，或选错了工具","fix":"看识别信号 + 母题","href":"method.html"},"construct":{"n":"构造不出","d":"几何题看不出辅助线","fix":"看构造模型","href":"method.html"},"calc":{"n":"计算失误","d":"会做但算错","fix":"进计算专项（连对 3 次出册）","href":"drill.html?scope=wrong"},"express":{"n":"表达不规范","d":"审题漏条件、步骤跳步","fix":"做找错练习","href":"drill.html?scope=wrong"}};
@@ -208,7 +208,32 @@
         }
       });
       loadedAll = true;
+      pruneUnresolvable();
     });
+  }
+
+  /**
+   * 清掉无法渲染的错题记录。
+   * 来源：
+   *   1) 早期版本把概念题记录成 c-xxx#n，但当时错题本只认题目 id
+   *   2) 内容改动后 id 失效（题目被删、概念卡测试减少）
+   * 这些记录留着只会在页面上显示「题目数据未找到」，没有复习价值。
+   */
+  var prunedOnce = false;
+  function pruneUnresolvable(){
+    if (!loadedAll) return 0;               // 分片没加载完，无法判断有效性
+    var list = BJM.wrongList();
+    var dead = [];
+    list.forEach(function(w){
+      if (!resolvable(w)) dead.push(w.id);
+    });
+    if (!dead.length) return 0;
+    var n = BJM.qMasterBatch(dead);
+    if (n && !prunedOnce) {
+      prunedOnce = true;
+      BJM.toast('已清理 ' + n + ' 条失效的错题记录');
+    }
+    return n;
   }
 
   function qmap(){
@@ -217,6 +242,22 @@
       (ch[cid].questions || []).forEach(function(q){ m[q.id] = q; });
     });
     return m;
+  }
+  /* 概念卡索引：id → { claim, tests[], chapter } */
+  function cmap(){
+    var m = {}, ch = CH();
+    Object.keys(ch).forEach(function(cid){
+      (ch[cid].concepts || []).forEach(function(c){ m[c.id] = c; });
+    });
+    return m;
+  }
+  /* 一条记录能否渲染：概念卡记录要有对应卡与测试序号，题目记录要有题目 */
+  function resolvable(w){
+    if (w.kind === 'concept') {
+      var c = cmap()[w.conceptId];
+      return !!(c && c.tests && w.testIdx >= 0 && c.tests[w.testIdx]);
+    }
+    return !!qmap()[w.id];
   }
   function mname(id){
     var m = (META.methods || []).find(function(x){ return x.id === id; });
@@ -277,8 +318,36 @@
       w.stuckStep >= 0 ? ('卡在第 ' + (w.stuckStep + 1) + ' 步') : '',
       '错 ' + w.times + ' 次'].filter(Boolean).join(' · ');
 
+    /* 概念卡错题：用概念卡自己的结构渲染（不是题目，没有 steps/solution） */
+    if (w.kind === 'concept') {
+      var c = cmap()[w.conceptId];
+      var t = c && c.tests ? c.tests[w.testIdx] : null;
+      if (!c || !t) {
+        // 概念卡已不存在（内容被改过）：不显示脏条目，等清理逻辑移除
+        return '';
+      }
+      var cMetaLine = [cname(w.chapter), '概念卡', '错 ' + w.times + ' 次'].filter(Boolean).join(' · ');
+      var verdict = t.a ? '成立' : '不成立';
+      return '<div class="wb-item" data-id="' + w.id + '">' +
+        '<div class="wb-head">' +
+          '<span class="wb-type concept">概念判断</span>' +
+          '<span class="wb-tier">' + BJM.esc(c.claim || '') + '</span>' +
+          '<span class="wb-head-meta">' + cMetaLine + '</span>' +
+        '</div>' +
+        '<div class="wb-stem">' + (t.qHtml || BJM.esc(t.q || '')) + '</div>' +
+        '<div class="wb-verdict">判断结果：<b class="' + (t.a ? 'ok' : 'bad') + '">' + verdict + '</b></div>' +
+        '<div class="wb-why"><b>为什么：</b>' + (t.whyHtml || BJM.esc(t.why || '')) + '</div>' +
+        '<div class="wb-foot">' +
+          '<span class="wb-act">' +
+            '<button class="btn ghost xs" data-master="' + w.id + '">✓ 已掌握</button>' +
+            '<a class="btn ghost xs" href="concept.html?chapter=' + w.chapter + '">去练概念 →</a>' +
+          '</span>' +
+        '</div>' +
+      '</div>';
+    }
+
     if (!q) {
-      return '<div class="wb-item"><div class="wb-stem">' + w.id + '（题目数据未找到）</div></div>';
+      return '';
     }
 
     // 顶层选项（送分单步题）
@@ -491,11 +560,17 @@
     if (!slice.length) return;
     var qm = qmap();
     var qs = slice.map(function(w){ return qm[w.id]; }).filter(Boolean);
-    if (!qs.length) { BJM.toast('本页题目数据未加载'); return; }
+    if (!qs.length) {
+      BJM.toast('本页只有概念判断题，请到「概念自测」重做');
+      return;
+    }
 
+    var skipped = slice.length - qs.length;
     var zone = document.getElementById('redoZone');
     zone.style.display = '';
-    document.getElementById('redoInfo').textContent = '本页 ' + qs.length + ' 题 · 答对即移出错题本';
+    document.getElementById('redoInfo').textContent =
+      '本页 ' + qs.length + ' 题 · 答对即移出错题本' +
+      (skipped ? '（另有 ' + skipped + ' 条概念判断题需到概念自测重做）' : '');
 
     // 记录重做前状态，用于完成态统计
     var beforeIds = {};
@@ -649,6 +724,7 @@
   }
 
   function refresh(){
+    pruneUnresolvable();
     refreshStats();
     draw();
     renderActions();

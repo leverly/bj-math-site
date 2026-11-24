@@ -275,12 +275,30 @@
   /**
    * 错题列表（供错题本页分页/搜索用）。
    * 每条带上原始记录 + 题目元信息摘要，避免页面反复查表。
+   *
+   * 注意 id 有两类：
+   *   q-xxx / v-xxx   普通题目，从章节分片查
+   *   c-xxx#n         概念卡的第 n 个判断题，从概念卡查
+   * kind 字段用来区分，页面据此选择不同的渲染方式。
    */
   Z.wrongList = function () {
     return Object.keys(qlog.wrong).map(function (id) {
       var w = qlog.wrong[id];
+      var kind = 'question';
+      var conceptId = '';
+      var testIdx = -1;
+      if (id.indexOf('#') > 0) {
+        kind = 'concept';
+        var parts = id.split('#');
+        conceptId = parts[0];
+        testIdx = parseInt(parts[1], 10);
+        if (isNaN(testIdx)) testIdx = -1;
+      }
       return {
         id: id,
+        kind: kind,
+        conceptId: conceptId,
+        testIdx: testIdx,
         errorType: w.errorType || 'method',
         chapter: w.chapter || '',
         method: w.method || '',

@@ -1880,7 +1880,32 @@ function buildWrong() {
         }
       });
       loadedAll = true;
+      pruneUnresolvable();
     });
+  }
+
+  /**
+   * 清掉无法渲染的错题记录。
+   * 来源：
+   *   1) 早期版本把概念题记录成 c-xxx#n，但当时错题本只认题目 id
+   *   2) 内容改动后 id 失效（题目被删、概念卡测试减少）
+   * 这些记录留着只会在页面上显示「题目数据未找到」，没有复习价值。
+   */
+  var prunedOnce = false;
+  function pruneUnresolvable(){
+    if (!loadedAll) return 0;               // 分片没加载完，无法判断有效性
+    var list = BJM.wrongList();
+    var dead = [];
+    list.forEach(function(w){
+      if (!resolvable(w)) dead.push(w.id);
+    });
+    if (!dead.length) return 0;
+    var n = BJM.qMasterBatch(dead);
+    if (n && !prunedOnce) {
+      prunedOnce = true;
+      BJM.toast('已清理 ' + n + ' 条失效的错题记录');
+    }
+    return n;
   }
 
   function qmap(){
@@ -1889,6 +1914,22 @@ function buildWrong() {
       (ch[cid].questions || []).forEach(function(q){ m[q.id] = q; });
     });
     return m;
+  }
+  /* 概念卡索引：id → { claim, tests[], chapter } */
+  function cmap(){
+    var m = {}, ch = CH();
+    Object.keys(ch).forEach(function(cid){
+      (ch[cid].concepts || []).forEach(function(c){ m[c.id] = c; });
+    });
+    return m;
+  }
+  /* 一条记录能否渲染：概念卡记录要有对应卡与测试序号，题目记录要有题目 */
+  function resolvable(w){
+    if (w.kind === 'concept') {
+      var c = cmap()[w.conceptId];
+      return !!(c && c.tests && w.testIdx >= 0 && c.tests[w.testIdx]);
+    }
+    return !!qmap()[w.id];
   }
   function mname(id){
     var m = (META.methods || []).find(function(x){ return x.id === id; });
@@ -1949,8 +1990,36 @@ function buildWrong() {
       w.stuckStep >= 0 ? ('卡在第 ' + (w.stuckStep + 1) + ' 步') : '',
       '错 ' + w.times + ' 次'].filter(Boolean).join(' · ');
 
+    /* 概念卡错题：用概念卡自己的结构渲染（不是题目，没有 steps/solution） */
+    if (w.kind === 'concept') {
+      var c = cmap()[w.conceptId];
+      var t = c && c.tests ? c.tests[w.testIdx] : null;
+      if (!c || !t) {
+        // 概念卡已不存在（内容被改过）：不显示脏条目，等清理逻辑移除
+        return '';
+      }
+      var cMetaLine = [cname(w.chapter), '概念卡', '错 ' + w.times + ' 次'].filter(Boolean).join(' · ');
+      var verdict = t.a ? '成立' : '不成立';
+      return '<div class="wb-item" data-id="' + w.id + '">' +
+        '<div class="wb-head">' +
+          '<span class="wb-type concept">概念判断</span>' +
+          '<span class="wb-tier">' + BJM.esc(c.claim || '') + '</span>' +
+          '<span class="wb-head-meta">' + cMetaLine + '</span>' +
+        '</div>' +
+        '<div class="wb-stem">' + (t.qHtml || BJM.esc(t.q || '')) + '</div>' +
+        '<div class="wb-verdict">判断结果：<b class="' + (t.a ? 'ok' : 'bad') + '">' + verdict + '</b></div>' +
+        '<div class="wb-why"><b>为什么：</b>' + (t.whyHtml || BJM.esc(t.why || '')) + '</div>' +
+        '<div class="wb-foot">' +
+          '<span class="wb-act">' +
+            '<button class="btn ghost xs" data-master="' + w.id + '">✓ 已掌握</button>' +
+            '<a class="btn ghost xs" href="concept.html?chapter=' + w.chapter + '">去练概念 →</a>' +
+          '</span>' +
+        '</div>' +
+      '</div>';
+    }
+
     if (!q) {
-      return '<div class="wb-item"><div class="wb-stem">' + w.id + '（题目数据未找到）</div></div>';
+      return '';
     }
 
     // 顶层选项（送分单步题）
@@ -2163,11 +2232,17 @@ function buildWrong() {
     if (!slice.length) return;
     var qm = qmap();
     var qs = slice.map(function(w){ return qm[w.id]; }).filter(Boolean);
-    if (!qs.length) { BJM.toast('本页题目数据未加载'); return; }
+    if (!qs.length) {
+      BJM.toast('本页只有概念判断题，请到「概念自测」重做');
+      return;
+    }
 
+    var skipped = slice.length - qs.length;
     var zone = document.getElementById('redoZone');
     zone.style.display = '';
-    document.getElementById('redoInfo').textContent = '本页 ' + qs.length + ' 题 · 答对即移出错题本';
+    document.getElementById('redoInfo').textContent =
+      '本页 ' + qs.length + ' 题 · 答对即移出错题本' +
+      (skipped ? '（另有 ' + skipped + ' 条概念判断题需到概念自测重做）' : '');
 
     // 记录重做前状态，用于完成态统计
     var beforeIds = {};
@@ -2321,6 +2396,7 @@ function buildWrong() {
   }
 
   function refresh(){
+    pruneUnresolvable();
     refreshStats();
     draw();
     renderActions();

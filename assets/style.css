@@ -2516,3 +2516,11 @@ details[open] > summary::before { content: '▾ '; }
   .print-list .math svg, .print-list .fig { color: #000 !important; }
   .math-defs { display: none; }
 }
+
+/* 概念卡错题：判断结果行 */
+.wb-verdict {
+  margin: 10px 0; font-size: .9rem; color: var(--text-2);
+}
+.wb-verdict b { font-size: .95rem; }
+.wb-verdict b.ok { color: var(--ok); }
+.wb-verdict b.bad { color: var(--rose); }
