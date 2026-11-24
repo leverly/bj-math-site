@@ -1743,7 +1743,8 @@ function buildWrong() {
 <div class="page-head">
   <div class="crumb"><a href="index.html">首页</a> / 智能错题本</div>
   <h1>智能错题本</h1>
-  <p class="lede">做错的题自动收录，按错因分组。可以<b>批量重做本页</b>、<b>打印错题纸</b>睡前或考前纸质复盘，也可以逐题标记已掌握。答对后自动移出。</p>
+  <p class="lede">做错的题自动收录，按错因分组。可以搜索、按每页 10 / 20 / 50 条翻页、<b>整页重做</b>，也能一键打印 A4 错题纸做纸质复盘。<br>
+  <span style="color:var(--text-3);font-size:.92em">每题都给出完整解答与各步答案，方便脱离电脑复盘。</span></p>
 </div>
 
 <section class="section" style="margin-top:20px">
@@ -1756,53 +1757,47 @@ function buildWrong() {
 </section>
 
 <section class="section" style="margin-top:22px">
-  <div class="tabs" id="tabs">
-    <button class="tab on" data-tab="all">全部 <span id="nAll">0</span></button>
-    <button class="tab" data-tab="concept">概念不清 <span id="nConcept">0</span></button>
-    <button class="tab" data-tab="method">方法未掌握 <span id="nMethod">0</span></button>
-    <button class="tab" data-tab="construct">构造不出 <span id="nConstruct">0</span></button>
-    <button class="tab" data-tab="calc">计算失误 <span id="nCalc">0</span></button>
-    <button class="tab" data-tab="express">表达不规范 <span id="nExpress">0</span></button>
-    <button class="tab" data-tab="diag">弱点诊断</button>
+  <div class="chips" id="tabs">
+    <button class="chip" data-tab="all">全部 <span id="nAll">0</span></button>
+    <button class="chip" data-tab="concept">概念不清 <span id="nConcept">0</span></button>
+    <button class="chip" data-tab="method">方法未掌握 <span id="nMethod">0</span></button>
+    <button class="chip" data-tab="construct">构造不出 <span id="nConstruct">0</span></button>
+    <button class="chip" data-tab="calc">计算失误 <span id="nCalc">0</span></button>
+    <button class="chip" data-tab="express">表达不规范 <span id="nExpress">0</span></button>
+    <button class="chip" data-tab="diag">弱点诊断</button>
+  </div>
+  <div class="toolbar" id="wbToolbar" style="margin-top:16px">
+    <input class="field" id="wq" type="search" placeholder="在错题本里搜索题干、章节、方法卡…" autocomplete="off">
+    <select class="field" id="psize" style="max-width:130px">
+      <option value="10">每页 10 条</option>
+      <option value="20">每页 20 条</option>
+      <option value="50">每页 50 条</option>
+    </select>
+    <button class="btn primary sm" id="redoBtn">重做本页</button>
+    <button class="btn soft sm" id="printBtn">🖨️ 打印错题纸</button>
+    <button class="btn ghost sm" id="clearBtn">清空本类</button>
+  </div>
+  <div class="note" id="wbHint" style="margin-bottom:16px">共 <b>0</b> 条</div>
+  <div id="wbList"></div>
+  <div class="pager" id="wbPager"></div>
+  <div class="empty" id="wbEmpty" style="display:none">
+    <b>错题本是空的</b>
+    <span>去 <a href="drill.html">分步刷题</a> 或 <a href="concept.html">概念自测</a>，做错的会自动收进来</span>
   </div>
 </section>
 
-<!-- ============ 错题本 ============ -->
-<div id="pane-book">
-  <section class="section" style="margin-top:16px">
-    <div class="toolbar">
-      <input class="field" id="wq" type="search" placeholder="在错题本里搜索：题干、章节、方法卡…" autocomplete="off">
-      <select class="field" id="psize">
-        <option value="10">每页 10 条</option>
-        <option value="20">每页 20 条</option>
-        <option value="50">每页 50 条</option>
-      </select>
-      <button class="btn primary sm" id="redoBtn">重做本页</button>
-      <button class="btn soft sm" id="printBtn">🖨️ 打印错题纸</button>
-      <button class="btn ghost sm" id="clearBtn">清空本类</button>
+<section class="section" id="redoZone" style="display:none">
+  <div class="section-head">
+    <div class="section-head-left">
+      <span class="kicker">重做</span>
+      <h2 style="font-size:1.15rem">本页错题重做</h2>
+      <span class="sub" id="redoInfo"></span>
     </div>
-    <div id="wbList"></div>
-    <div class="pager" id="wbPager"></div>
-    <div class="empty" id="wbEmpty" style="display:none">
-      <b>错题本是空的</b>
-      <span>去 <a href="drill.html">分步刷题</a> 或 <a href="concept.html">概念自测</a>，做错的题会自动收进来</span>
-    </div>
-  </section>
+    <button class="btn ghost sm" id="redoClose">收起</button>
+  </div>
+  <div id="redoHost"></div>
+</section>
 
-  <section class="section" id="redoZone" style="display:none;margin-top:24px">
-    <div class="section-head">
-      <div class="section-head-left">
-        <span class="kicker">重做</span>
-        <h2>本页错题重做</h2>
-        <span class="sub" id="redoInfo"></span>
-      </div>
-      <button class="btn ghost sm" id="redoClose">收起</button>
-    </div>
-    <div id="redoHost"></div>
-  </section>
-</div>
-
-<!-- ============ 弱点诊断 ============ -->
 <div id="pane-diag" style="display:none">
   <section class="section" style="margin-top:18px">
     <div class="section-head">
@@ -1836,6 +1831,11 @@ function buildWrong() {
     <div id="stuckBars" class="card" style="padding:18px 20px"></div>
   </section>
 </div>
+
+<!-- 打印专用区：全量条目，不受分页与搜索影响之外的分页限制 -->
+<section class="section" id="printZone">
+  <div id="printList" class="print-list"></div>
+</section>
 `;
 
   const script = `
@@ -1846,11 +1846,15 @@ function buildWrong() {
   var PSIZE_KEY = 'bj-wb-psize';
 
   var loadedAll = false;
-  var tab = 'all';
   var page = 0;
   var query = '';
   var PAGE_SIZE = parseInt(localStorage.getItem(PSIZE_KEY) || '10', 10);
   if ([10, 20, 50].indexOf(PAGE_SIZE) < 0) PAGE_SIZE = 10;
+
+  /* ?tab=concept 等深链，便于从别的页面跳进指定错因 */
+  var TAB_IDS = ['all','concept','method','construct','calc','express','diag'];
+  var tabParam = new URLSearchParams(location.search).get('tab');
+  var tab = TAB_IDS.indexOf(tabParam) >= 0 ? tabParam : 'all';
 
   function CH(){ return window.BJM.CH || {}; }
 
@@ -1895,46 +1899,48 @@ function buildWrong() {
     return c ? (c.no + '. ' + c.name) : '';
   }
 
-  /* ============ Tab ============ */
-  [].forEach.call(document.querySelectorAll('#tabs .tab'), function(b){
-    b.addEventListener('click', function(){
-      [].forEach.call(document.querySelectorAll('#tabs .tab'), function(x){ x.classList.remove('on'); });
-      b.classList.add('on');
-      tab = b.getAttribute('data-tab');
-      page = 0;
-      var isDiag = tab === 'diag';
-      document.getElementById('pane-book').style.display = isDiag ? 'none' : '';
-      document.getElementById('pane-diag').style.display = isDiag ? '' : 'none';
-      if (!isDiag) draw();
-    });
-  });
-
   /* ============ 数据 ============ */
-  function currentItems(){
+  function baseItems(){
     var list = BJM.wrongList();
     if (tab !== 'all' && tab !== 'diag') {
       list = list.filter(function(w){ return w.errorType === tab; });
     }
-    if (query) {
-      var qm = qmap();
-      var t = query.toLowerCase();
-      list = list.filter(function(w){
-        var q = qm[w.id];
-        var hay = [
-          w.id, w.errorType, ERR_NAME[w.errorType] || '',
-          cname(w.chapter), mname(w.method),
-          q ? (q.stem || '') : '',
-          q ? (q.tierName || '') : '',
-        ].join(' ').toLowerCase();
-        return hay.indexOf(t) >= 0;
-      });
-    }
-    // 错得多的排前面
     list.sort(function(a, b){ return b.times - a.times; });
     return list;
   }
+  function currentItems(){
+    var list = baseItems();
+    if (!query) return list;
+    var qm = qmap();
+    var t = query.toLowerCase();
+    return list.filter(function(w){
+      var q = qm[w.id];
+      var hay = [
+        w.id, w.errorType, ERR_NAME[w.errorType] || '',
+        cname(w.chapter), mname(w.method),
+        q ? (q.stem || '') : '',
+        q ? (q.tierName || '') : '',
+        q ? (q.solution || '') : '',
+      ].join(' ').toLowerCase();
+      return hay.indexOf(t) >= 0;
+    });
+  }
 
   /* ============ 单条渲染 ============ */
+  /* 每步答案：选择题取 options[key]，填空取 answer */
+  function stepAnswerHtml(s){
+    if (!s) return '';
+    if (s.type === 'choice' || s.type === 'expr') {
+      var opts = s.options || [];
+      var k = s.key;
+      if (k == null || !opts[k]) return '';
+      return (s.optionsHtml && s.optionsHtml[k]) ? s.optionsHtml[k] : BJM.esc(opts[k]);
+    }
+    if (s.type === 'judge') return s.key ? '成立' : '不成立';
+    var ans = s.answer != null ? s.answer : ((s.accept || [])[0] || '');
+    return ans ? (s.answerHtml || BJM.esc(ans)) : '';
+  }
+
   function itemHtml(w){
     var qm = qmap();
     var q = qm[w.id];
@@ -1947,30 +1953,44 @@ function buildWrong() {
       return '<div class="wb-item"><div class="wb-stem">' + w.id + '（题目数据未找到）</div></div>';
     }
 
-    // 选项（送分题在 q 上，多步题在首步上）
-    var firstStep = (q.steps || [])[0];
-    var opts = q.options || (firstStep && firstStep.options);
-    var optsHtml = q.optionsHtml || (firstStep && firstStep.optionsHtml);
+    // 顶层选项（送分单步题）
     var optsBlock = '';
-    if (opts && opts.length) {
-      var key = (q.answer != null) ? q.answer : (firstStep && firstStep.key);
-      optsBlock = '<div class="wb-opts">' + opts.map(function(o, k){
-        var cls = (k === key) ? ' right' : '';
-        var txt = (optsHtml && optsHtml[k] != null) ? optsHtml[k] : BJM.esc(o);
+    var qOpts = q.options;
+    var qOptsHtml = q.optionsHtml;
+    if (qOpts && qOpts.length) {
+      var qKey = q.answer;
+      optsBlock = '<div class="wb-opts">' + qOpts.map(function(o, k){
+        var cls = (k === qKey) ? ' right' : '';
+        var txt = (qOptsHtml && qOptsHtml[k] != null) ? qOptsHtml[k] : BJM.esc(o);
         return '<div class="wb-opt' + cls + '"><span class="wb-key">' + 'ABCD'[k] + '</span><span>' + txt + '</span></div>';
+      }).join('') + '</div>';
+    }
+
+    // 各步答案（分步题）
+    var stepsBlock = '';
+    var steps = q.steps || [];
+    if (steps.length > 1) {
+      stepsBlock = '<div class="wb-steps">' + steps.map(function(s, i){
+        var a = stepAnswerHtml(s);
+        return '<div class="wb-step">' +
+          '<span class="wb-step-no">' + (i + 1) + '</span>' +
+          '<span class="wb-step-ask">' + (s.askHtml || BJM.esc(s.ask || '')) + '</span>' +
+          (a ? '<span class="wb-step-ans">' + a + '</span>' : '') +
+        '</div>';
       }).join('') + '</div>';
     }
 
     return '<div class="wb-item" data-id="' + w.id + '">' +
       '<div class="wb-head">' +
         '<span class="wb-type ' + w.errorType + '">' + (meta.n || w.errorType) + '</span>' +
-        (w.tier ? '<span class="wb-tier">' + (BJM.META.tiers[w.tier] || w.tier) + '</span>' : '') +
+        (w.tier ? '<span class="wb-tier">' + (META.tiers[w.tier] || w.tier) + '</span>' : '') +
         '<span class="wb-head-meta">' + metaLine + '</span>' +
       '</div>' +
       '<div class="wb-stem">' + (q.stemHtml || BJM.esc(q.stem || '')) + '</div>' +
       (q.figHtml ? '<div class="wb-fig">' + q.figHtml + '</div>' : '') +
       optsBlock +
-      (q.solutionHtml ? '<details class="wb-sol"><summary>看完整解答</summary><div>' + q.solutionHtml + '</div></details>' : '') +
+      stepsBlock +
+      (q.solutionHtml ? '<div class="wb-why"><b>完整解答：</b>' + q.solutionHtml + '</div>' : '') +
       '<div class="wb-foot">' +
         '<span class="wb-act">' +
           '<button class="btn ghost xs" data-master="' + w.id + '">✓ 已掌握</button>' +
@@ -1980,20 +2000,36 @@ function buildWrong() {
     '</div>';
   }
 
+  /* ============ 打印区：全量（仅受 Tab 与搜索约束，不受分页限制） ============ */
+  function drawPrint(){
+    var items = currentItems();
+    var host = document.getElementById('printList');
+    if (!items.length) {
+      host.innerHTML = '<div class="empty"><b>当前标签页没有错题</b>没有可打印的内容</div>';
+      return;
+    }
+    var tabName = tab === 'all' ? '全部错题' : (tab === 'diag' ? '错题' : (ERR_META[tab] || {}).n);
+    var today = new Date().toLocaleDateString('zh-CN');
+    host.innerHTML = '<div class="print-head"><b>北京中考数学领航 · 智能错题本</b>' +
+      '<span>' + tabName + ' · 共 ' + items.length + ' 条 · ' + today + '</span></div>' +
+      items.map(itemHtml).join('');
+  }
+
   /* ============ 主渲染 ============ */
   function draw(){
     var items = currentItems();
+    var all = baseItems();
     var total = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
     if (page >= total) page = total - 1;
     if (page < 0) page = 0;
     var slice = items.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
     // Tab 计数
-    var all = BJM.wrongList();
+    var allWrong = BJM.wrongList();
     var byType = {};
-    all.forEach(function(w){ byType[w.errorType] = (byType[w.errorType] || 0) + 1; });
+    allWrong.forEach(function(w){ byType[w.errorType] = (byType[w.errorType] || 0) + 1; });
     var setN = function(id, v){ var e = document.getElementById(id); if (e) e.textContent = v; };
-    setN('nAll', all.length);
+    setN('nAll', allWrong.length);
     setN('nConcept', byType.concept || 0);
     setN('nMethod', byType.method || 0);
     setN('nConstruct', byType.construct || 0);
@@ -2006,6 +2042,7 @@ function buildWrong() {
     var redoBtn = document.getElementById('redoBtn');
     var printBtn = document.getElementById('printBtn');
     var clearBtn = document.getElementById('clearBtn');
+    var hint = document.getElementById('wbHint');
 
     if (!items.length) {
       host.innerHTML = '';
@@ -2014,12 +2051,19 @@ function buildWrong() {
       redoBtn.disabled = true;
       printBtn.disabled = true;
       clearBtn.disabled = true;
+      hint.innerHTML = all.length
+        ? '共 <b>0</b> 条匹配（已筛选，本类总计 ' + all.length + ' 条）'
+        : '共 <b>0</b> 条';
+      drawPrint();
       return;
     }
     empty.style.display = 'none';
     redoBtn.disabled = false;
     printBtn.disabled = false;
     clearBtn.disabled = false;
+    hint.innerHTML = '共 <b>' + items.length + '</b> 条' +
+      (items.length !== all.length ? '（已筛选，本类总计 ' + all.length + ' 条）' : '') +
+      ' · 第 ' + (page + 1) + ' / ' + total + ' 页';
 
     host.innerHTML = slice.map(itemHtml).join('');
 
@@ -2041,7 +2085,6 @@ function buildWrong() {
       });
     });
 
-    // 已掌握
     [].forEach.call(host.querySelectorAll('[data-master]'), function(b){
       b.addEventListener('click', function(){
         BJM.qClearWrong(b.getAttribute('data-master'));
@@ -2049,9 +2092,71 @@ function buildWrong() {
         draw();
       });
     });
+
+    drawPrint();
   }
 
-  /* ============ 批量重做本页 ============ */
+  /* ============ Tab / 搜索 / 每页条数 ============ */
+  function applyTab(t){
+    tab = t;
+    page = 0;
+    document.getElementById('redoZone').style.display = 'none';
+    var isDiag = tab === 'diag';
+    document.getElementById('wbToolbar').style.display = isDiag ? 'none' : '';
+    document.getElementById('wbHint').style.display = isDiag ? 'none' : '';
+    document.getElementById('wbList').style.display = isDiag ? 'none' : '';
+    document.getElementById('wbPager').style.display = isDiag ? 'none' : '';
+    document.getElementById('wbEmpty').style.display = isDiag ? 'none' : '';
+    document.getElementById('printZone').style.display = isDiag ? 'none' : '';
+    document.getElementById('pane-diag').style.display = isDiag ? '' : 'none';
+    if (!isDiag) draw();
+  }
+
+  [].forEach.call(document.querySelectorAll('#tabs .chip'), function(c){
+    c.classList.toggle('on', c.getAttribute('data-tab') === tab);
+    c.addEventListener('click', function(){
+      [].forEach.call(document.querySelectorAll('#tabs .chip'), function(x){ x.classList.remove('on'); });
+      c.classList.add('on');
+      applyTab(c.getAttribute('data-tab'));
+    });
+  });
+
+  document.getElementById('wq').addEventListener('input', function(e){
+    query = e.target.value.trim();
+    page = 0;
+    draw();
+  });
+
+  var psizeSel = document.getElementById('psize');
+  psizeSel.value = String(PAGE_SIZE);
+  psizeSel.addEventListener('change', function(){
+    PAGE_SIZE = parseInt(psizeSel.value, 10);
+    try { localStorage.setItem(PSIZE_KEY, String(PAGE_SIZE)); } catch (e) {}
+    page = 0;
+    draw();
+  });
+
+  /* ============ 打印 ============ */
+  document.getElementById('printBtn').addEventListener('click', function(){
+    drawPrint();
+    window.print();
+  });
+
+  /* ============ 清空 ============ */
+  document.getElementById('clearBtn').addEventListener('click', function(){
+    var label = tab === 'all' ? '全部错题' : (ERR_META[tab] || {}).n;
+    var n = currentItems().length;
+    if (!n) return;
+    if (!confirm('确定清空「' + label + '」的 ' + n + ' 道错题？此操作不可撤销。')) return;
+    if (tab === 'all') BJM.qClearAllWrong();
+    else BJM.qClearWrongByType(tab);
+    BJM.toast('已清空 ' + n + ' 道');
+    page = 0;
+    refreshStats();
+    draw();
+  });
+
+  /* ============ 重做本页 ============ */
   function redoPage(){
     var items = currentItems();
     var slice = items.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -2064,13 +2169,19 @@ function buildWrong() {
     zone.style.display = '';
     document.getElementById('redoInfo').textContent = '本页 ' + qs.length + ' 题 · 答对即移出错题本';
 
+    // 记录重做前状态，用于完成态统计
+    var beforeIds = {};
+    qs.forEach(function(q){ beforeIds[q.id] = 1; });
+    var beforeWrong = {};
+    BJM.wrongList().forEach(function(w){ if (beforeIds[w.id]) beforeWrong[w.id] = 1; });
+
+    var done = 0, released = 0;
+
     BJM.step({
       mount: '#redoHost',
       questions: qs,
       mode: 'guided',
       shuffle: false,
-      backHref: 'wrong.html',
-      backLabel: '返回错题本',
       onAnswer: function(q, ok, rec){
         BJM.qRecord({
           id: q.id, chapter: q.chapter, method: q.method, tier: q.tier,
@@ -2079,13 +2190,51 @@ function buildWrong() {
           timeMs: rec.timeMs, src: 'redo',
         });
         BJM.bumpDay('questions', 1);
+        if (ok) {
+          done++;
+          if (beforeWrong[q.id]) released++;
+        }
       },
-      onFinish: function(res){
+      onFinish: function(){
         setTimeout(function(){ refreshStats(); draw(); }, 300);
+        // 覆盖引擎的默认完成态，显示「答对 x/y · 其中 z 个已移出」
+        // 用轮询而不是固定延时：引擎渲染完成态的时机不确定
+        var tries = 0;
+        (function inject(){
+          var host = document.getElementById('redoHost');
+          if (!host) return;
+          var win = host.querySelector('.se-done-card');
+          if (!win) {
+            if (tries++ < 40) setTimeout(inject, 60);
+            return;
+          }
+          if (win.querySelector('.redo-summary')) return;   // 已插入
+          var extra = document.createElement('div');
+          extra.className = 'redo-summary';
+          extra.innerHTML = '本页共 ' + qs.length + ' 题 · 答对 <b>' + done + '</b> 题' +
+            ' · 其中 <b>' + released + '</b> 题已移出错题本' +
+            (done < qs.length ? ' · 答错的题仍保留在错题本' : '');
+          var actions = win.querySelector('.se-actions');
+          if (actions) win.insertBefore(extra, actions);
+          var again = win.querySelector('.se-again');
+          if (again) {
+            again.textContent = '返回错题本';
+            again.addEventListener('click', function(){
+              document.getElementById('redoZone').style.display = 'none';
+              draw();
+              document.getElementById('wbList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, { once: true });
+          }
+        })();
       },
     });
     zone.scrollIntoView({ block: 'start', behavior: 'smooth' });
   }
+
+  document.getElementById('redoBtn').addEventListener('click', redoPage);
+  document.getElementById('redoClose').addEventListener('click', function(){
+    document.getElementById('redoZone').style.display = 'none';
+  });
 
   /* ============ 弱点诊断 ============ */
   function renderActions(){
@@ -2179,51 +2328,9 @@ function buildWrong() {
     renderStuck();
   }
 
-  /* ============ 工具栏 ============ */
-  document.getElementById('wq').addEventListener('input', function(e){
-    query = e.target.value.trim();
-    page = 0;
-    draw();
-  });
-
-  var psizeSel = document.getElementById('psize');
-  psizeSel.value = String(PAGE_SIZE);
-  psizeSel.addEventListener('change', function(){
-    PAGE_SIZE = parseInt(psizeSel.value, 10);
-    try { localStorage.setItem(PSIZE_KEY, String(PAGE_SIZE)); } catch (e) {}
-    page = 0;
-    draw();
-  });
-
-  document.getElementById('redoBtn').addEventListener('click', redoPage);
-  document.getElementById('redoClose').addEventListener('click', function(){
-    document.getElementById('redoZone').style.display = 'none';
-  });
-
-  document.getElementById('printBtn').addEventListener('click', function(){
-    // 打印前展开所有解答，打印后恢复
-    var opened = [];
-    [].forEach.call(document.querySelectorAll('.wb-sol'), function(d){
-      if (!d.open) { d.open = true; opened.push(d); }
-    });
-    window.print();
-    setTimeout(function(){ opened.forEach(function(d){ d.open = false; }); }, 300);
-  });
-
-  document.getElementById('clearBtn').addEventListener('click', function(){
-    var label = tab === 'all' ? '全部错题' : (ERR_META[tab] || {}).n;
-    var n = currentItems().length;
-    if (!n) return;
-    if (!confirm('确定清空「' + label + '」的 ' + n + ' 道错题？（作答统计会保留）')) return;
-    if (tab === 'all') BJM.qClearAllWrong();
-    else BJM.qClearWrongByType(tab);
-    BJM.toast('已清空 ' + n + ' 道');
-    page = 0;
-    refresh();
-  });
-
   BJM.ready(function(){
     refresh();
+    applyTab(tab);          // 深链进入时同步显示状态
     loadAll().then(refresh);
   });
   document.addEventListener('bj:qlog', refresh);
@@ -2233,7 +2340,7 @@ function buildWrong() {
 
   const html = page({
     active: 'wrong.html', title: '智能错题本',
-    desc: '自动收录错题，按错因分组；支持搜索、分页、批量重做本页、打印错题纸。',
+    desc: '自动收录错题，按错因分组；搜索、分页、整页重做、打印 A4 错题纸。',
     body, script, useStep: true, data: ['meta'],
   });
   return html.replace('<body data-base="">', `<body data-base="">\n${R.math.defs()}`);

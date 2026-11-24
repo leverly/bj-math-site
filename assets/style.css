@@ -2415,36 +2415,104 @@ details[open] > summary::before { content: '▾ '; }
   .pager button { min-width: 32px; height: 32px; font-size: .8rem; }
 }
 
+
 /* ==========================================================
-   打印错题纸
+   智能错题本 · 打印区
+   printZone 常驻但默认隐藏；打印时只显示它（全量条目，不受分页限制）
+   ========================================================== */
+.print-list { display: none; }
+.print-head { display: none; }
+
+/* ---------- 各步答案（分步题） ---------- */
+.wb-steps {
+  margin: 12px 0; padding: 12px 14px; border-radius: 8px;
+  background: var(--surface-2); border: 1px solid var(--border);
+}
+.wb-step {
+  display: flex; align-items: baseline; gap: 9px;
+  padding: 6px 0; font-size: .86rem; line-height: 1.7;
+  border-bottom: 1px dashed var(--border);
+}
+.wb-step:last-child { border-bottom: 0; }
+.wb-step-no {
+  flex: none; width: 19px; height: 19px; display: grid; place-items: center;
+  border-radius: 6px; background: var(--bg-3); color: var(--text-3);
+  font-size: .7rem; font-weight: 800; align-self: center;
+}
+.wb-step-ask { flex: 1; color: var(--text-2); }
+.wb-step-ans {
+  flex: none; font-weight: 700; color: var(--ok);
+  padding-left: 8px; border-left: 2px solid var(--ok-soft);
+}
+
+/* ---------- 完整解答（错题本里常显，不折叠） ---------- */
+.wb-why {
+  margin: 12px 0; padding: 11px 14px; border-radius: 8px;
+  background: var(--bg-3); border-left: 3px solid var(--accent);
+  font-size: .88rem; line-height: 1.9; color: var(--text-2);
+}
+.wb-why b { color: var(--accent); display: block; margin-bottom: 5px; font-size: .82rem; }
+
+/* ---------- 重做完成态补充 ---------- */
+.redo-summary {
+  margin: 14px 0 4px; padding: 12px 16px; border-radius: 10px;
+  background: var(--accent-soft); color: var(--text-2);
+  font-size: .88rem; line-height: 1.8;
+}
+.redo-summary b { color: var(--accent); font-size: 1rem; }
+
+/* ==========================================================
+   打印：只留 printZone 的全量错题纸
    ========================================================== */
 @media print {
-  .hdr, .foot, .scroll-progress, .toast,
-  .tabs, .toolbar, .pager, #redoZone, .wb-foot, .wb-act,
-  .section-head .btn, #pane-diag { display: none !important; }
-  body { background: #fff !important; color: #000 !important; }
-  .main { padding: 0 !important; }
-  .wrap { max-width: none !important; padding: 0 !important; }
-  .kv { display: none !important; }
-  .page-head { margin-bottom: 14px; }
-  .page-head h1 { font-size: 1.5rem; }
-  .page-head .lede { font-size: .8rem; color: #444; }
-
-  .wb-item {
-    box-shadow: none !important; border: 1px solid #cbd5e1 !important;
-    break-inside: avoid; page-break-inside: avoid;
-    margin-bottom: 10px; padding: 12px 14px;
+  /* 打印一律浅色——深色主题变量会被带上纸，黑底黑字没法看 */
+  :root, html[data-theme="dark"], html[data-theme="light"] {
+    --bg: #ffffff; --bg-2: #ffffff; --bg-3: #f1f5f9;
+    --surface: #ffffff; --surface-2: #f8fafc;
+    --border: #cbd5e1; --border-2: #94a3b8;
+    --text: #0f172a; --text-2: #334155; --text-3: #64748b;
+    --accent: #1d4ed8; --ok: #047857; --rose: #b91c1c; --gold: #b45309;
+    --accent-soft: #eff6ff; --ok-soft: #f0fdf4; --rose-soft: #fef2f2;
+    --gold-soft: #fffbeb; --shadow-1: none; --shadow-2: none;
   }
-  .wb-stem { font-size: .92rem; }
-  .wb-opt { background: #f8fafc !important; border: 1px solid #e2e8f0; }
-  .wb-opt.right { background: #f0fdf4 !important; border-color: #86efac; }
-  .wb-sol { border: 1px solid #e2e8f0 !important; background: #fff !important; }
-  .wb-sol > summary { display: none !important; }
-  .wb-sol > div { display: block !important; padding: 10px 12px !important; }
-  details > summary { display: none !important; }
-  details > div { display: block !important; }
-  .fig { max-width: 260px !important; }
-  .math-defs { display: none; }
+  html, body { background: #fff !important; color: #0f172a !important; font-size: 11pt; }
+  .hdr, .foot, .scroll-progress, .toast,
+  .page-head, .kv, #tabs, .toolbar, #wbHint, #wbList, #wbPager,
+  #wbEmpty, #redoZone, #pane-diag, .section-head .btn {
+    display: none !important;
+  }
+  .main { background: none !important; padding: 0 !important; }
+  .wrap { max-width: none !important; padding: 0 !important; }
+  #printZone { margin: 0 !important; padding: 0 !important; }
+  .print-list { display: block !important; }
+  .print-list .empty { display: none !important; }
+
+  .print-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 1.5px solid #94a3b8; padding-bottom: 8px; margin-bottom: 14px;
+    font-size: 10pt; color: #334155;
+  }
+  .print-head b { font-size: 12pt; color: #0f172a; }
+
+  /* 错题纸卡片：去掉阴影，保留细边框，避免跨页断开 */
+  .print-list .wb-item {
+    box-shadow: none !important; border: 1px solid #cbd5e1 !important;
+    margin-bottom: 10px; padding: 11px 13px;
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  .print-list .wb-head-meta { color: #64748b !important; }
+  .print-list .wb-type { background: #f1f5f9 !important; color: #334155 !important; }
+  .print-list .wb-tier { background: #f8fafc !important; color: #64748b !important; }
+  .print-list .wb-opt { background: #f8fafc !important; border: 1px solid #e2e8f0; }
+  .print-list .wb-opt.right { background: #f0fdf4 !important; border-color: #86efac; color: #047857 !important; }
+  .print-list .wb-opt.right .wb-key { background: #047857 !important; color: #fff !important; }
+  .print-list .wb-steps { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+  .print-list .wb-step-ans { color: #047857 !important; }
+  .print-list .wb-why { background: #f8fafc !important; border-left-color: #94a3b8 !important; }
+  .print-list .wb-why b { color: #1d4ed8 !important; }
+  .print-list .wb-foot { display: none !important; }
+  .print-list .fig { max-width: 240px !important; }
   /* 打印时公式转黑 */
-  .math svg, .fig { color: #000 !important; }
+  .print-list .math svg, .print-list .fig { color: #000 !important; }
+  .math-defs { display: none; }
 }
